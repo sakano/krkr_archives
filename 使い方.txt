@@ -9,6 +9,28 @@ Plugins.link("KAGParserExb.dll");
 
 
 
+■バージョンについて
+『KAGParserExb.dll』は、最新の開発版吉里吉里(version 2.31.2012.831, 
+SVN Revision 5057)で動作します。安定版の吉里吉里(version 2.32.2.426)
+で使用したい場合は、『KAGParserExb.dll』の代わりに『KAGParserExb_232rev2.dll』
+を使ってください。
+ただし、安定版ではなく開発版の吉里吉里を使用することを推奨します。
+最新開発版の吉里吉里本体は以下のURLからダウンロードできます。
+https://sv.kikyou.info/svn/kirikiri2/trunk/kirikiri2/bin/win32/
+
+
+
+■パラメータマクロ使用時の注意
+パラメータマクロを使用する場合は、systemフォルダの『MainWindow.tjs』を
+書き換える必要があります。(KAG, KAGEX共通です)
+
+以下の行を探します。
+(Dictionary.assign incontextof extraConductor.macros)(mainConductor.macros);
+その次の行に、以下の行を挿入してください。
+(Dictionary.assign incontextof extraConductor.paramMacros)(mainConductor.paramMacros);
+
+
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                     パラメータマクロ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
