@@ -1,0 +1,45 @@
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+                  KAGParserExb使い方
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+
+『KAGParserExb.dll』を吉里吉里本体と同じフォルダにおきます。
+そしてOverride.tjsで
+Plugins.link("KAGParserExb.dll");
+のように読み込んでください。
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    パラメータマクロ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[pmacro]タグで属性（パラメータ）をマクロとして登録できます。
+name属性にマクロ名を指定します。
+name属性以外の属性がパラメータマクロとして登録されます。
+
+@pmacro name="スクロール" method=scroll time=1000
+以上のようなパラメータマクロが登録されている時、以下のコマンドは同じ意味になります。
+@trans スクロール
+@trans method=scroll time=1000
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    複数行タグ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+タグを複数行に分けて書くことができます。
+
+Afterinit.tjsで、
+kag.mainConductor.multiLineTagEnabled = true;
+kag.extraConductor.multiLineTagEnabled = true;
+とすると複数行タグが使えるようになります。
+
+次の行に続けたいコマンドの末尾に「\」をつけると複数行タグになります。
+
+@position layer=message0 page=fore \
+ left=10 top=350 width=620 height=120 \
+ marginl=10 margint=5 marginr=10 marginb=5 \
+ visible=false
+
+
+
+より詳細な説明は、「readme_original.txt」を参照してください。

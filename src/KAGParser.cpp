@@ -2351,10 +2351,8 @@ parse_start:
 					TVPThrowExceptionMessage(TVP_KAGPARSER_MESSAGEMAP(TVPKAGSyntaxError));
 
 				tjs_int          curlen  = TJS_strlen(CurLineStr)  - 1; // ignore "\"
-				tjs_int          nextlen = Lines[multiLine].Length - 1; // ignore ";"
+				tjs_int          nextlen = Lines[multiLine].Length;
 				const tjs_char * next    = Lines[multiLine].Start;
-				if (next[0] != TJS_W(';'))
-					TVPThrowExceptionMessage(TVP_KAGPARSER_MESSAGEMAP(TVPKAGSyntaxError));
 
 				tjs_int finallen = curlen + nextlen;
 
@@ -2363,7 +2361,7 @@ parse_start:
 
 				TJS_strncpy(d, CurLineStr, curlen);
 				d += curlen;
-				TJS_strcpy(d, next +1); // ignore ";"
+				TJS_strcpy(d, next);
 
 				newbuf.FixLen();
 				LineBuffer = newbuf;
