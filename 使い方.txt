@@ -20,14 +20,21 @@ https://sv.kikyou.info/svn/kirikiri2/trunk/kirikiri2/bin/win32/
 
 
 
-■パラメータマクロ使用時の注意
-パラメータマクロを使用する場合は、systemフォルダの『MainWindow.tjs』を
+■パラメータマクロ又は属性名マクロ使用時の注意
+パラメータマクロ又は属性名マクロを使用する場合は、systemフォルダの『MainWindow.tjs』を
 書き換える必要があります。(KAG, KAGEX共通です)
 
-以下の行を探します。
+１．以下の行を探します。
 (Dictionary.assign incontextof extraConductor.macros)(mainConductor.macros);
-その次の行に、以下の行を挿入してください。
+その次の行に、以下の2行を挿入してください。
 (Dictionary.assign incontextof extraConductor.paramMacros)(mainConductor.paramMacros);
+(Dictionary.assign incontextof extraConductor.attribNameMacros)(mainConductor.attribNameMacros);
+
+２．以下の行を探します。
+(Dictionary.assign incontextof mainConductor.macros)(extraConductor.macros);
+その次の行に、以下の2行を挿入してください。
+(Dictionary.assign incontextof mainConductor.paramMacros)(extraConductor.paramMacros);
+(Dictionary.assign incontextof mainConductor.attribNameMacros)(extraConductor.attribNameMacros);
 
 
 
@@ -61,6 +68,20 @@ kag.extraConductor.multiLineTagEnabled = true;
  left=10 top=350 width=620 height=120 \
  marginl=10 margint=5 marginr=10 marginb=5 \
  visible=false
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    属性名マクロ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[amacro]タグで属性名の別名を登録できます。
+name属性に別名として使いたい属性名を指定ます。
+target属性にその別名で表される本来の属性名を指定します。
+
+@amacro name="t" target="time"
+以上のような属性名マクロが登録されている時、以下のコマンドは同じ意味になります。
+@wait t=1000
+@wait time=1000
 
 
 

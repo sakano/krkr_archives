@@ -1,7 +1,7 @@
 ********************************************************************************
 *                                                                              *
 *         KAGParserExbプラグイン                                               *
-*                             ver. 1.01                                        *
+*                             ver. 1.02                                        *
 *                                       Copyright (C)2012 Biscrat              *
 *                                                      komatsu@biscrat.com     *
 *                                                                              *
@@ -11,8 +11,9 @@
 オリジナルのKAGParserEx.dllのソースコードは以下のURLで配布されています。
 https://sv.kikyou.info/svn/kirikiri2/trunk/kirikiri2/src/plugins/win32/KAGParserEx/
 
-KAGParserEx.dllからの変更点は以下のようんあります。
+KAGParserEx.dllからの変更点は以下のようになっています。
 ・複数行タグの行頭の「;」が不要になっています
+・属性名マクロが追加されています
 
 VC10でコンパイルしているので、Windows2000などXPより古いOSでは動作しません。
 

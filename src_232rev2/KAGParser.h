@@ -212,6 +212,7 @@ private:
 	ArgValue args; // current args
 	iTJSDispatch2 * Macros; // Macro Dictionary Object
 	iTJSDispatch2 * ParamMacros; // Param Macro Dictionary Object
+	iTJSDispatch2 * AttribNameMacros; // Attrib Name Macro Dictionary Object
 
 	std::vector<ArgValue> MacroArgs; // Macro arguments
 	tjs_uint MacroArgStackDepth;
@@ -352,6 +353,7 @@ public:
 
 	iTJSDispatch2 *GetMacrosNoAddRef() const { return Macros; }
 	iTJSDispatch2 *GetParamMacrosNoAddRef() const { return ParamMacros; }
+	iTJSDispatch2 *GetAttribNameMacrosNoAddRef() const { return AttribNameMacros; }
 
 	iTJSDispatch2 *GetMacroTopNoAddRef() const;
 		// get current macro argument (parameters)
