@@ -14,5 +14,8 @@ Observerパターン用ライブラリ。Backbone.Eventsのtjs版です。
 ##Biscrat_LinqArray.tjs
 Arrayクラスを拡張。C#のLINQもどきが使えるようになります。
 
+##Biscrat_TextDrawer.tjs
+LayerExDraw.dllのdrawPathStringでテキストを描画します。
+
 ##Biscrat_Utils.tjs
 その他の便利関数など。
