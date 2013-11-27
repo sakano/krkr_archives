@@ -1,4 +1,4 @@
-#krkr-biscrat-utils
+#biscrat-krkr-utils
 吉里吉里用のtjsスクリプトです。各tjsファイルのライセンスはMITライセンスになっています。
 
 ##Biscrat_AsyncCaller.tjs
