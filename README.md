@@ -5,7 +5,7 @@
 AsyncTriggerを使って任意の関数を非同期に呼び出す。
 kwidgetsのAsyncCallerとほぼ同じです。
 
-##BiscratDeferred.tjs
+##Biscrat_Deferred.tjs
 Promiseパターン用ライブラリ。jQuery.Deferredのtjs版です。
 
 ##Biscrat_Events.tjs
@@ -16,6 +16,12 @@ Arrayクラスを拡張。C#のLINQもどきが使えるようになります。
 
 ##Biscrat_TextDrawer.tjs
 LayerExDraw.dllのdrawPathStringでテキストを描画します。
+
+##Biscrat_Serializable.tjs
+オブジェクトにシリアライズ/デシリアライズ用の関数を追加します。
+
+##Biscrat_MouseGesture.tjs
+マウスジェスチャの入力を受け付けます。
 
 ##Biscrat_Utils.tjs
 その他の便利関数など。
