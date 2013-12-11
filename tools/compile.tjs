@@ -22,7 +22,16 @@ class Biscrat_Compiler
 		(Dictionary.clear incontextof compiledFiles)();
 	}
 	
-	function preprocess (param, dest, srcModifiedTime) {
+	function checkExtension(map, file) {
+		var type = map[Storages.extractStorageExt(file)];
+		if (type === void) {
+			error(@"àŸèÌÇ»ägí£éqÇ≈Ç∑(${file})");
+			return;
+		}
+		return type;
+	}
+	
+	function preprocess(param, dest, srcModifiedTime) {
 		dm(@"PREPROCEE: ${preprocessCommand} ${param}\n");
 		var result = System.commandExecute(preprocessCommand, param);
 		switch (true) {
@@ -49,15 +58,7 @@ class Biscrat_Compiler
 		createDirectoryIfNotExist(dest);
 		reset();
 		foreachFilesInDirectory(src, dest, function(src, filename, dest) {
-			// check the extention
-			switch (Storages.extractStorageExt(src)) {
-			case ".otjs":
-			case ".tjs": break;
-			default:
-				error(@"àŸèÌÇ»ägí£éqÇ≈Ç∑(${src})");
-				return;
-			}
-			
+			if (!checkExtension(settings.extensions_debug, src)) return;
 			var srcModifiedTime = Storages.getLastModifiedFileTime(src);
 			if (!Storages.isExistentStorage(dest) || Storages.getLastModifiedFileTime(dest) !== srcModifiedTime) {
 				var param = expandMessageStrings(preprocessParamDebug, "SRC", Storages.getLocalName(src), "DEST", Storages.getLocalName(dest), "INCLUDE", Storages.getLocalName(includeFilePath));
@@ -71,15 +72,7 @@ class Biscrat_Compiler
 		createDirectoryIfNotExist(mid);
 		reset();
 		foreachFilesInDirectory(src, dest, function(src, filename, dest, mid) {
-			// check the extention
-			switch (Storages.extractStorageExt(src)) {
-			case ".otjs": return; // ignore
-			case ".tjs": break;
-			default:
-				error(@"àŸèÌÇ»ägí£éqÇ≈Ç∑(${src})");
-				return;
-			}
-			
+			if (!checkExtension(settings.extensions_release, src)) return;
 			var srcModifiedTime = Storages.getLastModifiedFileTime(src);
 			if (!Storages.isExistentStorage(dest) || Storages.getLastModifiedFileTime(dest) !== srcModifiedTime) {
 				var param = expandMessageStrings(preprocessParamRelease, "SRC", Storages.getLocalName(src), "MID", Storages.getLocalName(mid), "INCLUDE", Storages.getLocalName(includeFilePath));

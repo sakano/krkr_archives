@@ -2,5 +2,13 @@
 	"ignoreFiles" => %[
 	],
 	"dataFiles" => %[
-	]
+	],
+	"extensions_debug" => %[
+		".tjs" => true,
+		".otjs" => true,
+	],
+	"extensions_release" => %[
+		".tjs" => true,
+		".otjs" => false,
+	],
 ]
