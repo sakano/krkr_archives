@@ -1,81 +1,113 @@
 class Biscrat_MouseGesture
 {
-	/** Mouse gesture sensitivity */
-	var __threshold = 50;
-	/** Detects four-directions(true) or eight-directions(false) mouse gesture */
-	var __fourDirection = true;
-	/** The max length of a mouse gesture */
-	var __gestureLimit = 1;
+	var _threshold = 50;
+	var _type = __BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION;
+	var _limit = 1;
 	/** Move the mouse pointer with this button down */
-	var __mouseButton = mbRight;
+	var _mouseButton = mbRight;
 	
-	var __isMouseDown = false;
-	var __px, __py;
-	var __gestures = "";
-	var __gestureCallbacks = %[];
-	var __gestureEnabled = false;
-	var __gestureOverflow = false;
+	var _isMouseDown = false;
+	var _px, _py;
+	var _gestures = "";
+	var _gestureCallbacks = %[];
+	var _gestureEnabled = false;
+	var _gestureOverflow = false;
+	
+	/**
+	 * Gets or sets whether the mouse gesture sensitivity.
+	 * @type int
+	 */
+	property threshold {
+		setter(v) { clearGesture(); _threshold = +v; }
+		getter { return _threshold; }
+	}
+	
+	/**
+	 * Gets or sets gesture types.
+	 * @type int
+	 */
+	property type {
+		setter(v) { clearGesture(); _type = v; }
+		getter { return _type; }
+	}
+	
+	/**
+	 * Gets or sets the max length of a mouse gesture.
+	 * @type int
+	 */
+	property limit {
+		setter(v) { clearGesture(); _limit = v; }
+		getter { return _limit; }
+	}
+	
+	/**
+	 * Gets or sets the mouse button used to ditect gestures.
+	 * @type int
+	 */
+	property button {
+		setter(v) { clearGesture(); _mouseButton = v; }
+		getter { return _mouseButton; }
+	}
 	
 	/**
 	 * Gets or sets whether the mouse gesture is enabled.
+	 * @type bool
 	 */
 	property enabled {
-		setter(v) {
-			clearGesture();
-			__gestureEnabled = !!v;
-		}
-		getter { return __gestureEnabled; }
+		setter(v) { clearGesture(); _gestureEnabled = !!v; }
+		getter { return _gestureEnabled; }
 	}
+	
 	
 	function Biscrat_MouseGesture() {
 		Serializable(this, [
-			"__threshold",
-			"__fourDirection",
-			"__gestureLimit",
-			"__mouseButton",
-			"enabled"
+			"_threshold",
+			"_type",
+			"_limit",
+			"_mouseButton",
+			"_gestureEnabled"
 		]);
 	}
 	
 	function finalize()
 	{
-		invalidate __gestureCallbacks;
+		invalidate _gestureCallbacks;
 	}
 	
 	/**
 	 * This function must be called when the mouse button is down.
-	 * @param x the x-coordinate of the mouse.
-	 * @param y the y-coordinate of the mouse.
-	 * @param button the mouse button clicked.
+	 * @param number x the x-coordinate of the mouse.
+	 * @param number y the y-coordinate of the mouse.
+	 * @param int button the mouse button clicked.
 	 */
 	function onMouseDown(x, y, button)
 	{
-		if (button & __mouseButton) {
+		if (button & _mouseButton) {
 			clearGesture();
-			__isMouseDown = true;
-			__px = x;
-			__py = y;
+			_isMouseDown = true;
+			_px = x;
+			_py = y;
 		}
 	}
 	
 	/**
 	 * This function must be called when the mouse pointer is moved.
-	 * @param x the x-coordinate of the mouse.
-	 * @param y the y-coordinate of the mouse.
+	 * @param number x the x-coordinate of the mouse.
+	 * @param number y the y-coordinate of the mouse.
 	 */
 	function onMouseMove(x, y)
 	{
-		if (!__isMouseDown) { return; }
-		if (__fourDirection) {
-			if (__px-x >= __threshold) inputGesture("4");
-			else if (x-__px >= __threshold) inputGesture("6");
-			else if (__py-y >= __threshold) inputGesture("2");
-			else if (y-__py >= __threshold) inputGesture("8");
+		if (!_isMouseDown) { return; }
+		if (_type === __BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION) {
+			if (_px-x >= _threshold) inputGesture("4");
+			else if (x-_px >= _threshold) inputGesture("6");
+			else if (_py-y >= _threshold) inputGesture("2");
+			else if (y-_py >= _threshold) inputGesture("8");
 			else return;
 		} else {
-			if (Math.pow(x-__px, 2) + Math.pow(y-__py, 2) >= __threshold * __threshold) {
+			if (Math.pow(x-_px, 2) + Math.pow(y-_py, 2) >= _threshold * _threshold) {
 				var qpi = __PI/8;
-				var theta = Math.atan2(y-__py, x-__px);
+				var theta = Math.atan2(y-_py, x-_px);
 				if (theta < -qpi*7) inputGesture("4");
 				else if (theta < -qpi*5) inputGesture("1");
 				else if (theta < -qpi*3) inputGesture("2");
@@ -89,21 +121,21 @@ class Biscrat_MouseGesture
 				return;
 			}
 		}
-		__px = x, __py = y;
+		_px = x, _py = y;
 	}
 	
 	/**
 	 * This function must be called when the mouse is up.
-	 * @param x the x-coordinate of the mouse.
-	 * @param y the y-coordinate of the mouse.
-	 * @param button the mouse button clicked.
-	 * @return true if a gesture is invoked.
+	 * @param number x the x-coordinate of the mouse.
+	 * @param number y the y-coordinate of the mouse.
+	 * @param int button the mouse button clicked.
+	 * @return bool true if a gesture is invoked.
 	 */
 	function onMouseUp(x, y, button)
 	{
 		var ret = false;
-		if (button & __mouseButton) {
-			if (__isMouseDown) {
+		if (button & _mouseButton) {
+			if (_isMouseDown) {
 				ret = doGesture();
 			}
 			clearGesture();	
@@ -113,18 +145,18 @@ class Biscrat_MouseGesture
 
 	/**
 	 * Records mouse gesture while mouse moving.
-	 * @param gesture Gesture input.
+	 * @param string gesture Gesture input.
 	 */
 	function inputGesture(gesture)
 	{
-		if (__gestureOverflow) { return; }
-		var len = __gestures.length;
-		if (len == 0 || __gestures[len-1] != gesture) {
+		if (_gestureOverflow) { return; }
+		var len = _gestures.length;
+		if (len == 0 || _gestures[len-1] != gesture) {
 			// Record the gesture if it differs from previous gesture.
-			__gestures += gesture;
+			_gestures += gesture;
 		}
-		if (__gestures.length > __gestureLimit) {
-			__gestureOverflow = true;
+		if (_gestures.length > _limit) {
+			_gestureOverflow = true;
 		}
 	}
 	
@@ -133,25 +165,25 @@ class Biscrat_MouseGesture
 	 */
 	function clearGesture()
 	{
-		__isMouseDown = false;
-		__gestures = "";
-		__gestureOverflow = false;
+		_isMouseDown = false;
+		_gestures = "";
+		_gestureOverflow = false;
 	}
 	
 	/**
 	 * Calls the registered function if gesture is detected.
-	 * @return True, if the callback function is called.
+	 * @return bool True, if the callback function is called.
 	 */
 	function doGesture()
 	{
 		var called = false;
-		if (__gestureEnabled && !__gestureOverflow && __gestures.length != 0) {
-			if (__gestureCallbacks.all !== void){
-				__gestureCallbacks.all(__gestures);
+		if (_gestureEnabled && !_gestureOverflow && _gestures.length != 0) {
+			if (_gestureCallbacks.all !== void){
+				_gestureCallbacks.all(_gestures);
 				called = true;
 			}
-			if (__gestureCallbacks[__gestures] !== void) {
-				__gestureCallbacks[__gestures](__gestures);
+			if (_gestureCallbacks[_gestures] !== void) {
+				_gestureCallbacks[_gestures](_gestures);
 				called = true;
 			}
 		}
@@ -160,17 +192,17 @@ class Biscrat_MouseGesture
 	
 	/**
 	 * Registers the callback function called when the mouse gesture is ditected.
-	 * @param gestures The mouse gesture to call the callback function.
-	 * @param callback The callback function. 
+	 * @param string gestures The mouse gesture to call the callback function.
+	 * @param func callback The callback function. 
 	 */
 	function addCallback(gestures, callback)
 	{
-		__gestureCallbacks[string(gestures)] = callback;
+		_gestureCallbacks[string(gestures)] = callback;
 	}
 	
 	/**
 	 * Unregisters the callback function.
-	 * @param gestures The mouse gesture to remove the callback function.
+	 * @param string gestures The mouse gesture to remove the callback function.
 	 */
 	function removeCallback(gestures)
 	{
@@ -182,6 +214,6 @@ class Biscrat_MouseGesture
 	 */
 	function clearCallback()
 	{
-		(Dictionary.clear incontextof __gestureCallbacks)();
+		(Dictionary.clear incontextof _gestureCallbacks)();
 	}
 }

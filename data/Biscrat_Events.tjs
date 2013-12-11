@@ -16,6 +16,8 @@ class Biscrat_Events
 	 *
 	 * Callbacks bound to the special "all" event will be invoked when any event is fired.
 	 * These callbacks are passed the name of the event as the first argument.
+	 * @param string event The event name to bind.
+	 * @param func callback The function to bind.
 	 */
 	function bind(event, callback) {
 		if (__eventCallbacks[event] === void) {
@@ -29,6 +31,7 @@ class Biscrat_Events
 	 * The following two lines are almost same.
 	 *   bindMap(%[ event => callback, even2 => callback2 ]);
 	 *   bind(event, callback), bind(event2, callback2);
+	 * @param dictionary map The dictionary object contains evant names and callbacks.
 	 */
 	function bindMap(map) {
 		foreach(map, bind);
@@ -39,6 +42,8 @@ class Biscrat_Events
 	 * If no event is specified, callback for all events will be removed.
 	 * If no callback is specified, all callback for the event will be removed.
 	 * If neither event nor callback is specified, all callback will be removed.
+	 * @param string event The event name to unbind.
+	 * @param func callback The function to unbind.
 	 */
 	function unbind(event, callback) {
 		if (event !== void) {
@@ -64,6 +69,8 @@ class Biscrat_Events
 	/**
 	 * Trigger callback for the given event.
 	 * Subsequent arguments will be passed along to the event callbacks.
+	 * @param string event The event name to trigger.
+	 * @param mixed * The arguments passed to callbacks.
 	 */
 	function trigger(event, *) {
 		var callbacks = [];

@@ -1,55 +1,55 @@
 class Biscrat_Deferred
 {
-	var __promise = new Biscrat_Deferred_Promise();
+	var _promise = new Biscrat_Deferred_Promise();
 	
 	function Biscrat_Deferred() {}
 	
 	function finalize() {
-		// invalidate __promise;
+		// invalidate _promise;
 	}
 	
-	function done() { return __promise.done(...); }
-	function fail() { return __promise.fail(...); }
-	function always() { return __promise.always(...); }
-	function then() { return __promise.then(...); }
-	property state { getter { return __promise.state; } }
+	function done() { return _promise.done(...); }
+	function fail() { return _promise.fail(...); }
+	function always() { return _promise.always(...); }
+	function then() { return _promise.then(...); }
+	property state { getter { return _promise.state; } }
 	
 	/**
 	 * Return a Deferred's Promise object.
-	 * @return Promise object
+	 * @return object Promise object
 	 */
 	function promise() {
-		return __promise;
+		return _promise;
 	}
 	
 	/**
 	 * Resolve a Deferred object and call any doneCallbacks.
-	 * @param args* Arguments passed to callbacks
+	 * @param mixed args* Arguments passed to callbacks
 	 */
 	function resolve(args*) {
 		if (state !== __BISCRAT_DEFERRED_PENDING) { return; }
-		__promise.__state = __BISCRAT_DEFERRED_RESOLVED;
-		foreach(__promise.__doneCallbacks, __promise.__doCallbacks, *);
-		__promise.__args = args;
+		_promise._state = __BISCRAT_DEFERRED_RESOLVED;
+		foreach(_promise._doneCallbacks, _promise._doCallbacks, *);
+		_promise._args = args;
 	}
 	
 	/**
 	 * Reject a Deferred object and call any failCallbacks.
-	 * @param args* Arguments passed to callbacks
+	 * @param mixed args* Arguments passed to callbacks
 	 */
 	function reject(args*) {
 		if (state !== __BISCRAT_DEFERRED_PENDING) { return; }
-		__promise.__state = __BISCRAT_DEFERRED_REJECTED;
-		foreach(__promise.__failCallbacks, __promise.__doCallbacks, *);
-		__promise.__args = args;
+		_promise._state = __BISCRAT_DEFERRED_REJECTED;
+		foreach(_promise._failCallbacks, _promise._doCallbacks, *);
+		_promise._args = args;
 	}
 	
 	/**
 	 * Create a Deferred object based on one or more Deferred objects.
-	 * When these objects are resolved it will be resolved.
+	 * When these all objects are resolved it will be resolved.
 	 * When any one of them is rejected it will be rejected.
-	 * @param deferreds* Deferred objects
-	 * @return Promise object of createdDeferred object based on these specified Deferred objects.
+	 * @param object deferreds* Deferred objects
+	 * @return object Promise object of created Deferred object based on these specified Deferred objects.
 	 */
 	function when(deferreds*) {
 		var whenDeferred = new Biscrat_Deferred();
@@ -57,18 +57,18 @@ class Biscrat_Deferred
 			whenDeferred.resolve();
 		} else {
 			with (whenDeferred) {
-				.__whenDeferredsCount = deferreds.count;
-				.__whenDoneCount = 0;
-				.__whenDone = function() {
-					if (++__whenDoneCount == __whenDeferredsCount) {
+				._whenDeferredsCount = deferreds.count;
+				._whenDoneCount = 0;
+				._whenDone = function() {
+					if (++_whenDoneCount == _whenDeferredsCount) {
 						resolve();
 					}
 				} incontextof whenDeferred;
-				.__whenFail = function() {
+				._whenFail = function() {
 					reject();
 				} incontextof whenDeferred;
 				for (var i = 0; i < deferreds.count; ++i) {
-					deferreds[i].done(.__whenDone).fail(.__whenFail);
+					deferreds[i].done(._whenDone).fail(._whenFail);
 				}
 			}
 		}
@@ -78,12 +78,12 @@ class Biscrat_Deferred
 
 class Biscrat_Deferred_Promise
 {
-	var __args = [];
-	var __doneCallbacks = [];
-	var __failCallbacks = [];
-	var __state = __BISCRAT_DEFERRED_PENDING;
+	var _args = [];
+	var _doneCallbacks = [];
+	var _failCallbacks = [];
+	var _state = __BISCRAT_DEFERRED_PENDING;
 	
-	function __doCallbacks(idx, callback, *) {
+	function _doCallbacks(idx, callback, *) {
 		var context = Scripts.getObjectContext(callback);
 		if (callback isvalid && (context === null || context isvalid)) {
 			callback(*);
@@ -95,22 +95,23 @@ class Biscrat_Deferred_Promise
 	function Biscrat_Deferred_Promise() {}
 	
 	function finalize() {
-		invalidate __args;
-		invalidate __doneCallbacks;
-		invalidate __failCallbacks;
+		invalidate _args;
+		invalidate _doneCallbacks;
+		invalidate _failCallbacks;
 	}
 	
 	/**
 	 * Add callbacks to be called when the deferred object is resolved.
 	 * If the object has been resolved, callbacks are called immediately.
+	 * @param func callbacks* The callback functions.
 	 */
 	function done(callbacks*) {
-		switch (__state) {
+		switch (_state) {
 		case __BISCRAT_DEFERRED_PENDING:
-			__doneCallbacks.push(*);
+			_doneCallbacks.push(*);
 			break;
 		case __BISCRAT_DEFERRED_RESOLVED:
-			foreach(callbacks, __doCallbacks, __args*);
+			foreach(callbacks, _doCallbacks, _args*);
 			break;
 		}
 		return this;
@@ -119,14 +120,15 @@ class Biscrat_Deferred_Promise
 	/**
 	 * Add Callbacks to be called when the Deferred object is rejected.
 	 * If the object has been rejected, callbacks are called immediately.
+	 * @param func callbacks* The callback functions.
 	 */
 	function fail(callbacks*) {
-		switch (__state) {
+		switch (_state) {
 		case __BISCRAT_DEFERRED_PENDING:
-			__failCallbacks.push(...);
+			_failCallbacks.push(...);
 			break;
 		case __BISCRAT_DEFERRED_REJECTED:
-			foreach(callbacks, __doCallbacks, __args*);
+			foreach(callbacks, _doCallbacks, _args*);
 			break;
 		}
 		return this;
@@ -135,19 +137,23 @@ class Biscrat_Deferred_Promise
 	/**
 	 * Add callbacks to be called when the Deferred object is either resolved or rejected.
 	 * If the object has been resolved or rejected, callbacks are called immediately.
+	 * @param func callbacks* The callback functions.
 	 */
 	function always(callbacks*) {
-		if (__state == __BISCRAT_DEFERRED_PENDING) {
+		if (_state == __BISCRAT_DEFERRED_PENDING) {
 			done(*);
 			fail(*);
 		} else {
-			foreach(callbacks, __doCallbacks, __args*);
+			foreach(callbacks, _doCallbacks, _args*);
 		}
 		return this;
 	}
 	
 	/**
 	 * Add callbacks to be called when the deferred object is resolved or rejected.
+	 * @param func doneCallback The callback function called when the deffered object is resolved.
+	 * @param func failCallback The callback function called when the deffered object is rejected.
+	 * @param func alwaysCallback The callback function called when the deffered object is resolved or rejected .
 	 */
 	function then(doneCallback, failCallback, alwaysCallback) {
 		if (doneCallback !== void) done(doneCallback);
@@ -159,6 +165,7 @@ class Biscrat_Deferred_Promise
 	/**
 	 * The current state of a Deffered object.
 	 * The value is __BISCRAT_DEFERRED_PENDING, __BISCRAT_DEFERRED_RESOLVED or __BISCRAT_DEFERRED_REJECTED.
+	 * @type int The number indicating the current state.
 	 */
-	property state { getter { return __state; } }
+	property state { getter { return _state; } }
 }

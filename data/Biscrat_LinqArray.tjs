@@ -1,8 +1,8 @@
 /**
  * Returns the element at a specified index.
  * An exception will be thrown when the index is out of range.
- * @param The index of the element to retrieve.
- * @return The element at the specified position.
+ * @param int index The index of the element to retrieve.
+ * @return mixed The element at the specified position.
  */
 Array.elementAt = function(index) {
   if (index < 0 || index >= this.count) {
@@ -13,7 +13,7 @@ Array.elementAt = function(index) {
 
 /**
  * Create an Array object that is a shallow copy of the current instance.
- * @return An array object.
+ * @return array An array object.
  */
 Array.clone = function() {
   var tmp = [];
@@ -23,7 +23,8 @@ Array.clone = function() {
 
 /**
  * Apply a function to each element.
- * @param func A function to apply.
+ * @param func func A function to apply.
+ * @param mixed * The arguments passed to the function.
  */
 Array.foreach = function(func, *) {
   for (var i = 0; i < this.count; ++i) {
@@ -33,9 +34,10 @@ Array.foreach = function(func, *) {
 
 /**
  * Create a Dictionary object according to a keySelector and an elementSelector.
- * @param keySelector A function to extract key from each element.
- * @param elementSelector A function to extract element from each element.
- * @return A dictionary that contains keys and values.
+ * @param func keySelector A function to extract key from each element.
+ * @param func elementSelector A function to extract element from each element.
+ * @param mixed * The arguments passed to the functions.
+ * @return dictionary A dictionary that contains keys and values.
  */
 Array.toDictionary = function(keySelector, elementSelector, *) {
   if (elementSelector === void) elementSelector = function(elm) { return elm; };
@@ -51,9 +53,10 @@ Array.toDictionary = function(keySelector, elementSelector, *) {
 /**
  * Create a Dictionary object according to a keySelector and an elementSelector.
  * Each value of the dictionary is mapped to an Array.
- * @param keySelector A function to extract key from each element.
- * @param elementSelector A function to extract element from each element.
- * @return An one-to-many dictionary that maps keys to arrays of values.
+ * @param func keySelector A function to extract key from each element.
+ * @param func elementSelector A function to extract element from each element.
+ * @param mixed * The arguments passed to the functions.
+ * @return dictionary An one-to-many dictionary that maps keys to arrays of values.
  */
 Array.toLookup = function(keySelector, elementSelector, *) {
   if (elementSelector === void) elementSelector = function(elm) { return elm; };
@@ -68,8 +71,9 @@ Array.toLookup = function(keySelector, elementSelector, *) {
 
 /**
  * Projects each element into a new form.
- * @param selector A transform function to apply to each element.
- * @return An array object whose elements are return values of selector.
+ * @param func selector A transform function to apply to each element.
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object whose elements are return values of selector.
  */
 Array.select = function(selector, *) {
   var tmp = [];
@@ -83,9 +87,10 @@ Array.select = function(selector, *) {
 /**
  * Projects each element into a new form.
  * One element is transformed into one or more elements.
- * @param selector A transform function to apply to each element.
+ * @param func selector A transform function to apply to each element.
  *   This function must return an array object.
- * @return An array object whose elements are return values of selector.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements are return values of selector.
  */
 Array.selectMany = function(selector, *) {
   var tmp = [];
@@ -97,8 +102,9 @@ Array.selectMany = function(selector, *) {
 
 /**
  * Filter an array based on a predicate.
- * @param predicate A function to test each element for a condition.
- * @return An array object whose elements satisfy the condition.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements satisfy the condition.
  */
 Array.where = function(predicate, *) {
   var tmp = [];
@@ -112,8 +118,9 @@ Array.where = function(predicate, *) {
 
 /**
  * Groups the elements according to a specified keySelector.
- * @param keySelector A function to extract the key for each element.
- * @return A one-to-many dictionary that maps keys to arrays of values.
+ * @param func keySelector A function to extract the key for each element.
+ * @param mixed * The arguments passed to the function.
+ * @return dictionary A one-to-many dictionary that maps keys to arrays of values.
  */
 Array.groupBy = function(keySelector, *) {
   var tmp = %[];
@@ -127,9 +134,10 @@ Array.groupBy = function(keySelector, *) {
 
 /**
  * Sorts the elements in ascending order by using a specified comparer.
- * @param keySelector A function to extract a key from each element.
- * @param comparer A function to compare keys.
- * @return An array object whose elements are sorted according to a key.
+ * @param func keySelector A function to extract a key from each element.
+ * @param func comparer A function to compare keys.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements are sorted according to a key.
  */
 Array.orderBy = function(keySelector, comparer, *) {
   if (comparer === void) {
@@ -153,9 +161,10 @@ Array.orderBy = function(keySelector, comparer, *) {
 
 /**
  * Sorts the elements in descending order by using a specified comparer.
- * @param keySelector A function to extract a key from each element.
- * @param comparer A function to compare keys.
- * @return An array object whose elements are sorted according to a key.
+ * @param func keySelector A function to extract a key from each element.
+ * @param func comparer A function to compare keys.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements are sorted according to a key.
  */
 Array.orderByDescending = function(keySelector, comparer, *) {
   if (comparer === void) {
@@ -168,11 +177,12 @@ Array.orderByDescending = function(keySelector, comparer, *) {
 
 /**
  * Correlate the elements of two arrays based on matching keys.
- * @param inner An array to join.
- * @param outerKeySelector A function to extract the join key from each element of the current instance.
- * @param innerKeySelector A function to extract the join key from each element of inner.
- * @param resultSelector A function to create a result element from two matching elments.
- * @return An array object whose elements are return value of resultSelector.
+ * @param array inner An array to join.
+ * @param func outerKeySelector A function to extract the join key from each element of the current instance.
+ * @param func innerKeySelector A function to extract the join key from each element of inner.
+ * @param func resultSelector A function to create a result element from two matching elments.
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object whose elements are return value of resultSelector.
  */
 Array.innerJoin = function(inner, outerKeySelector, innerKeySelector, resultSelector, *) {
   var outerKeys = %[];
@@ -195,12 +205,13 @@ Array.innerJoin = function(inner, outerKeySelector, innerKeySelector, resultSele
 
 /**
  * Correlate the elements of two sequennces based on key equality, nad groups the results.
- * @param inner An array to join.
- * @param outerKeySelector A function to extract the join key from each element of the current instance.
- * @param innerKeySelector A function to extract the join key from each element of inner.
- * @param resultSelector A function to create a result element from an element from the current instance
+ * @param array inner An array to join.
+ * @param func outerKeySelector A function to extract the join key from each element of the current instance.
+ * @param func innerKeySelector A function to extract the join key from each element of inner.
+ * @param func resultSelector A function to create a result element from an element from the current instance
+ * @param mixed * The arguments passed to the functions.
  *   and an array object of matching elements from inner.
- * @return An array object whose elements are return value of resultSelector.
+ * @return array An array object whose elements are return value of resultSelector.
  */
 Array.groupJoin = function(inner, outerKeySelector, innerKeySelector, resultSelector, *) {
   var innerKeys = %[];
@@ -220,8 +231,8 @@ Array.groupJoin = function(inner, outerKeySelector, innerKeySelector, resultSele
 
 /**
  * Returns a specified number of continuous elements from the start.
- * @param count The number of elements to return
- * @return An array object that contains the specified number of elements from the start.
+ * @param int count The number of elements to return
+ * @return array An array object that contains the specified number of elements from the start.
  */
 Array.take = function(count) {
   if (count > this.count) count = this.count;
@@ -234,8 +245,8 @@ Array.take = function(count) {
 
 /**
  * Bypasses a specified number of elements and then returns the remaining elements.
- * @param count The number of elements to skip.
- * @return An array object that contains the remaining elements.
+ * @param int count The number of elements to skip.
+ * @return array An array object that contains the remaining elements.
  */
 Array.skip = function(count) {
   var tmp = [];
@@ -247,8 +258,9 @@ Array.skip = function(count) {
 
 /**
  * Returns a continuous element from the start as long as a specified condition is true.
- * @param predicate A function to test each element for condition.
- * @return An array object whose elements satisfy the condition continuously.
+ * @param func predicate A function to test each element for condition.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements satisfy the condition continuously.
  */
 Array.takeWhile = function(predicate, *) {
 	var tmp = [];
@@ -262,8 +274,9 @@ Array.takeWhile = function(predicate, *) {
 /**
  * Bypasses elements in a sequence as long as a specified condition is true and
  * then returnn the remaining elements.
- * @param predicate A function to test each eleemnt for a condition
- * @return An array object that contains the remaining elements.
+ * @param func predicate A function to test each eleemnt for a condition
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object that contains the remaining elements.
  */
 Array.skipWhile = function(predicate, *) {
 	var idx = 0;
@@ -279,8 +292,7 @@ Array.skipWhile = function(predicate, *) {
 
 /**
  * Returns distinct elements.
- * @param comparer A function to compare values.
- * @return An array object that contains distinct elements.
+ * @return array An array object that contains distinct elements.
  */
 Array.distinct = function() {
   var tmp = [];
@@ -296,8 +308,8 @@ Array.distinct = function() {
 
 /**
  * Concatenates a specified array.
- * @param array An array object to concatenate.
- * @return An array object concatenated.
+ * @param array array An array object to concatenate.
+ * @return array An array object concatenated.
  */
 Array.concat = function(array) {
   var tmp = [];
@@ -308,9 +320,10 @@ Array.concat = function(array) {
 /**
  * Create an Array object by merging two elements whose indexes are equal.
  * If two arrays differ in length the length of the new array will be the same as the shorter.
- * @param array An array object to merge.
- * @param resultSelector A function to get a merged element from two.
- * @return An array object whose elements are return values of resultSelector.
+ * @param array array An array object to merge.
+ * @param func resultSelector A function to get a merged element from two.
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object whose elements are return values of resultSelector.
  */
 Array.zip = function(array, resultSelector, *) {
   var tmp = [];
@@ -323,8 +336,8 @@ Array.zip = function(array, resultSelector, *) {
 
 /**
  * Produces the set union with a specified array.
- * @param array An array object.
- * @return An array object whose elements are in the current array or the specified array.
+ * @param array array An array object.
+ * @return array An array object whose elements are in the current array or the specified array.
  */
 Array.union = function(array) {
   var tmp = [];
@@ -346,8 +359,8 @@ Array.union = function(array) {
 
 /**
  * Produces the set intersection with a specified array.
- * @param array An array object.
- * @return An array object whose elements are in the current array and the specified array.
+ * @param array array An array object.
+ * @return array An array object whose elements are in the current array and the specified array.
  */
 Array.intersect = function(array) {
   var values = %[];
@@ -365,8 +378,8 @@ Array.intersect = function(array) {
 
 /**
  * Produces the set difference with a specified array.
- * @param array An array object.
- * @return An array object whose elements are in the current array but not in a specified array.
+ * @param array array An array object.
+ * @return array An array object whose elements are in the current array but not in a specified array.
  */
 Array.except = function(array) {
   var values = %[];
@@ -384,9 +397,10 @@ Array.except = function(array) {
 
 /**
  * Determines whether two arrays are equal by comparing their elements by using a specified comparer.
- * @param array An array object to compare.
- * @param comparer A function to compare elements.
- * @return true if the two arrays are the same length and their corresponding elements compare equal.
+ * @param array array An array object to compare.
+ * @param func comparer A function to compare elements.
+ * @param mixed * The arguments passed to the function.
+ * @return bool true if the two arrays are the same length and their corresponding elements compare equal.
  */
 Array.sequenceEqual = function(array, comparer, *) {
   if (this.count != array.count) return false;
@@ -398,9 +412,10 @@ Array.sequenceEqual = function(array, comparer, *) {
 
 /**
  * Returns the first element that satisfies a specified condition.
- * @param predicate A function to test each element for a condition.
- * @param defaultValue A return value when no element specify the condition.
- * @return The first element that passes the test in the specified predicate function.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed defaultValue A return value when no element specify the condition.
+ * @param mixed * The arguments passed to the function.
+ * @return mixed The first element that passes the test in the specified predicate function.
  */
 Array.first = function(predicate, defaultValue=void, *) {
   for (var i = 0; i < this.count; ++i) {
@@ -411,9 +426,10 @@ Array.first = function(predicate, defaultValue=void, *) {
 
 /**
  * Returns the last element that satisfies a specified condition.
- * @param predicate A function to test each element for a condition.
- * @param defaultValue A return value when no element specify the condition.
- * @return The last element that passes the test.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed defaultValue A return value when no element specify the condition.
+ * @param mixed * The arguments passed to the functions.
+ * @return mixed The last element that passes the test.
  */
 Array.last = function(predicate, defaultValue=void, *) {
   for (var i = this.count-1; i >= 0; --i) {
@@ -424,9 +440,9 @@ Array.last = function(predicate, defaultValue=void, *) {
 
 /**
  * Generate an array object of integral numbers within a specified range.
- * @param start The value of the first integer.
- * @param count The number of integers to generate.
- * @return An array object that contains a range of sequential integral numbers.
+ * @param int start The value of the first integer.
+ * @param int count The number of integers to generate.
+ * @return array An array object that contains a range of sequential integral numbers.
  */
 Array.range = function(start, count) {
   var tmp = [];
@@ -438,9 +454,9 @@ Array.range = function(start, count) {
 
 /**
  * Generates an array that contains one repeated value.
- * @param element The value to be repeated.
- * @param count The number of times to repeat.
- * @return An array object that countains a repeated value.
+ * @param mixed element The value to be repeated.
+ * @param int count The number of times to repeat.
+ * @return array An array object that countains a repeated value.
  */
 Array.repeat = function(element, count) {
   var tmp = [];
@@ -452,7 +468,7 @@ Array.repeat = function(element, count) {
 
 /**
  * Generate an empty array object.
- * @return An array object that contains no element.
+ * @return array An array object that contains no element.
  */
 Array.empty = function() {
   return [];
@@ -460,8 +476,9 @@ Array.empty = function() {
 
 /**
  * Determines whether any element satisfies a condtion.
- * @param predicate A function to test each element for a condition.
- * @return true if any elements pass the test.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed * The arguments passed to the function.
+ * @return bool true if any elements pass the test.
  */
 Array.any = function(predicate, *) {
   for (var i = 0; i < this.count; ++i) {
@@ -472,8 +489,9 @@ Array.any = function(predicate, *) {
 
 /**
  * Determines whether all elements satisfy a condition.
- * @param predicate A function ot test each element for a condition.
- * @return true if every element passes the test.
+ * @param func predicate A function ot test each element for a condition.
+ * @param mixed * The arguments passed to the function.
+ * @return bool true if every element passes the test.
  */
 Array.all = function(predicate, *) {
   for (var i = 0; i < this.count; ++i) {
@@ -484,9 +502,10 @@ Array.all = function(predicate, *) {
 
 /**
  * Determines whether a specified element exists.
- * @param value The value to find.
- * @param comparer A function to compare two elements.
- * @return true if the specified value exist.
+ * @param mixed value The value to find.
+ * @param func comparer A function to compare two elements.
+ * @param mixed * The arguments passed to the functions.
+ * @return bool true if the specified value exist.
  */
 Array.contains = function(value, comparer, *) {
   if (comparer === void) {
@@ -500,7 +519,7 @@ Array.contains = function(value, comparer, *) {
 
 /**
  * Computes the sum. Every element is converted to numeric value.
- * @return The sum of the elements.
+ * @return number The sum of the elements.
  */
 Array.sum = function() {
   var v = 0;
@@ -512,7 +531,7 @@ Array.sum = function() {
 
 /**
  * Returns the minimum value.
- * @return The minimum value.
+ * @return mixed The minimum value.
  */
 Array.min = function() {
   var v = this[-1];
@@ -524,7 +543,7 @@ Array.min = function() {
 
 /**
  * Returns the maximum value.
- * @return The maximum value.
+ * @return mixed The maximum value.
  */
 Array.max = function() {
   var v = this[-1];
@@ -536,7 +555,7 @@ Array.max = function() {
 
 /**
  * Computes the average.
- * @return The average.
+ * @return number The average.
  */
 Array.average = function() {
   return this.sum() / this.count;
@@ -544,8 +563,9 @@ Array.average = function() {
 
 /**
  * Applies an accumulator function.
- * @param func An accumulator function.
- * @return The last return value of accumulator.
+ * @param func func An accumulator function.
+ * @param mixed * The arguments passed to the function.
+ * @return mixed The last return value of accumulator.
  */
 Array.aggregate = function(func, *) {
   var tmp = void;

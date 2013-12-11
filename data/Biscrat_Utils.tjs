@@ -1,5 +1,7 @@
 /**
  * Output an object's members.
+ * @param object object value The value to output.
+ * @param func function out Called to output message.
  */
 function dv(value, out = global.Debug.message) {
 	var printer = %[
@@ -124,6 +126,9 @@ function dv(value, out = global.Debug.message) {
 
 /**
  * Output current stack trace.
+ * @param int limit The max depth to get a stack trace.
+ * @param func out Called to output message.
+ * @return string The message of stack trace.
  */
 function outputTraceString(limit = 0, out = global.Debug.message) {
 	var trace = global.Scripts.getTraceString(limit);
@@ -134,8 +139,9 @@ function outputTraceString(limit = 0, out = global.Debug.message) {
 
 /**
  * Replace old strings between braces to new strings.
- * @param message The string contains strings between braces to be replaced.
- * @param lists* The old strings and new strings in turn.
+ * @param string message The string contains strings between braces to be replaced.
+ * @param strign lists* The old strings and new strings in turn.
+ * @return string The message expanded.
  */
 function expandMessageStrings(message, lists*) {
 	for (var i = lists.count-2; i >= 0; i -= 2) {
@@ -146,9 +152,9 @@ function expandMessageStrings(message, lists*) {
 
 /**
  * Read file with INI file format.
- * @param path The path to the INI file.
- * @param needSection If true, keys must be grouped into sections.
- * @return The dictionary object contains sections and keys.
+ * @param string path The path to the INI file.
+ * @param bool needSection If true, keys must be grouped into sections.
+ * @return dictionary The dictionary object contains sections and keys.
  */
 function readIniFile(path, needSection = false)
 {
@@ -202,8 +208,8 @@ function readIniFile(path, needSection = false)
 
 /**
  * Write INI file.
- * @param path The path to the INI file.
- * @param dic The dictionary object to write.
+ * @param string path The path to the INI file.
+ * @param dictionary dic The dictionary object to write.
  */
 function writeIniFile(path, dic) {
 	var lines = [];
