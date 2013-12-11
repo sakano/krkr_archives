@@ -1,0 +1,54 @@
+Plugins.link("fstat.dll");
+Plugins.link("shellexecute.dll");
+Plugins.link("scriptsex.dll");
+
+var dm = Debug.message;
+var foreach = Scripts.foreach;
+
+/**
+ * Replace old strings between braces to new strings.
+ * @param string message The string contains strings between braces to be replaced.
+ * @param strign lists* The old strings and new strings in turn.
+ * @return string The message expanded.
+ */
+function expandMessageStrings(message, lists*) {
+	for (var i = lists.count-2; i >= 0; i -= 2) {
+		message = message.replace(@"/\\{&lists[i];\\}/"!, lists[i+1]);
+	}
+	return message;
+}
+
+/**
+ * Get paths to the files in the specified directory.
+ * @param string dirPath The path to the directory.
+ * @param bool recur If true, files in subdirectories are included.
+ * @return array The paths to the files.
+ */
+function getFilesInDirectory(dirPath, recur=true) {
+	var list = Storages.dirlist(dirPath);
+	var files = [];
+	for (var i = list.count-1; i >= 0; --i) {
+		var file = list[i];
+		if (file[file.length-1] == "/") { // directory
+			if (file[0] == ".") { continue; }
+			if (!recur) { continue; }
+			var r = getFilesInDirectory(dirPath + file);
+			for (var j = r.count-1; j >= 0; --j) { r[j] = file + r[j]; }
+			files.push(r*);
+		} else { // file
+			files.push(dirPath + file);
+		}
+	}
+	return files;
+}
+
+
+/**
+ * Create the directory.
+ * @param string path The path to the directory.
+ */
+function createDirectoryIfNotExist(path) {
+	if (!Storages.isExistentDirectory(path) && !Storages.createDirectory(path)) {
+		dm(@"フォルダを作成できません。\n(${path})");
+	}
+}

@@ -1,0 +1,18 @@
+#include "preprocessConstants.tjs"
+#include "preprocessUtils.tjs"
+
+
+#define __WARNING_ASYNC_CALLER_INVALID_CALLBACK "無効な関数が呼び出されました。"
+#define __WARNING_DEFERRED_INVALID_CALLBACK "無効な関数が呼び出されました。"
+#define __EXCEPTION_LINQ_ARRAY_OUT_OF_RANGE "配列のindexが範囲外です。"
+#define __EXCEPTION_LINQ_ARRAY_DUPLICATE_KEYS "キーが重複しています。"
+#define __BISCRAT_READ_INI_FILE_ERROR "iniファイルの読み込みに失敗しました。\nパス:{PATH}\n行:{LINE}\n行番号:{LINENUM}\n\n{MES}"
+#define __BISCRAT_READ_INI_FILE_SECTION_ERROR "sectionを読み込めません。"
+#define __BISCRAT_READ_INI_FILE_SECTION_UNSPECIFIED "sectionが指定されていません。"
+#define __BISCRAT_READ_INI_FILE_KEY_NAME_DUPLICATE "キー名が重複しています。({NAME})"
+#define __BISCRAT_DEFERRED_PENDING 0
+#define __BISCRAT_DEFERRED_RESOLVED 1
+#define __BISCRAT_DEFERRED_REJECTED -1
+#define __BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION 0
+#define __BISCRAT_MOUSE_GESTURE_TYPE_EIGHT_DIRECTION 1
+#define __ENV_DEFAULT_FONT "ＭＳ ゴシック"

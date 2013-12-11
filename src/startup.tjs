@@ -1,0 +1,20 @@
+// link plugins
+Plugins.link("ScriptsEx.dll");
+Plugins.link("LayerExDraw.dll");
+Plugins.link("saveStruct.dll");
+Plugins.link("fstat.dll");
+
+// define shortcuts
+var dm = Debug.message;
+var foreach = Scripts.foreach;
+
+// load scripts
+Scripts.execStorage("Biscrat_Utils.tjs");
+Scripts.execStorage("Biscrat_LinqArray.tjs"); 
+Scripts.execStorage("Biscrat_Serializable.tjs");
+Scripts.execStorage("Biscrat_AsyncCaller.tjs");
+Scripts.execStorage("Biscrat_Events.tjs");
+Scripts.execStorage("Biscrat_Deferred.tjs");
+Scripts.execStorage("Biscrat_TextDrawer.tjs");
+Scripts.execStorage("Biscrat_MouseGesture.tjs");
+Scripts.execStorage("Biscrat_Timekeeper.tjs");
