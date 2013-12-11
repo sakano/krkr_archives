@@ -1,1 +1,3 @@
 data/debug/*
+data/release/*
+data/release_intermediate/*
