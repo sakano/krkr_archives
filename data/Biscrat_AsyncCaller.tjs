@@ -1,31 +1,31 @@
 class Biscrat_AsyncCaller
 {
-	var __trigger = new AsyncTrigger(this);
-	var __registered = [];
+	var _trigger = new AsyncTrigger(this);
+	var _registered = [];
 	
 	property mode {
-		setter(v) { __trigger.mode = v; }
-		getter()  { return __trigger.mode; }
+		setter(v) { _trigger.mode = v; }
+		getter()  { return _trigger.mode; }
 	}
 	
 	function Biscrat_AsyncCaller(mode=atmNormal) {
-		__trigger.cached = true;
-		__trigger.mode = mode;
+		_trigger.cached = true;
+		_trigger.mode = mode;
 	}
 	
 	function finalize() {
-		invalidate __trigger;
+		invalidate _trigger;
 	}
 	
 	function call(func, args*) {
-		__registered.push(func, args);
-		__trigger.trigger();
+		_registered.push(func, args);
+		_trigger.trigger();
 	}
 	
 	function callOnce(func, args*) {
-		for (var i = 0; i < __registered.count; i += 2) {
-			if (__registered[i] !== func) { continue; }
-			var registerdArgs = __registered[i+1];
+		for (var i = 0; i < _registered.count; i += 2) {
+			if (_registered[i] !== func) { continue; }
+			var registerdArgs = _registered[i+1];
 			if (registerdArgs.count != args.count) { continue; }
 			var equal = true;
 			for (var j = 0; j < registerdArgs.count; ++j) {
@@ -40,8 +40,8 @@ class Biscrat_AsyncCaller
 	}
 	
 	function action {
-		var registered = __registered;
-		__registered = [];
+		var registered = _registered;
+		_registered = [];
 		for (var i = 0; i < registered.count; i += 2) {
 			var context = Scripts.getObjectContext(registered[i]);
 			if (registered[i] isvalid && (context === null || context isvalid)) {

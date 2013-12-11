@@ -1,13 +1,13 @@
 class Biscrat_Events
 {
-	var __eventCallbacks = %[];
+	var _eventCallbacks = %[];
 	function Biscrat_Events() {}
 	
 	function finalize() {
-		foreach(__eventCallbacks, function(event, callbacks) {
+		foreach(_eventCallbacks, function(event, callbacks) {
 			invalidate callbacks;
 		});
-		invalidate __eventCallbacks;
+		invalidate _eventCallbacks;
 	}
 	
 	/**
@@ -20,10 +20,10 @@ class Biscrat_Events
 	 * @param func callback The function to bind.
 	 */
 	function bind(event, callback) {
-		if (__eventCallbacks[event] === void) {
-			__eventCallbacks[event] = [];
+		if (_eventCallbacks[event] === void) {
+			_eventCallbacks[event] = [];
 		}
-		__eventCallbacks[event].add(callback);
+		_eventCallbacks[event].add(callback);
 	}
 	
 	/**
@@ -47,21 +47,21 @@ class Biscrat_Events
 	 */
 	function unbind(event, callback) {
 		if (event !== void) {
-			if (__eventCallbacks[event] !== void) {
+			if (_eventCallbacks[event] !== void) {
 				if (callback !== void) {
-					__eventCallbacks[event].remove(callback, true);
+					_eventCallbacks[event].remove(callback, true);
 				} else {
-					invalidate __eventCallbacks[event];
-					delete __eventCallbacks[event];
+					invalidate _eventCallbacks[event];
+					delete _eventCallbacks[event];
 				}
 			}
 		} else  {
 			if (callback !== void) {
-				foreach(__eventCallbacks, function(event, callbacks, callback) {
+				foreach(_eventCallbacks, function(event, callbacks, callback) {
 					callbacks.remove(callback, true);
 				}, callback);
 			} else {
-				(Dictionary.clear incontextof __eventCallbacks)();
+				(Dictionary.clear incontextof _eventCallbacks)();
 			}
 		}
 	}
@@ -74,15 +74,15 @@ class Biscrat_Events
 	 */
 	function trigger(event, *) {
 		var callbacks = [];
-		if (__eventCallbacks.all !== void) {
-			callbacks.assign(__eventCallbacks.all);
+		if (_eventCallbacks.all !== void) {
+			callbacks.assign(_eventCallbacks.all);
 			for (var i = 0; i < callbacks.count; ++i) {
 				callbacks[i](...);
 			}
 			callbacks.clear();
 		}
-		if (event !== "all" && __eventCallbacks[event] !== void) {
-			callbacks.assign(__eventCallbacks[event]);
+		if (event !== "all" && _eventCallbacks[event] !== void) {
+			callbacks.assign(_eventCallbacks[event]);
 			for (var i = 0; i < callbacks.count; ++i) {
 				callbacks[i](*);
 			}
