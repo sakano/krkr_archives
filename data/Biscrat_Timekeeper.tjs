@@ -1,0 +1,46 @@
+class Biscrat_Timekeeper
+{
+	var _timeEvent = new Biscrat_Events(true);
+	var _paused = %[];
+	var _lastTick;
+	
+	function Biscrat_Timekeeper() {
+		System.addContinuousHandler(onTick);
+		_lastTick = System.getTickCount();
+	}
+	
+	function finalize() {
+		invalidate _timeEvent;
+		invalidate _paused;
+	}
+	
+	function bind { _timeEvent.bind(...); }
+	function bindMap { _timeEvent.bindMap(...); }
+	function unbind { _timeEvent.unbind(...); }
+	
+	/**
+	 * Stop distributing the specified events until resume() is called.
+	 * @param string event The event name.
+	 */
+	function pause(event) {
+		_paused[event] = true;
+	}
+	
+	/**
+	 * Resume distributing the specified events.
+	 * @param string event The event name.
+	 */
+	function resume(event) {
+		_paused[event] = false;
+	}
+	
+	/**
+	 * Distribute the events except for paused events.
+	 */
+	function onTick(tick) {
+		if (!_paused["normal"]) {
+			_timeEvent.trigger("normal", tick - _lastTick);
+		}
+		_lastTick = tick;
+	}
+}
