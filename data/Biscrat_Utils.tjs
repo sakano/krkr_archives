@@ -227,3 +227,27 @@ function writeIniFile(path, dic) {
 	}
 	lines.save2(path);
 }
+
+/**
+ * Get paths to the files in the specified directory.
+ * @param string dirPath The path to the directory.
+ * @param bool recur If true, files in subdirectories are included.
+ * @return array The paths to the files.
+ */
+function getFilesInDirectory(dirPath, recur=true) {
+	var list = Storages.dirlist(dirPath);
+	var files = [];
+	for (var i = list.count-1; i >= 0; --i) {
+		var file = list[i];
+		if (file[file.length-1] == "/") { // directory
+			if (file[0] == ".") { continue; }
+			if (!recur) { continue; }
+			var r = getFilesInDirectory(dirPath + file);
+			for (var j = r.count-1; j >= 0; --j) { r[j] = file + r[j]; }
+			files.push(r*);
+		} else { // file
+			files.push(file);
+		}
+	}
+	return files;
+}

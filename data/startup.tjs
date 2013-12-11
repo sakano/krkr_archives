@@ -2,6 +2,7 @@
 Plugins.link("ScriptsEx.dll");
 Plugins.link("LayerExDraw.dll");
 Plugins.link("saveStruct.dll");
+Plugins.link("fstat.dll");
 
 // define shortcuts
 var dm = Debug.message;
