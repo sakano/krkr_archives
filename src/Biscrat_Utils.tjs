@@ -251,3 +251,27 @@ function getFilesInDirectory(dirPath, recur=true) {
 	}
 	return files;
 }
+
+/**
+ * Create string with Regexp.
+ * @param object reg The RegExp object.
+ * @param string targetString The string to match a regular expression.
+ * @param string patternString The string where the placeholders like $1 will be replaced by matched string.
+*/
+global.createStringWithRegExp = function(reg, targetString, patternString) {
+	var start = reg.start;
+	reg.exec(targetString);
+	while(1) {
+		var newString = patternString.replace(r, (f incontextof %[reg:reg]));
+		if (newString === patternString) { break; }
+		patternString= newString;
+	}
+	reg.start = start;
+	return patternString;
+} incontextof %[
+	r:/\$[0-9]+/,
+	f:function(matches) {
+		var num = +matches[0].substr(1);
+		return reg.matches[num];
+	}
+];
