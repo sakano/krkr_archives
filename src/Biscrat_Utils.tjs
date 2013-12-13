@@ -145,7 +145,7 @@ function outputTraceString(limit = 0, out = global.Debug.message) {
  */
 function expandMessageStrings(message, lists*) {
 	for (var i = lists.count-2; i >= 0; i -= 2) {
-		message = message.replace(@"/\\{&lists[i];\\}/"!, lists[i+1]);
+		message = message.replace(@"/\\{&lists[i];\\}/g"!, lists[i+1]);
 	}
 	return message;
 }
