@@ -102,7 +102,7 @@ class Biscrat_Compiler
 	}
 	
 	function foreachFilesInDirectory(src, dest, func, mid) {
-		foreach(getFilesInDirectory(src), function(idx, src, dest, func, mid) {
+		foreach(getFilesInDirectory(src), function(idx, src, dest, func, mid, srcPath) {
 			var filename = Storages.extractStorageName(src).toLowerCase();
 			if (settings.ignoreFiles[filename]) { return; }
 			if (compiledFiles[filename]) {
@@ -110,7 +110,7 @@ class Biscrat_Compiler
 				return;
 			}
 			compiledFiles[filename] = true;
-			func(src, filename, dest + filename, mid + filename);
-		}, dest, func, mid);
+			func(srcPath + src, filename, dest + filename, mid + filename);
+		}, dest, func, mid, src);
 	}
 }

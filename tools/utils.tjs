@@ -36,7 +36,7 @@ function getFilesInDirectory(dirPath, recur=true) {
 			for (var j = r.count-1; j >= 0; --j) { r[j] = file + r[j]; }
 			files.push(r*);
 		} else { // file
-			files.push(dirPath + file);
+			files.push(file);
 		}
 	}
 	return files;
