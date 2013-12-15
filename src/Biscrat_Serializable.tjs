@@ -7,7 +7,12 @@ class Biscrat_Serializable
 	function serializeIntoDictionary() {
 		var dic = new global.Dictionary();
 		for (var i = 0; i < properties.count; ++i) {
-			dic[properties[i]] = object[properties[i]];
+			var value = object[properties[i]];
+			if (typeof value === "Object") {
+				dic[properties[i]] = value.serialize();
+			} else {
+				dic[properties[i]] = value;
+			}
 		}
 		return dic;
 	}
@@ -18,7 +23,12 @@ class Biscrat_Serializable
 	 */
 	function deserializeFromDictionary(dic) {
 		for (var i = 0; i < properties.count; ++i) {
-			object[properties[i]] = dic[properties[i]];
+			var value = dic[properties[i]];
+			if (typeof value === "Object") {
+				object[properties[i]].deserialize(value);
+			} else {
+				object[properties[i]] = value;
+			}
 		}
 	}
 }
