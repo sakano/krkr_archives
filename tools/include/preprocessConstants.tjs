@@ -414,5 +414,7 @@
 #define VK_LAUNCH_MEDIA_SELECT 181
 #define VK_LAUNCH_APP1 182
 #define VK_LAUNCH_APP2 183
+#define frFreeType 0
+#define frGDI 1
 #define gcsAuto -1
 #define dtnAuto 0
