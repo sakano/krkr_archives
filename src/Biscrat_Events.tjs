@@ -88,4 +88,28 @@ class Biscrat_Events
 			}
 		}
 	}
+	
+	/**
+	 * Trigger callback for the given event.
+	 * Subsequent arguments will be passed along to the event callbacks.
+	 * Unlike trigger(), this funcntion stop calling callbacks if a callback returns true.
+	 * @param string event The event name to trigger.
+	 * @param mixed * The arguments passed to callbacks.
+	 */
+	function triggerOne(event, *) {
+		var callbacks = [];
+		if (_eventCallbacks.all !== void) {
+			callbacks.assign(_eventCallbacks.all);
+			for (var i = 0; i < callbacks.count; ++i) {
+				if (callbacks[i](...)) { return; }
+			}
+			callbacks.clear();
+		}
+		if (event !== "all" && _eventCallbacks[event] !== void) {
+			callbacks.assign(_eventCallbacks[event]);
+			for (var i = 0; i < callbacks.count; ++i) {
+				if (callbacks[i](*)) { return; }
+			}
+		}
+	}
 }
