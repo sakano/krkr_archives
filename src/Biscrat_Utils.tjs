@@ -275,3 +275,68 @@ global.createStringWithRegExp = function(reg, targetString, patternString) {
 		return reg.matches[num];
 	}
 ];
+
+/**
+ * Transform and copy an Bitmap.
+ * @param object dest The Bitmap object to be drawn.
+ * @param object src The Bitmap object to transform and copy.
+ * @param number originX The x-coordinate of transform origin.
+ * @param number originY The y-coordinate of transform origin.
+ * @param number zoomX The rate of magnification in the horizontal direction.
+ * @param number zoomY The rate of magnification in the vertical direction.
+ * @param number angle The clockwise angle to rotate the image.
+ * @param number translateX The value to translate the image along the X axis.
+ * @param number translateY The value to translate the image along the Y axis.
+ */
+ImageFunction.operateTransform = function(dest, src, originX = 0, originY = 0, zoomX = 1, zoomY = 1, angle=0, translateX=0, translateY=0) {
+	var _11 = 1;
+	var _12 = 0;
+	var _21 = 0;
+	var _22 = 1;
+	if (zoomX !== 1) {
+		_11 *= zoomX;
+		_12 *= zoomX;
+	}
+	if (zoomY != 1) {
+		_21 *= zoomY;
+		_22 *= zoomY;
+	}
+	if (angle !== 0) {
+		angle *= __PI / 180;
+		var sin = Math.sin(angle);
+		var cos = Math.cos(angle);
+		var t11 = _11, t12 = _12;
+		_11 = t11 * cos - _21 * sin;
+		_21 = t11 * sin + _21 * cos;
+		_12 = t12 * cos - _22 * sin;
+		_22 = t12 * sin + _22 * cos;
+	}
+	var aX = 0, aY = 0;
+	var bX = src.width, bY = 0;
+	var cX = 0, cY = src.height;
+	#define ADD_VECTOR2(X1, Y1, X2, Y2) X1 += X2; Y1 += Y2;
+	#define SUBTRACT_VECTOR2(X1, Y1, X2, Y2) X1 -= X2; Y1 -= Y2;
+	#define MULTIPLY_MATRIX22_VECTOR2(M11, M12, M21, M22, X, Y) { \
+		var tx = X; \
+		X = M11 * tx + M12 * Y; \
+		Y = M21 * tx + M22 * Y; \
+	}
+	SUBTRACT_VECTOR2(aX, aY, originX, originY)
+	SUBTRACT_VECTOR2(bX, bY, originX, originY)
+	SUBTRACT_VECTOR2(cX, cY, originX, originY)
+	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, aX, aY)
+	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, bX, bY)
+	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, cX, cY)
+	var dX = originX + translateX - 0.5;
+	var dY = originY + translateY - 0.5;
+	ADD_VECTOR2(aX, aY, dX, dY)
+	ADD_VECTOR2(bX, bY, dX, dY)
+	ADD_VECTOR2(cX, cY, dX, dY)
+	
+	ImageFunction.operateAffine(dest, src, aX, aY, bX, bY, cX, cY,
+		null, null, false, omAlpha, dfAlpha, 255, stFastLinear|stRefNoClip);
+	#undef ADD_VECTOR2
+	#undef SUBTRACT_VECTOR2
+	#undef MULTIPLY_VECTOR2
+	#undef MULTIPLY_MATRIX22_VECTOR2
+};
