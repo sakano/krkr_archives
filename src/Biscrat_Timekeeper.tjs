@@ -1,6 +1,6 @@
 class Biscrat_Timekeeper
 {
-	var _timeEvent = new Biscrat_Events(true);
+	var _event = new Biscrat_Events(true);
 	var _paused = %[];
 	var _lastTick;
 	
@@ -10,13 +10,13 @@ class Biscrat_Timekeeper
 	}
 	
 	function finalize() {
-		invalidate _timeEvent;
+		invalidate _event;
 		invalidate _paused;
 	}
 	
-	function bind { _timeEvent.bind(...); }
-	function bindMap { _timeEvent.bindMap(...); }
-	function unbind { _timeEvent.unbind(...); }
+	function bind { _event.bind(...); }
+	function bindMap { _event.bindMap(...); }
+	function unbind { _event.unbind(...); }
 	
 	/**
 	 * Stop distributing the specified events until resume() is called.
@@ -39,7 +39,7 @@ class Biscrat_Timekeeper
 	 */
 	function onTick(tick) {
 		if (!_paused["normal"]) {
-			_timeEvent.trigger("normal", tick - _lastTick);
+			_event.trigger("normal", tick - _lastTick);
 		}
 		_lastTick = tick;
 	}

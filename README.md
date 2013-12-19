@@ -1,5 +1,5 @@
 #biscrat-krkr-utils
-吉里吉里用のtjsスクリプトです。各tjsファイルのライセンスはMITライセンスになっています。
+吉里吉里Z用のtjsスクリプトです。各tjsファイルのライセンスはMITライセンスになっています。
 
 ##Biscrat_AsyncCaller.tjs
 AsyncTriggerを使って任意の関数を非同期に呼び出す。
@@ -25,6 +25,12 @@ LayerExDraw.dllのdrawPathStringでテキストを描画します。
 
 ##Biscrat_Timekeeper.tjs
 時間経過イベントを発生させます。
+
+##Biscrat_Drawing2DMatrix.tjs
+アフィン変換用の行列クラス。
+
+##Biscrat_MatrixFunction.tjs
+行列を操作する関数をまとめたクラス。
 
 ##Biscrat_Utils.tjs
 その他の便利関数など。
