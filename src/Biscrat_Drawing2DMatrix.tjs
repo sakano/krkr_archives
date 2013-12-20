@@ -111,8 +111,8 @@ class Biscrat_Drawing2DMatrix
 	 */
 	function operateAffine(dest, src) {
 		ImageFunction.operateAffine(dest, src, _13 - 0.5 , _23 - 0.5,
-			_12 * src.width  + _13, _22 * src.width  + _23 - 0.5,
-			_11 * src.height + _13, _21 * src.height + _23 - 0.5,
+			_11 * src.width  + _13 - 0.5, _21 * src.width  + _23 - 0.5,
+			_12 * src.height + _13 - 0.5, _22 * src.height + _23 - 0.5,
 			null, null, false, omAlpha, dfAlpha, 255, stFastLinear|stRefNoClip);
 	}
 }

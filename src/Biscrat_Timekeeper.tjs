@@ -10,6 +10,7 @@ class Biscrat_Timekeeper
 	}
 	
 	function finalize() {
+		System.removeContinuousHandler(onTick);
 		invalidate _event;
 		invalidate _paused;
 	}
