@@ -32,5 +32,11 @@ LayerExDraw.dllのdrawPathStringでテキストを描画します。
 ##Biscrat_MatrixFunction.tjs
 行列を操作する関数をまとめたクラス。
 
+##Biscrat_TransformImage.tjs
+画像をアフィン変換して描画します。
+
+##Biscrat_EventWindow.tjs
+イベントを通知するウィンドウ。
+
 ##Biscrat_Utils.tjs
 その他の便利関数など。

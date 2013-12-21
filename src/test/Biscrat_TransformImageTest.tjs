@@ -1,0 +1,80 @@
+// Create window
+var win = new Biscrat_EventWindow();
+win.setInnerSize(300, 300);
+win.visible = 1;
+
+// Create primary layer
+var primaryLayer = new Layer(win, null);
+primaryLayer.setSize(win.innerWidth, win.innerHeight);
+primaryLayer.fillRect(0,0,primaryLayer.width, primaryLayer.height, 0xFFFFFF);
+primaryLayer.visible = true;
+
+// Create Layer to be drawn images
+with (win.layer = new Layer(win, primaryLayer)) {
+	.setSize(300,300);
+	.fillRect(0,0,300,300,0xFF000000);
+	.visible = true;
+}
+
+// Create Images
+var srcImage = new Biscrat_TransformImage();
+{ // Red box at the center of the screen
+	var srcBitmap = new Bitmap(100, 100);
+	ImageFunction.fillRect(srcBitmap, 0, true);
+	ImageFunction.colorRect(srcBitmap, 0xFF0000, 255, null, dfAlpha, null);
+	srcImage.setBitmap(srcBitmap);
+	srcImage.x = 100;
+	srcImage.y = 100;
+	srcImage.originX = srcImage._bitmap.width/2;
+	srcImage.originY = srcImage._bitmap.height/2;
+}
+
+var childSrcImage = new Biscrat_TransformImage();
+{ // Green box going around the red box
+	var srcBitmap = new Bitmap(30, 30);
+	ImageFunction.fillRect(srcBitmap, 0, true);
+	ImageFunction.colorRect(srcBitmap, 0x00FF00, 255, null, dfAlpha, null);
+	childSrcImage.setBitmap(srcBitmap);
+	childSrcImage.x = -50;
+	childSrcImage.y = -50;
+	childSrcImage.originX = 100;
+	childSrcImage.originY = 100;
+	childSrcImage.parent = srcImage;
+}
+var grandchildSrcImage = new Biscrat_TransformImage();
+{ // Blue box going around the green box
+	var srcBitmap = new Bitmap(10, 10);
+	ImageFunction.fillRect(srcBitmap, 0, true);
+	ImageFunction.colorRect(srcBitmap, 0x0000FF, 255, null, dfAlpha, null);
+	grandchildSrcImage.setBitmap(srcBitmap);
+	grandchildSrcImage.x = -20;
+	grandchildSrcImage.y = -20;
+	grandchildSrcImage.originX = 35;
+	grandchildSrcImage.originY = 35;
+	grandchildSrcImage.parent = childSrcImage;
+	
+}
+
+// Bitmap to be drawn boxes before the image is copied to the layer.
+var destBitmap = new Bitmap(win.innerWidth, win.innerHeight);
+
+var TICK = 0;
+var timeKeeper = new Biscrat_Timekeeper();
+win.add(timeKeeper);
+timeKeeper.bind("normal", function(tick) {
+	ImageFunction.fillRect(destBitmap, 0xFFFFFF, true);
+	
+	// Rotate the boxes.
+	TICK = (TICK + tick) % (360 * 60);
+	srcImage.angle = TICK/60;
+	childSrcImage.angle = TICK/30;
+	grandchildSrcImage.angle = TICK/10;
+	
+	// Draw the boxes.
+	srcImage.draw(destBitmap, true);
+	childSrcImage.draw(destBitmap);
+	grandchildSrcImage.draw(destBitmap);
+	
+	// Copy to the layer
+	win.layer.copyFromBitmapToMainImage(destBitmap);
+});

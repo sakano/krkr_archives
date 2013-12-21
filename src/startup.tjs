@@ -20,5 +20,8 @@ Scripts.execStorage("Biscrat_MouseGesture.tjs");
 Scripts.execStorage("Biscrat_Timekeeper.tjs");
 Scripts.execStorage("biscrat_Drawing2DMatrix.tjs");
 Scripts.execStorage("biscrat_MatrixFunction.tjs");
+Scripts.execStorage("Biscrat_EventWindow.tjs");
+Scripts.execStorage("Biscrat_TransformImage.tjs");
+
 
 Scripts.execStorage("Biscrat_UtilsTest.tjs");
