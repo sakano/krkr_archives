@@ -1,23 +1,19 @@
 class Biscrat_Timekeeper
 {
-	var _event = new Biscrat_Events(true);
 	var _paused = %[];
 	var _lastTick;
 	
 	function Biscrat_Timekeeper() {
+		Bindable(this);
 		System.addContinuousHandler(onTick);
 		_lastTick = System.getTickCount();
 	}
 	
 	function finalize() {
 		System.removeContinuousHandler(onTick);
-		invalidate _event;
+		BindableFinalize(this);
 		invalidate _paused;
 	}
-	
-	function bind { _event.bind(...); }
-	function bindMap { _event.bindMap(...); }
-	function unbind { _event.unbind(...); }
 	
 	/**
 	 * Stop distributing the specified events until resume() is called.

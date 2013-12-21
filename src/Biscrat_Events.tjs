@@ -115,3 +115,20 @@ class Biscrat_Events
 		return false;
 	}
 }
+
+function Bindable(object) {
+	__ASSERT(typeof object._event === "undefined")
+	__ASSERT(typeof object.bind === "undefined")
+	__ASSERT(typeof object.bindMap === "undefined")
+	__ASSERT(typeof object.unbind === "undefined")
+	with (object) {
+		._event = new Biscrat_Events();
+		.bind = ._event.bind;
+		.bindMap = ._event.bindMap;
+		.unbind = ._event.unbind;
+	}
+}
+
+function BindableFinalize(object) {
+	invalidate object._event;
+}

@@ -26,7 +26,7 @@
 #if __DEBUG
 	#define __ASSERT(COND, MESSAGE) \
 		if (!(COND)) { \
-			throw new Exception("[ASSERT]file:%s, line:%d, message:%s".sprintf(__FILE__, __LINE__, MESSAGE)); \
+			throw new Exception("[ASSERT]\nfile:%s\nline:%d\nmessage:%s".sprintf(__FILE__, __LINE__, MESSAGE)); \
 		}
 #else
 	#define __ASSERT(COND, MESSAGE)
