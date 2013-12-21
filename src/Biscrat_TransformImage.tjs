@@ -83,7 +83,7 @@ class Biscrat_TransformImage
 	}
 	
 	function load(filename) {
-		if (_bitmap == null) {
+		if (_bitmap === null) {
 			_bitmap = new Bitmap(filename);
 		} else {
 			_bitmap.load(filename);

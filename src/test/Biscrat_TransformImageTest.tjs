@@ -12,16 +12,15 @@ primaryLayer.visible = true;
 // Create Layer to be drawn images
 with (win.layer = new Layer(win, primaryLayer)) {
 	.setSize(300,300);
-	.fillRect(0,0,300,300,0xFF000000);
 	.visible = true;
 }
+win.add(win.layer);
 
 // Create Images
 var srcImage = new Biscrat_TransformImage();
 { // Red box at the center of the screen
 	var srcBitmap = new Bitmap(100, 100);
-	ImageFunction.fillRect(srcBitmap, 0, true);
-	ImageFunction.colorRect(srcBitmap, 0xFF0000, 255, null, dfAlpha, null);
+	ImageFunction.fillRect(srcBitmap, 0xFFFF0000, true);
 	srcImage.setBitmap(srcBitmap);
 	srcImage.x = 100;
 	srcImage.y = 100;
@@ -32,8 +31,7 @@ var srcImage = new Biscrat_TransformImage();
 var childSrcImage = new Biscrat_TransformImage();
 { // Green box going around the red box
 	var srcBitmap = new Bitmap(30, 30);
-	ImageFunction.fillRect(srcBitmap, 0, true);
-	ImageFunction.colorRect(srcBitmap, 0x00FF00, 255, null, dfAlpha, null);
+	ImageFunction.fillRect(srcBitmap, 0xFF00FF00, true);
 	childSrcImage.setBitmap(srcBitmap);
 	childSrcImage.x = -50;
 	childSrcImage.y = -50;
@@ -44,8 +42,7 @@ var childSrcImage = new Biscrat_TransformImage();
 var grandchildSrcImage = new Biscrat_TransformImage();
 { // Blue box going around the green box
 	var srcBitmap = new Bitmap(10, 10);
-	ImageFunction.fillRect(srcBitmap, 0, true);
-	ImageFunction.colorRect(srcBitmap, 0x0000FF, 255, null, dfAlpha, null);
+	ImageFunction.fillRect(srcBitmap, 0xFF0000FF, true);
 	grandchildSrcImage.setBitmap(srcBitmap);
 	grandchildSrcImage.x = -20;
 	grandchildSrcImage.y = -20;
