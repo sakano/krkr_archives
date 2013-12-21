@@ -39,6 +39,8 @@ class Biscrat_Serializable
  * @param array properties The array of properties names to serialize.
  */
 function Serializable(object, properties) {
+	__ASSERT(typeof object.serialize === "undefined")
+	__ASSERT(typeof object.deserialize === "undefined")
 	var context = %[
 		object : object,
 		properties : properties
