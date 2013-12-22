@@ -48,9 +48,10 @@ class Biscrat_TransformImage
 		getter {
 			if (_matrixUpdate) {
 				with (_matrix) {
-					.reset();
-					if (_parent !== null) {
-						.multiply(_parent.matrix);
+					if (_parent === null) {
+						.reset();
+					} else {
+						.clone(_parent.matrix);
 					}
 					.translate(_x + _originX, _y + _originY);
 					.rotate(_angle);
