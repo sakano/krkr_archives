@@ -52,8 +52,7 @@ class Biscrat_TransformImage
 					if (_parent !== null) {
 						.multiply(_parent.matrix);
 					}
-					.translate(_x, _y);
-					.translate(_originX, _originY);
+					.translate(_x + _originX, _y + _originY);
 					.rotate(_angle);
 					.shear(_shearX, shearY);
 					.scale(_scaleX, _scaleY);

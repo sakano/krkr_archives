@@ -1,3 +1,6 @@
+Font.rasterizer = frFreeType;
+System.graphicCacheLimit = gcsAuto;
+
 // link plugins
 Plugins.link("ScriptsEx.dll");
 Plugins.link("LayerExDraw.dll");
