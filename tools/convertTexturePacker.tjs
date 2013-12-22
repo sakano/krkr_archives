@@ -1,0 +1,5 @@
+Scripts.execStorage("utils.tjs");
+Scripts.execStorage("Biscrat_TexturePackerConvertWindow.tjs");
+
+var win = new Biscrat_TexturePackerConvertWindow();
+win.visible = true;
