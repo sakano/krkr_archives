@@ -13,6 +13,7 @@ var foreach = Scripts.foreach;
 
 // load scripts
 Scripts.execStorage("Biscrat_Utils.tjs");
+Scripts.execStorage("Biscrat_IniFile.tjs");
 Scripts.execStorage("Biscrat_LinqArray.tjs"); 
 Scripts.execStorage("Biscrat_Serializable.tjs");
 Scripts.execStorage("Biscrat_AsyncCaller.tjs");

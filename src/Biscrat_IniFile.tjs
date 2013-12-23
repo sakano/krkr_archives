@@ -1,0 +1,76 @@
+/**
+ * Read file with INI file format.
+ * @param string path The path to the INI file.
+ * @param bool needSection If true, keys must be grouped into sections.
+ * @return dictionary The dictionary object contains sections and keys.
+ */
+Scripts.readIniFile = function(path, needSection = false) {
+	var info = %[];
+	var line;
+	var lineNum = -1;
+	try {
+		var lines = [];
+		lines.load(path);
+		var current = needSection ? void : info;
+		while(++lineNum < lines.count) {
+			line = lines[lineNum].trim();
+			switch(line[0]) {
+			case ";": // comment line
+				break;
+			case "[": // section
+				if (line[line.length-1] !== "]") {
+					throw new Exception(__BISCRAT_READ_INI_FILE_SECTION_ERROR);
+				}
+				var section = line.substr(1, line.length-2).trim();
+				if (info[section] === void) { info[section] = %[]; }
+				current = info[section];
+				break;
+			default:
+				var idx = line.indexOf("=");
+				if (idx > 0) { // keys
+					var name = line.substr(0,idx).trim();
+					var value = line.substr(idx+1).trim();
+					if (current === void) {
+						throw new Exception(__BISCRAT_READ_INI_FILE_SECTION_UNSPECIFIED);
+					}
+					if (current[name] !== void) {
+						throw new Exception(expandMessageStrings(__BISCRAT_READ_INI_FILE_KEY_NAME_DUPLICATE, "NAME", name));
+					}
+					current[name] = value;
+				}
+				break;
+			}
+		}
+	} catch(e) {
+		var ex = new Exception(
+			expandMessageStrings(__BISCRAT_READ_INI_FILE_ERROR,
+			"PATH", path, "LINE", line, "LINENUM", lineNum+1, "MES", e.message));
+		ex.innerException = e;
+		ex.path = path;
+		ex.line = line;
+		throw ex;
+	}
+	return info;
+};
+
+/**
+ * Write INI file.
+ * @param string path The path to the INI file.
+ * @param dictionary dic The dictionary object to write.
+ */
+Scripts.writeIniFile = function(path, dic) {
+	var lines = [];
+	var innerDics = [];
+	foreach(dic, function(key, value, lines, innerDics) {
+		if (value instanceof "Dictionary") {
+			innerDics.push(key, value);
+		} else {
+			lines.push(key + "=" + value); // These keys are not included in sections.
+		}
+	}, lines, innerDics);
+	for (var i = 0; i < innerDics.count; i += 2) {
+		lines.push("[" + innerDics[i] + "]");
+		foreach(innerDics[i+1], function(key, value, lines) { lines.push(key + "=" + value); }, lines);
+	}
+	lines.save2(path);
+};
