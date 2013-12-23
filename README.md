@@ -38,5 +38,8 @@ LayerExDraw.dllのdrawPathStringでテキストを描画します。
 ##Biscrat_EventWindow.tjs
 イベントを通知するウィンドウ。
 
+##Biscrat_IniFile.tjs
+Iniファイルの読み書き。
+
 ##Biscrat_Utils.tjs
 その他の便利関数など。
