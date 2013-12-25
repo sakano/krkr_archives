@@ -1,18 +1,18 @@
-m4_changequote(/*@, @*/)
-m4_include(/*@preprocessConstants.tjs@*/)
-m4_include(/*@preprocessUtils.tjs@*/)
-
-m4_define(/*@__WARNING_ASYNC_CALLER_INVALID_CALLBACK@*/, /*@"無効な関数が呼び出されました。"@*/)
-m4_define(/*@__WARNING_DEFERRED_INVALID_CALLBACK@*/, /*@"無効な関数が呼び出されました。"@*/)
-m4_define(/*@__EXCEPTION_LINQ_ARRAY_OUT_OF_RANGE@*/, /*@"配列のindexが範囲外です。"@*/)
-m4_define(/*@__EXCEPTION_LINQ_ARRAY_DUPLICATE_KEYS@*/, /*@"キーが重複しています。"@*/)
-m4_define(/*@__BISCRAT_READ_INI_FILE_ERROR@*/, /*@"iniファイルの読み込みに失敗しました。\nパス:{PATH}\n行:{LINE}\n行番号:{LINENUM}\n\n{MES}"@*/)
-m4_define(/*@__BISCRAT_READ_INI_FILE_SECTION_ERROR@*/, /*@"sectionを読み込めません。"@*/)
-m4_define(/*@__BISCRAT_READ_INI_FILE_SECTION_UNSPECIFIED@*/, /*@"sectionが指定されていません。"@*/)
-m4_define(/*@__BISCRAT_READ_INI_FILE_KEY_NAME_DUPLICATE@*/, /*@"キー名が重複しています。({NAME})"@*/)
-m4_define(/*@__BISCRAT_DEFERRED_PENDING@*/, /*@0@*/)
-m4_define(/*@__BISCRAT_DEFERRED_RESOLVED@*/, /*@1@*/)
-m4_define(/*@__BISCRAT_DEFERRED_REJECTED@*/, /*@-1@*/)
-m4_define(/*@__BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION@*/, /*@0@*/)
-m4_define(/*@__BISCRAT_MOUSE_GESTURE_TYPE_EIGHT_DIRECTION@*/, /*@1@*/)
-m4_define(/*@__ENV_DEFAULT_FONT "ＭＳ@*/, /*@ゴシック"@*/)
+m4_changequote(/*@, @*/)m4_dnl
+m4_include(/*@preprocessConstants.tjs@*/)m4_dnl
+m4_include(/*@preprocessUtils.tjs@*/)m4_dnl
+m4_dnl
+m4_define(/*@__WARNING_ASYNC_CALLER_INVALID_CALLBACK@*/, /*@"無効な関数が呼び出されました。"@*/)m4_dnl
+m4_define(/*@__WARNING_DEFERRED_INVALID_CALLBACK@*/, /*@"無効な関数が呼び出されました。"@*/)m4_dnl
+m4_define(/*@__EXCEPTION_LINQ_ARRAY_OUT_OF_RANGE@*/, /*@"配列のindexが範囲外です。"@*/)m4_dnl
+m4_define(/*@__EXCEPTION_LINQ_ARRAY_DUPLICATE_KEYS@*/, /*@"キーが重複しています。"@*/)m4_dnl
+m4_define(/*@__BISCRAT_READ_INI_FILE_ERROR@*/, /*@"iniファイルの読み込みに失敗しました。\nパス:{PATH}\n行:{LINE}\n行番号:{LINENUM}\n\n{MES}"@*/)m4_dnl
+m4_define(/*@__BISCRAT_READ_INI_FILE_SECTION_ERROR@*/, /*@"sectionを読み込めません。"@*/)m4_dnl
+m4_define(/*@__BISCRAT_READ_INI_FILE_SECTION_UNSPECIFIED@*/, /*@"sectionが指定されていません。"@*/)m4_dnl
+m4_define(/*@__BISCRAT_READ_INI_FILE_KEY_NAME_DUPLICATE@*/, /*@"キー名が重複しています。({NAME})"@*/)m4_dnl
+m4_define(/*@__BISCRAT_DEFERRED_PENDING@*/, /*@0@*/)m4_dnl
+m4_define(/*@__BISCRAT_DEFERRED_RESOLVED@*/, /*@1@*/)m4_dnl
+m4_define(/*@__BISCRAT_DEFERRED_REJECTED@*/, /*@-1@*/)m4_dnl
+m4_define(/*@__BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION@*/, /*@0@*/)m4_dnl
+m4_define(/*@__BISCRAT_MOUSE_GESTURE_TYPE_EIGHT_DIRECTION@*/, /*@1@*/)m4_dnl
+m4_define(/*@__ENV_DEFAULT_FONT "ＭＳ@*/, /*@ゴシック"@*/)m4_dnl

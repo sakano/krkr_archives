@@ -1,24 +1,10 @@
-m4_define(/*@__ERROR_LINE@*/, /*@(1++++)@*/)
-
-m4_ifelse(__DEBUG, 1,
-/*@
-	m4_define(/*@__D@*/, $1)
-	m4_define(/*@__R@*/, )
-	m4_define(/*@__DM()@*/, /*@dm($*);@*/)
-	m4_define(/*@__ERROR_ON_DEBUG@*/, __ERROR_LINE)
-	m4_define(/*@__ERROR_ON_RELEASE@*/, )
-	m4_define(/*@__ASSERT@*/,
-		if (!($1)) {
-			throw new Exception("[ASSERT]\nfile:%s\nline:%d\nmessage:%s".sprintf(__FILE__, __LINE__, $2));
-		})
-@*/
-,
-/*@
-	m4_define(/*@__D@*/, )
-	m4_define(/*@__R@*/, $1)
-	m4_define(/*@__DM()@*/, )
-	m4_define(/*@__ERROR_ON_DEBUG@*/, )
-	m4_define(/*@__ERROR_ON_RELEASE@*/, __ERROR_LINE)
-	m4_define(/*@__ASSERT@*/, )
-@*/
-)
+m4_define(/*@__ERROR_LINE@*/, /*@(1++++)@*/)m4_dnl
+m4_dnl
+m4_define(/*@__D@*/, m4_ifelse(__DEBUG,   1, $1))m4_dnl
+m4_define(/*@__R@*/, m4_ifelse(__RELEASE, 1, $1))m4_dnl
+m4_define(/*@__DM()@*/, m4_ifelse(__DEBUG, 1, /*@dm($*);@*/))m4_dnl
+m4_define(/*@__ERROR_ON_DEBUG@*/,   m4_ifelse(__DEBUG,   1, /*@__ERROR_LINE@*/))m4_dnl
+m4_define(/*@__ERROR_ON_RELEASE@*/, m4_ifelse(__RELEASE, 1, /*@__ERROR_LINE@*/))m4_dnl
+m4_define(/*@__ASSERT@*/, m4_ifelse(__DEBUG, 1,m4_dnl
+/*@if (!($1)) { throw new Exception("[ASSERT]\nfile:%s\nline:%d\nmessage:%s".sprintf(/*@"m4___file__"@*/, /*@m4___line__@*/, $2)); }@*/m4_dnl
+))m4_dnl
