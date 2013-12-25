@@ -226,11 +226,12 @@ ImageFunction.operateTransform = function(dest, src, originX = 0, originY = 0, s
 	var aX = -originX,            aY = -originY;
 	var bX = src.width - originX, bY = -originY;
 	var cX = -originX,            cY = src.height - originY;
-	#define MULTIPLY_MATRIX22_VECTOR2(M11, M12, M21, M22, X, Y) { \
-		var tx = X; \
-		X = M11 * tx + M12 * Y; \
-		Y = M21 * tx + M22 * Y; \
-	}
+	m4_define(/*@MULTIPLY_MATRIX22_VECTOR2@*/,/*@
+	{
+		var tx = $5;
+		$5 = $1 * tx + $2 * $6;
+		$6 = $3 * tx + $4 * $6;
+	}@*/)
 	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, aX, aY)
 	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, bX, bY)
 	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, cX, cY)
@@ -238,5 +239,5 @@ ImageFunction.operateTransform = function(dest, src, originX = 0, originY = 0, s
 	var dY = originY + translateY - 0.5;
 	ImageFunction.operateAffine(dest, src, aX + dX, aY + dY, bX + dX, bY + dY, cX + dX, cY + dY,
 		null, null, false, omAlpha, dfAlpha, 255, stFastLinear|stRefNoClip);
-	#undef MULTIPLY_MATRIX22_VECTOR2
+	m4_undefine(MULTIPLY_MATRIX22_VECTOR2)
 };

@@ -1,33 +1,24 @@
-#if __DEBUG
-	#define __D(T) T
-	#define __R(T)
-#else
-	#define __D(T)
-	#define __R(T) T
-#endif
+m4_define(/*@__ERROR_LINE@*/, /*@(1++++)@*/)
 
-#if __DEBUG
-	#define __DM(...) dm(_VA_ARGS__);
-#else
-	#define __DM(...)
-#endif
-
-#define __ERROR_LINE (1++++)
-
-#if __DEBUG
-	#define __ERROR_ON_DEBUG __ERROR_LINE
-	#define __ERROR_ON_RELEASE
-#else
-	#define __ERROR_ON_DEBUG
-	#define __ERROR_ON_RELEASE __ERROR_LINE
-#endif
-
-
-#if __DEBUG
-	#define __ASSERT(COND, MESSAGE) \
-		if (!(COND)) { \
-			throw new Exception("[ASSERT]\nfile:%s\nline:%d\nmessage:%s".sprintf(__FILE__, __LINE__, MESSAGE)); \
-		}
-#else
-	#define __ASSERT(COND, MESSAGE)
-#endif
+m4_ifelse(__DEBUG, 1,
+/*@
+	m4_define(/*@__D@*/, $1)
+	m4_define(/*@__R@*/, )
+	m4_define(/*@__DM()@*/, /*@dm($*);@*/)
+	m4_define(/*@__ERROR_ON_DEBUG@*/, __ERROR_LINE)
+	m4_define(/*@__ERROR_ON_RELEASE@*/, )
+	m4_define(/*@__ASSERT@*/,
+		if (!($1)) {
+			throw new Exception("[ASSERT]\nfile:%s\nline:%d\nmessage:%s".sprintf(__FILE__, __LINE__, $2));
+		})
+@*/
+,
+/*@
+	m4_define(/*@__D@*/, )
+	m4_define(/*@__R@*/, $1)
+	m4_define(/*@__DM()@*/, )
+	m4_define(/*@__ERROR_ON_DEBUG@*/, )
+	m4_define(/*@__ERROR_ON_RELEASE@*/, __ERROR_LINE)
+	m4_define(/*@__ASSERT@*/, )
+@*/
+)

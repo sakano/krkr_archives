@@ -4,18 +4,17 @@ class Biscrat_TransformImage
 	var _matrix = new Biscrat_Drawing2DMatrix();
 	var _matrixUpdate = true;
 	var _transformUpdate = true;
-	
-	#define TRANSFORM_PROP(PROP_NAME, DEF_VALUE) \
-		var _##PROP_NAME = DEF_VALUE; \
-		property PROP_NAME { \
-			setter(v) { \
-				_##PROP_NAME = v; \
-				_transformUpdate = true; \
-				_matrixUpdate = true; \
-				_event.trigger("transformUpdated"); \
-			} \
-			getter { return _##PROP_NAME; } \
-		}
+	m4_define(/*@TRANSFORM_PROP@*/,
+		var _$1 = $2;
+		property $1 {
+			setter(v) {
+				_$1 = v;
+				_transformUpdate = true;
+				_matrixUpdate = true;
+				_event.trigger("transformUpdated");
+			}
+			getter { return _$1; }
+		})
 	TRANSFORM_PROP(originX, 0)
 	TRANSFORM_PROP(originY, 0)
 	TRANSFORM_PROP(scaleX, 1)
@@ -25,7 +24,7 @@ class Biscrat_TransformImage
 	TRANSFORM_PROP(angle, 0)
 	TRANSFORM_PROP(x, 0)
 	TRANSFORM_PROP(y, 0)
-	#undef TRANSFORM_PROP
+	m4_undefine(`TRANSFORM_PROP')
 	
 	var _parent = null;
 	property parent {
