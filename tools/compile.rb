@@ -8,8 +8,10 @@ SrcPath = File.absolute_path("../src/") + "//"
 DebugPath = File.absolute_path("../data/debug/") + "//"
 ReleaseIntermeditatePath = File.absolute_path("../data/release_intermediate/") + "//"
 ReleasePath = File.absolute_path("../data/release/") + "//"
+CompileScriptPath = File.absolute_path("compile_tjs.tjs")
+CompileScriptDir = File.dirname(CompileScriptPath)
 
-
+# Delete all files in the directory
 def clean(dir)
 	Find.find(dir){|f|
 		next unless FileTest.file?(f)
@@ -19,29 +21,73 @@ def clean(dir)
 	}
 end
 
-def compile(dest, src, param)
+preprocess = lambda {|f, df, param|
+	# Do preprocess
+	cmd = "m4 -E -P #{param} -I\"#{IncludePath}\" \"#{PreprocessFile}\" \"#{f}\""
+	puts cmd
+	result = `#{cmd}`
+	
+	# Error check
+	if $? != 0
+		return false
+	end
+	result = result.encode("utf-8","utf-8")
+	File.write("#{df}", result)
+	
+	return true
+}
+
+compile = lambda{|f, df, param|
+	# Do compile
+	cmd = "tvpwin32 \"#{CompileScriptDir}\" -startup=\"#{CompileScriptPath}\" -src=\"#{f}\" -dest=\"#{df}\" -type=\"script\" #{param}"
+	puts cmd
+	puts `#{cmd}`
+	
+	# Error check
+	if $? != 0
+		return false
+	end
+	
+	return true
+}
+
+def do_all_files(dest, src, param, label, &do_cmd)
+	success = true
 	Find.find(src){|f|
 		next unless FileTest.file?(f)
-		f = File.absolute_path(f)
-		cmd = "m4 -E -P #{param} -I\"#{IncludePath}\" \"#{PreprocessFile}\" \"#{f}\""
-		puts " == PREPROCESS(#{f}) =="
-		puts cmd
-		result = `#{cmd}`
+		next if File.basename(f)[0] == "."
+		f = File.absolute_path(f) # the source file's path
+		df = "#{dest}#{File.basename f}" # the dest file's path
 		
-		if $? != 0
-			puts " == PREPROCESS ERROR =="
-			return false
+		puts " == #{label}(#{f}) =="
+		
+		# Skip the file if update time is same,
+		src_time = File.mtime(f)
+		if File.exist?(df)
+			dest_time = File.mtime(df)
+			if src_time == dest_time
+				puts "skip"
+				next
+			end
 		end
-		result = result.encode("utf-8","utf-8")
-		File.write("#{dest}#{File.basename f}", result)
+		
+		# Do command
+		if !do_cmd.call(f, df, param)
+			puts " == #{label} ERROR =="
+			success = false
+			return
+		end
+		
+		# Change update time
+		File.utime(src_time, src_time, "#{df}")
 	}
+	return success
 end
 
 clean_flag = false
 debug_flag = false
 release_flag = false
 ARGV.each {|arg|
-	p arg
 	if arg == "-clean"
 		clean_flag = true
 	end
@@ -54,17 +100,18 @@ ARGV.each {|arg|
 	end
 }
 
-
 if debug_flag
 	if clean_flag
 		clean(DebugPath)
 	end
-	compile(DebugPath, SrcPath, "-D__DEBUG=1 -D__RELEASE=0")
+	do_all_files(DebugPath, SrcPath, "-D__DEBUG=1 -D__RELEASE=0", "PREPROCESS", &preprocess)
 end
 if release_flag
 	if clean_flag
 		clean(ReleaseIntermeditatePath)
 		clean(ReleasePath)
 	end
-	compile(ReleaseIntermeditatePath, SrcPath, "-D__DEBUG=0 -D__RELEASE=1")
+	if do_all_files(ReleaseIntermeditatePath, SrcPath, "-D__DEBUG=0 -D__RELEASE=1", "PREPROCESS", &preprocess)
+		do_all_files(ReleasePath, ReleaseIntermeditatePath, "", "COMPILE", &compile)
+	end
 end

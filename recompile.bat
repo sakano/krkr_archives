@@ -1,1 +1,1 @@
-tvpwin32.exe "tools" -startup="compile.tjs" -compiledebug="yes" -compilerelease="yes" -clean="yes"
+ruby tools/compile.rb -release -debug -clean

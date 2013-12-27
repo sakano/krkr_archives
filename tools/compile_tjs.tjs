@@ -1,0 +1,34 @@
+var srcFile = System.getArgument("-src");
+var destFile = System.getArgument("-dest");
+if (srcFile == "" || !Storages.isExistentStorage(srcFile)) {
+	Debug.message("srcに指定されたファイルが見つかりません");
+	System.exit(-1);
+}
+Debug.message(destFile);
+if (destFile == "") {
+	Debug.message("destに正しいパスを指定してください");
+	System.exit(-1);
+}
+
+switch (System.getArgument("-type")) {
+case "script":
+	Scripts.compileStorage(srcFile, destFile);
+	break;
+case "data":
+	var data = Scripts.evalStorage(Storages.getfullPath(srcFile));
+	if (data instanceof "Dictionary") {
+		(Dictionary.saveStruct incontextof data)(destFile, "b");
+	} else if (data instanceof "Array") {
+		data.saveStruct(destFile, "b");
+	} else {
+		Debug.message(@"不正なデータファイルです。${filename}");
+		System.exit(-1);
+	}
+	break;
+default:
+	Debug.message("typeを指定してください");
+	System.exit(-1);
+}
+
+System.exit(0);
+
