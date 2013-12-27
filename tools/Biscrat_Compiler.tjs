@@ -23,7 +23,7 @@ class Biscrat_Compiler
 	function checkExtension(map, file) {
 		var type = map[Storages.extractStorageExt(file)];
 		if (type === void) {
-			error(@"ˆÙí‚ÈŠg’£q‚Å‚·(${file})");
+			error(@"ç•°å¸¸ãªæ‹¡å¼µå­ã§ã™(${file})");
 			return;
 		}
 		return type;
@@ -34,7 +34,7 @@ class Biscrat_Compiler
 		var result = System.commandExecute(preprocessCommand, param);
 		switch (true) {
 		case result.status !== "ok":
-			error("ƒvƒŠƒvƒƒZƒX‚É¸”s‚µ‚Ü‚µ‚½B\n" + result.message + "\n" + dest);
+			error("ãƒ—ãƒªãƒ—ãƒ­ã‚»ã‚¹ã«å¤±æ•—ã—ã¾ã—ãŸã€‚\n" + result.message + "\n" + dest);
 			break;
 		case result.exitcode !== 0:
 			dm(@"ERROR : exitcode = ${result.exitcode}\n");
@@ -42,11 +42,11 @@ class Biscrat_Compiler
 				dm(value + "\n");
 			});
 			Storages.deleteFile(dest);
-			error("ƒvƒŠƒvƒƒZƒX‚É¸”s‚µ‚Ü‚µ‚½B\n" + dest);
+			error("ãƒ—ãƒªãƒ—ãƒ­ã‚»ã‚¹ã«å¤±æ•—ã—ã¾ã—ãŸã€‚\n" + dest);
 			break;
 		default:
 			if (!Storages.setLastModifiedFileTime(dest, srcModifiedTime)) {
-				error(@"ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚Ìİ’è‚É¸”s‚µ‚Ü‚µ‚½B(${dest})");
+				error(@"ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã®è¨­å®šã«å¤±æ•—ã—ã¾ã—ãŸã€‚(${dest})");
 			}
 			break;
 		}
@@ -90,13 +90,13 @@ class Biscrat_Compiler
 				} else if (data instanceof "Array") {
 					data.saveStruct(dest, "b");
 				} else {
-					error(@"•s³‚Èƒf[ƒ^ƒtƒ@ƒCƒ‹‚Å‚·B${filename}");
+					error(@"ä¸æ­£ãªãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™ã€‚${filename}");
 				}
 			} else {
 				Scripts.compileStorage(mid, dest);
 			}
 			if (!Storages.setLastModifiedFileTime(dest, Storages.getLastModifiedFileTime(mid))) {
-				error(@"ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚Ìİ’è‚É¸”s‚µ‚Ü‚µ‚½B(${dest})");
+				error(@"ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã®è¨­å®šã«å¤±æ•—ã—ã¾ã—ãŸã€‚(${dest})");
 			}
 		}, dest, mid);
 	}
@@ -106,7 +106,7 @@ class Biscrat_Compiler
 			var filename = Storages.extractStorageName(src).toLowerCase();
 			if (settings.ignoreFiles[filename]) { return; }
 			if (compiledFiles[filename]) {
-				error("ƒtƒ@ƒCƒ‹–¼‚ªd•¡‚µ‚Ä‚¢‚Ü‚·B");
+				error("ãƒ•ã‚¡ã‚¤ãƒ«åãŒé‡è¤‡ã—ã¦ã„ã¾ã™ã€‚");
 				return;
 			}
 			compiledFiles[filename] = true;

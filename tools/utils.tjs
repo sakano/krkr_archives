@@ -50,7 +50,7 @@ function getFilesInDirectory(dirPath, recur=true) {
  */
 function createDirectoryIfNotExist(path) {
 	if (!Storages.isExistentDirectory(path) && !Storages.createDirectory(path)) {
-		dm(@"フォルダを作成できません。\n(${path})");
+		dm(@"繝輔か繝ｫ繝繧剃ｽ懈�舌〒縺阪∪縺帙ｓ縲�\n(${path})");
 	}
 }
 /**

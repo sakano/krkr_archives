@@ -1,45 +1,45 @@
 #biscrat-krkr-utils
-‹g—¢‹g—¢Z—p‚ÌtjsƒXƒNƒŠƒvƒg‚Å‚·BŠetjsƒtƒ@ƒCƒ‹‚Ìƒ‰ƒCƒZƒ“ƒX‚ÍMITƒ‰ƒCƒZƒ“ƒX‚É‚È‚Á‚Ä‚¢‚Ü‚·B
+å‰é‡Œå‰é‡ŒZç”¨ã®tjsã‚¹ã‚¯ãƒªãƒ—ãƒˆã§ã™ã€‚å„tjsãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã¯MITãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã«ãªã£ã¦ã„ã¾ã™ã€‚
 
 ##Biscrat_AsyncCaller.tjs
-AsyncTrigger‚ğg‚Á‚Ä”CˆÓ‚ÌŠÖ”‚ğ”ñ“¯Šú‚ÉŒÄ‚Ño‚·B
-kwidgets‚ÌAsyncCaller‚Æ‚Ù‚Ú“¯‚¶‚Å‚·B
+AsyncTriggerã‚’ä½¿ã£ã¦ä»»æ„ã®é–¢æ•°ã‚’éåŒæœŸã«å‘¼ã³å‡ºã™ã€‚
+kwidgetsã®AsyncCallerã¨ã»ã¼åŒã˜ã§ã™ã€‚
 
 ##Biscrat_Deferred.tjs
-Promiseƒpƒ^[ƒ“—pƒ‰ƒCƒuƒ‰ƒŠBjQuery.Deferred‚Ìtjs”Å‚Å‚·B
+Promiseãƒ‘ã‚¿ãƒ¼ãƒ³ç”¨ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã€‚jQuery.Deferredã®tjsç‰ˆã§ã™ã€‚
 
 ##Biscrat_Events.tjs
-Observerƒpƒ^[ƒ“—pƒ‰ƒCƒuƒ‰ƒŠBBackbone.Events‚Ìtjs”Å‚Å‚·B
+Observerãƒ‘ã‚¿ãƒ¼ãƒ³ç”¨ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã€‚Backbone.Eventsã®tjsç‰ˆã§ã™ã€‚
 
 ##Biscrat_LinqArray.tjs
-ArrayƒNƒ‰ƒX‚ğŠg’£BC#‚ÌLINQ‚à‚Ç‚«‚ªg‚¦‚é‚æ‚¤‚É‚È‚è‚Ü‚·B
+Arrayã‚¯ãƒ©ã‚¹ã‚’æ‹¡å¼µã€‚C#ã®LINQã‚‚ã©ããŒä½¿ãˆã‚‹ã‚ˆã†ã«ãªã‚Šã¾ã™ã€‚
 
 ##Biscrat_TextDrawer.tjs
-LayerExDraw.dll‚ÌdrawPathString‚ÅƒeƒLƒXƒg‚ğ•`‰æ‚µ‚Ü‚·B
+LayerExDraw.dllã®drawPathStringã§ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»ã—ã¾ã™ã€‚
 
 ##Biscrat_Serializable.tjs
-ƒIƒuƒWƒFƒNƒg‚ÉƒVƒŠƒAƒ‰ƒCƒY/ƒfƒVƒŠƒAƒ‰ƒCƒY—p‚ÌŠÖ”‚ğ’Ç‰Á‚µ‚Ü‚·B
+ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚º/ãƒ‡ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚ºç”¨ã®é–¢æ•°ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 
 ##Biscrat_MouseGesture.tjs
-ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒ‚Ì“ü—Í‚ğó‚¯•t‚¯‚Ü‚·B
+ãƒã‚¦ã‚¹ã‚¸ã‚§ã‚¹ãƒãƒ£ã®å…¥åŠ›ã‚’å—ã‘ä»˜ã‘ã¾ã™ã€‚
 
 ##Biscrat_Timekeeper.tjs
-ŠÔŒo‰ßƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚Ü‚·B
+æ™‚é–“çµŒéã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã¾ã™ã€‚
 
 ##Biscrat_Drawing2DMatrix.tjs
-ƒAƒtƒBƒ“•ÏŠ·—p‚Ìs—ñƒNƒ‰ƒXB
+ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›ç”¨ã®è¡Œåˆ—ã‚¯ãƒ©ã‚¹ã€‚
 
 ##Biscrat_MatrixFunction.tjs
-s—ñ‚ğ‘€ì‚·‚éŠÖ”‚ğ‚Ü‚Æ‚ß‚½ƒNƒ‰ƒXB
+è¡Œåˆ—ã‚’æ“ä½œã™ã‚‹é–¢æ•°ã‚’ã¾ã¨ã‚ãŸã‚¯ãƒ©ã‚¹ã€‚
 
 ##Biscrat_TransformImage.tjs
-‰æ‘œ‚ğƒAƒtƒBƒ“•ÏŠ·‚µ‚Ä•`‰æ‚µ‚Ü‚·B
+ç”»åƒã‚’ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›ã—ã¦æç”»ã—ã¾ã™ã€‚
 
 ##Biscrat_EventWindow.tjs
-ƒCƒxƒ“ƒg‚ğ’Ê’m‚·‚éƒEƒBƒ“ƒhƒEB
+ã‚¤ãƒ™ãƒ³ãƒˆã‚’é€šçŸ¥ã™ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã€‚
 
 ##Biscrat_IniFile.tjs
-Iniƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‘‚«B
+INIãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿æ›¸ãã€‚
 
 ##Biscrat_Utils.tjs
-‚»‚Ì‘¼‚Ì•Ö—˜ŠÖ”‚È‚ÇB
+ãã®ä»–ã®ä¾¿åˆ©é–¢æ•°ãªã©ã€‚

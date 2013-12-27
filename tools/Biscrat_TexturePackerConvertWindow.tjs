@@ -6,8 +6,8 @@ class Biscrat_TexturePackerConvertWindow extends Window
 		with (this.primary = new Layer(this, null)) {
 			.setSize(width, height);
 			.fillRect(0, 0, width, height, 0xFFFFFFFF);
-			.drawText(20, 20, "pngƒtƒ@ƒCƒ‹‚Æjsonƒtƒ@ƒCƒ‹‚ğ", 0x000000);
-			.drawText(20, 40, "ƒhƒƒbƒv‚µ‚Ä‚­‚¾‚³‚¢B", 0x000000);
+			.drawText(20, 20, "pngãƒ•ã‚¡ã‚¤ãƒ«ã¨jsonãƒ•ã‚¡ã‚¤ãƒ«ã‚’", 0x000000);
+			.drawText(20, 40, "ãƒ‰ãƒ­ãƒƒãƒ—ã—ã¦ãã ã•ã„ã€‚", 0x000000);
 			.visible = true;
 		}
 	}

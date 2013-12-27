@@ -24,7 +24,7 @@ class Biscrat_TransformImage
 	TRANSFORM_PROP(angle, 0)
 	TRANSFORM_PROP(x, 0)
 	TRANSFORM_PROP(y, 0)
-	m4_undefine(`TRANSFORM_PROP')
+	m4_undefine(/*@TRANSFORM_PROP@*/)
 	
 	var _parent = null;
 	property parent {
