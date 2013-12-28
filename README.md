@@ -35,6 +35,9 @@ LayerExDraw.dllのdrawPathStringでテキストを描画します。
 ##Biscrat_TransformImage.tjs
 画像をアフィン変換して描画します。
 
+##Biscrat_SoundBuffer.tjs
+フェード機能を備えたサウンドバッファ。
+
 ##Biscrat_EventWindow.tjs
 イベントを通知するウィンドウ。
 

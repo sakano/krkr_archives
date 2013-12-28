@@ -10,6 +10,7 @@ m4_define(/*@__BISCRAT_READ_INI_FILE_ERROR@*/, /*@"iniファイルの読み込�
 m4_define(/*@__BISCRAT_READ_INI_FILE_SECTION_ERROR@*/, /*@"sectionを読み込めません。"@*/)m4_dnl
 m4_define(/*@__BISCRAT_READ_INI_FILE_SECTION_UNSPECIFIED@*/, /*@"sectionが指定されていません。"@*/)m4_dnl
 m4_define(/*@__BISCRAT_READ_INI_FILE_KEY_NAME_DUPLICATE@*/, /*@"キー名が重複しています。({NAME})"@*/)m4_dnl
+m4_define(/*@__BISCRAT_SOUND_BUFFER_FILE_NOT_FOUND@*/, /*@"音声ファイルが見つかりません。({FILE})"@*/)m4_dnl
 m4_define(/*@__BISCRAT_DEFERRED_PENDING@*/, /*@0@*/)m4_dnl
 m4_define(/*@__BISCRAT_DEFERRED_RESOLVED@*/, /*@1@*/)m4_dnl
 m4_define(/*@__BISCRAT_DEFERRED_REJECTED@*/, /*@-1@*/)m4_dnl

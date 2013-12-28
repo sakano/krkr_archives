@@ -1,0 +1,196 @@
+class Biscrat_SoundBuffer
+{
+	var _buffer;
+	var _currentFile = "";
+	var _currentStatus = "unload";
+	var _volumeFactors = [];
+	var _loop = false;
+	var _fadeCompletedCallbacks = [];
+	
+	function Biscrat_SoundBuffer() {
+		_buffer = new WaveSoundBuffer(this);
+		Bindable(this);
+	} 
+	
+	function finalize() {
+		_buffer.stopFade();
+		_buffer.stop();
+		invalidate _buffer;
+		invalidate _volumeFactors;
+		invalidate _fadeCompletedCallbacks;
+		BindableFinalize(this);
+	}
+	
+	/**
+	 * Play the specified sound.
+	 * @param string The sound file to play.
+	 * @param int The time to fade in.
+	 * @param startLabel string The label which shows start position.
+	 */
+	function play(file, time = 0, startLabel) {
+		__ASSERT(file != void)
+		file = getExistFileName(file);
+		_buffer.stopFade();
+		_buffer.stop();
+		_buffer.open(file);
+		loop = _loop;
+		if (startLabel != void && _buffer.labels[startLabel] != void) {
+			_buffer.samplePosition = _buffer.labels[startLabel].samplePosition;
+		}
+		if (time > 0) {
+			_buffer.volume = 0;
+			_buffer.play();
+			_buffer.fade(100000, time, 0);
+		} else {
+			_buffer.volume = 100000;
+			_buffer.play();
+		}
+		
+		_currentFile = file;
+	}
+	
+	/**
+	 * Stop the playing sound.
+	 * @param int time The time to fade out.
+	 */
+	function stop(time = 0) {
+		_buffer.stopFade();
+		if (time > 0 && _currentStatus === "play") {
+			_fadeCompletedCallbacks.push(_buffer.stop);
+			_buffer.fade(0, time, 0);
+		} else {
+			_buffer.stop();
+		}
+		_currentFile = "";
+	}
+	
+	/**
+	 * Fade the volume to the specified value.
+	 * @param int volume The volume to be reached.
+	 * @param int time The time to fade.
+	 */
+	function fade(volume, time = 0) {
+		__ASSERT(0 <= volume && volume <= 100)
+		_buffer.stopFade();
+		if (time > 0 && _currentStatus === "play") {
+			_fadeCompletedCallbacks.push(function {
+				owner.volume = volume;
+				owner._buffer.volume = 100000;
+				owner._volume = void;
+			} incontextof %[owner:this, volume:volume]);
+			{
+				var t = _buffer.volume;
+				_volume = this.volume;
+				_buffer.volume = this.volume * 1000;
+				this.volume = t / 1000;
+			}
+			_buffer.fade(volume * 1000, time, 0);
+		} else {
+			this.volume = volume;
+		}
+	}
+	
+	/**
+	 * Set the properties which this buffer's volume depends on.
+	 * @param array props The array of the properties.
+	 */
+	function setVolumeFactors(props) {
+		_volumeFactors.assign(props);
+	}
+	
+	/**
+	 * Gets or sets whether the sound loops.
+	 * @type bool
+	 */
+	property loop {
+		setter(v) {
+			_buffer.looping  = _loop = !!v;
+			_buffer.flags[0] = _loop ? 0 : 1;
+			_event.trigger("setLoop", _loop);
+		}
+		getter {
+			return _loop;
+		}
+	}
+	
+	/**
+	 * Gets or sets the volume. The value must be within the range of [0, 100]
+	 * @type int
+	 */
+	var _volume;
+	property volume {
+		setter(v) {
+			__ASSERT(0 <= v && v <= 100)
+			_buffer.stopFade();
+			v = +v;
+			for (var i = 0; i < _volumeFactors.count; ++i) {
+				v *= _volumeFactors[i] / 100;
+			}
+			_buffer.volume2 = v * 1000;
+			_event.trigger("setVolume", v);
+		}
+		getter() {
+			return _volume !== void ? _volume : (int)(_buffer.volume2 / 1000);
+		}
+	}
+	
+	/**
+	 * Gets or sets the panning. The value must be within the range of [-100, 100]
+	 * @type int
+	 */
+	property pan {
+		setter(v) {
+			__ASSERT(-100 <= v && v <= 100)
+			_buffer.pan = v * 1000;
+		}
+		getter() {
+			return (int)(_buffer.pan / 1000);
+		}
+	}
+	
+	/**
+	 * This function is called when a buffer event occurs.
+	 */
+	function action(ev) {
+		if (ev.target !== _buffer) return;
+		switch (ev.type) {
+		case "onStatusChanged":
+			switch (ev.status) {
+			case "play":
+				_event.trigger("play");
+				break;
+			case "stop":
+				_event.trigger("stop");
+				break;
+			}
+			_currentStatus = ev.status;
+			break;
+		case "onLabel":
+			_event.trigger("label", ev.name);
+			break;
+		case "onFadeCompleted":
+			for (var i = 0; i < _fadeCompletedCallbacks.count; ++i) {
+				_fadeCompletedCallbacks[i]();
+			}
+			_fadeCompletedCallbacks.clear();
+			break;
+		}
+	}
+	
+	/**
+	 * Get the sound file name.
+	 * @param string name The file name, whose extension may be omitted.
+	 * @return string The file name whose extension is completed.
+	 */
+	function getExistFileName(file) {
+		with (Storages) {
+			if (.isExistentStorage(file)) { return file; }
+			m4_define(/*@CHECK_EXT@*/, /*@if (.isExistentStorage(file + $1)) { return file + $1; }@*/)
+			CHECK_EXT(".ogg")
+			CHECK_EXT(".opus")
+			CHECK_EXT(".wav")
+			m4_undefine(/*@CHECK_EXT@*/)
+		}
+		throw new Exception(expandMessageStrings(__BISCRAT_SOUND_BUFFER_FILE_NOT_FOUND, "FILE", file));
+	}
+}
