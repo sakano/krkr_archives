@@ -17,11 +17,22 @@ class Biscrat_AsyncCaller
 		invalidate _trigger;
 	}
 	
+	/**
+	 * Call the specified function asynchronously.
+	 * @param object func The function to be called.
+	 * @param mixed args* The arguments to be passed to the function.
+	 */
 	function call(func, args*) {
 		_registered.push(func, args);
 		_trigger.trigger();
 	}
 	
+	/**
+	 * Call the specified function asynchronously.
+	 * The identical functions are called once.
+	 * @param object func The function to be called.
+	 * @param mixed args* The arguments to be passed to the function.
+	 */
 	function callOnce(func, args*) {
 		for (var i = 0; i < _registered.count; i += 2) {
 			if (_registered[i] !== func) { continue; }

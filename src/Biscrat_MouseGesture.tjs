@@ -68,8 +68,7 @@ class Biscrat_MouseGesture
 		Bindable(this);
 	}
 	
-	function finalize()
-	{
+	function finalize() {
 		BindableFinalize(this);
 		invalidate _event;
 	}
@@ -81,8 +80,7 @@ class Biscrat_MouseGesture
 	 * @param int button the mouse button clicked.
 	 * @return bool True if the mouse gesture is ditected.
 	 */
-	function onMouseDown(x, y, button)
-	{
+	function onMouseDown(x, y, button) {
 		if (button & _mouseButton) {
 			clear();
 			_isMouseDown = true;
@@ -99,8 +97,7 @@ class Biscrat_MouseGesture
 	 * @param number y the y-coordinate of the mouse.
 	 * @param bool True while ditecting the mouse gesture.
 	 */
-	function onMouseMove(x, y)
-	{
+	function onMouseMove(x, y) {
 		if (!_isMouseDown) { return false; }
 		if (_type === __BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION) {
 			if      (_px-x >= _threshold) input("4");
@@ -136,8 +133,7 @@ class Biscrat_MouseGesture
 	 * @param int button the mouse button clicked.
 	 * @param bool True if the mouse gesture is ditected.
 	 */
-	function onMouseUp(x, y, button)
-	{
+	function onMouseUp(x, y, button) {
 		if (!_enabled || !_isMouseDown || !(button & _mouseButton)) return false;
 		if (_gestures.length === 0) {
 			clear();
@@ -155,8 +151,7 @@ class Biscrat_MouseGesture
 	 * Records mouse gesture while mouse moving.
 	 * @param string gesture Gesture input.
 	 */
-	function input(gesture)
-	{
+	function input(gesture) {
 		if (_overflow) { return; }
 		var len = _gestures.length;
 		if (len == 0 || _gestures[len-1] != gesture) {
@@ -172,8 +167,7 @@ class Biscrat_MouseGesture
 	/**
 	 * Cancels the current input.
 	 */
-	function clear()
-	{
+	function clear() {
 		_isMouseDown = false;
 		_gestures = "";
 		_overflow = false;
