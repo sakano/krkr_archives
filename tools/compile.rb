@@ -1,4 +1,5 @@
 require "Find"
+require "optparse"
 
 Dir.chdir("C:\\krkr\\biscrat-krkr-utils\\tools\\")
 
@@ -84,30 +85,16 @@ def do_all_files(dest, src, param, label, &do_cmd)
 	return success
 end
 
-clean_flag = false
-debug_flag = false
-release_flag = false
-ARGV.each {|arg|
-	if arg == "-clean"
-		clean_flag = true
-	end
-	if arg == "-debug"
-		debug_flag = true
-		
-	end
-	if arg == "-release"
-		release_flag = true
-	end
-}
+args = ARGV.getopts("", "clean", "debug", "release")
 
-if debug_flag
-	if clean_flag
+if args["debug"]
+	if args["clean"]
 		clean(DebugPath)
 	end
 	do_all_files(DebugPath, SrcPath, "-D__DEBUG=1 -D__RELEASE=0", "PREPROCESS", &preprocess)
 end
-if release_flag
-	if clean_flag
+if args["release"]
+	if args["clean"]
 		clean(ReleaseIntermeditatePath)
 		clean(ReleasePath)
 	end

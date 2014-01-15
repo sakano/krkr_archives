@@ -1,1 +1,1 @@
-ruby tools/compile.rb -release -debug -clean
+ruby tools/compile.rb --release --debug --clean

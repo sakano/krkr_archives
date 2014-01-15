@@ -1,1 +1,1 @@
-ruby tools/compile.rb -debug
+ruby tools/compile.rb --debug

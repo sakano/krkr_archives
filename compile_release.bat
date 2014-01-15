@@ -1,1 +1,1 @@
-ruby tools/compile.rb -release
+ruby tools/compile.rb --release
