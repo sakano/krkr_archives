@@ -1,0 +1,88 @@
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+                  KAGParserExb使い方
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+
+『KAGParserExb.dll』を吉里吉里本体と同じフォルダにおきます。
+そしてOverride.tjsで
+Plugins.link("KAGParserExb.dll");
+のように読み込んでください。
+
+
+
+■バージョンについて
+『KAGParserExb.dll』は、最新の開発版吉里吉里(version 2.31.2012.831, 
+SVN Revision 5057)で動作します。安定版の吉里吉里(version 2.32.2.426)
+で使用したい場合は、『KAGParserExb.dll』の代わりに『KAGParserExb_232rev2.dll』
+を使ってください。
+ただし、安定版ではなく開発版の吉里吉里を使用することを推奨します。
+最新開発版の吉里吉里本体は以下のURLからダウンロードできます。
+https://sv.kikyou.info/svn/kirikiri2/trunk/kirikiri2/bin/win32/
+
+
+
+■パラメータマクロ又は属性名マクロ使用時の注意
+パラメータマクロ又は属性名マクロを使用する場合は、systemフォルダの『MainWindow.tjs』を
+書き換える必要があります。(KAG, KAGEX共通です)
+
+１．以下の行を探します。
+(Dictionary.assign incontextof extraConductor.macros)(mainConductor.macros);
+その次の行に、以下の2行を挿入してください。
+(Dictionary.assign incontextof extraConductor.paramMacros)(mainConductor.paramMacros);
+(Dictionary.assign incontextof extraConductor.attribNameMacros)(mainConductor.attribNameMacros);
+
+２．以下の行を探します。
+(Dictionary.assign incontextof mainConductor.macros)(extraConductor.macros);
+その次の行に、以下の2行を挿入してください。
+(Dictionary.assign incontextof mainConductor.paramMacros)(extraConductor.paramMacros);
+(Dictionary.assign incontextof mainConductor.attribNameMacros)(extraConductor.attribNameMacros);
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    パラメータマクロ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[pmacro]タグで属性（パラメータ）をマクロとして登録できます。
+name属性にマクロ名を指定します。
+name属性以外の属性がパラメータマクロとして登録されます。
+
+@pmacro name="スクロール" method=scroll time=1000
+以上のようなパラメータマクロが登録されている時、以下のコマンドは同じ意味になります。
+@trans スクロール
+@trans method=scroll time=1000
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    複数行タグ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+タグを複数行に分けて書くことができます。
+
+Afterinit.tjsで、
+kag.mainConductor.multiLineTagEnabled = true;
+kag.extraConductor.multiLineTagEnabled = true;
+とすると複数行タグが使えるようになります。
+
+次の行に続けたいコマンドの末尾に「\」をつけると複数行タグになります。
+
+@position layer=message0 page=fore \
+ left=10 top=350 width=620 height=120 \
+ marginl=10 margint=5 marginr=10 marginb=5 \
+ visible=false
+
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    属性名マクロ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[amacro]タグで属性名の別名を登録できます。
+name属性に別名として使いたい属性名を指定ます。
+target属性にその別名で表される本来の属性名を指定します。
+
+@amacro name="t" target="time"
+以上のような属性名マクロが登録されている時、以下のコマンドは同じ意味になります。
+@wait t=1000
+@wait time=1000
+
+
+
+より詳細な説明は、「readme_original.txt」を参照してください。
