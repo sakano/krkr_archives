@@ -93,3 +93,13 @@ http://kasekey.blog101.fc2.com/blog-entry-203.html
 
 ## utilフォルダ
 吉里吉里Z用のtjsライブラリです。
+
+
+
+## docフォルダ
+吉里吉里関連のドキュメントが入っています。
+
++ kagex_reference
+KAGEXのワールド拡張を含まない部分のリファレンスです。
+以下のURLで同じものを公開しています。
+http://www.biscrat.com/krkr/docs/kagex/contents/index.html
