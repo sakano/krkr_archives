@@ -1,0 +1,9 @@
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+          SKN_MouseGesture プラグイン使い方
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+必要なファイルは SKN_MouseSkip.tjs です。
+
+afterinit.tjs に
+Scripts.evalStorage("SKN_MouseSkip.tjs");
+をコピペしてください。プラグインが自動的に有効になります。
+

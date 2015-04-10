@@ -1,0 +1,176 @@
+//Ÿƒ}ƒEƒXƒWƒFƒXƒ`ƒƒƒNƒ‰ƒX
+//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+class SKN_MouseGesture {
+	var THRESHOLD = 50; // ƒWƒFƒXƒ`ƒƒ‚ðŽó‚¯•t‚¯‚éÅ¬px”
+	var isMouseDown = false; // ƒWƒFƒXƒ`ƒƒ“ü—Í’†‚©
+	var px, py; // ƒWƒFƒXƒ`ƒƒŠJŽnÀ•W
+
+	var type = 0; // 0:4•ûŒüƒ}ƒEƒXƒWƒFƒXƒ`ƒƒ 1:8•ûŒüƒ}ƒEƒXƒWƒFƒXƒ`ƒƒ
+	var gestures = ""; // “ü—Í‚³‚ê‚½ƒWƒFƒXƒ`ƒƒi1 2 3 4 6 7 8 9‚©‚ç¬‚é•¶Žš—ñ
+	var gestureFunc = %[]; // ƒWƒFƒXƒ`ƒƒ“ü—ÍŽž‚ÉŒÄ‚Ño‚·ŠÖ”
+	var gestureEnabled = false; // ƒWƒFƒXƒ`ƒƒ‚ðŽÀs‚·‚é‚©
+	var gestureLimit = 8; // ƒWƒFƒXƒ`ƒƒ‚ÌÅ‘å˜A‘±“ü—Í”
+	var gestureOverflow = false; // ƒWƒFƒXƒ`ƒƒ‚ªƒI[ƒo[ƒtƒ[‚µ‚½‚©
+	/**
+	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 */
+	function SKN_MouseGesture() {
+	}
+	/**
+	 * ƒfƒXƒgƒ‰ƒNƒ^
+	 */
+	function finalize() {
+		clearGestureFunc();
+	}
+
+	//ŸƒCƒxƒ“ƒgˆ—
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	/**
+	 * ƒ}ƒEƒX‚Ìƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Ô
+	 */
+	function onMouseDown(x, y, button) {
+		if (button == mbRight) {
+//			dm("called onMouseDown");
+			clearGesture();
+			isMouseDown = true;
+			px = x;
+			py = y;
+		}
+	}
+	/**
+	 * ƒ}ƒEƒX‚ª“®‚¢‚½‚Æ‚«‚ÉŒÄ‚Ô
+	 */
+	function onMouseMove(x, y) {
+		if (isMouseDown) {
+			//dm("called onMouseMove", "X:"+x, "Y:"+y);
+			if (type == 0) {
+				if (px-x >= THRESHOLD) inputGesture(4);
+				else if (x-px >= THRESHOLD) inputGesture(6);
+				else if (py-y >= THRESHOLD) inputGesture(2);
+				else if (y-py >= THRESHOLD) inputGesture(8);
+				else return;
+			} else {
+				if (Math.pow(x-px,2) + Math.pow(y-py,2) >= THRESHOLD*THRESHOLD) {
+					var qpi = Math.PI*1/8;
+					var theta = Math.atan2(y-py, x-px);
+					if (theta < -qpi*7) inputGesture(4);
+					else if (theta < -qpi*5) inputGesture(1);
+					else if (theta < -qpi*3) inputGesture(2);
+					else if (theta < -qpi*1) inputGesture(3);
+					else if (theta < qpi*1) inputGesture(6);
+					else if (theta < qpi*3) inputGesture(9);
+					else if (theta < qpi*5) inputGesture(8);
+					else if (theta < qpi*7) inputGesture(7);
+					else inputGesture(4);
+				} else {
+					return;
+				}
+			}
+			px = x, py = y; // inputGesture‚ðŒÄ‚ñ‚¾ê‡‚ÍÀ•WXV
+		}
+	}
+	/**
+	 * ƒ}ƒEƒX‚Ìƒ{ƒ^ƒ“‚ª—£‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Ô
+	 * @return ƒWƒFƒXƒ`ƒƒ‚ªŽÀs‚³‚ê‚½‚©
+	 */
+	function onMouseUp(x, y, button) {
+//		dm("called onMouseUp");
+		var ret = false;
+		if (isMouseDown) {
+			ret = doGesture();
+		}
+		clearGesture();
+		return ret;
+	}
+
+	//ŸƒWƒFƒXƒ`ƒƒƒf[ƒ^ˆ—
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	/**
+	 * ƒWƒFƒXƒ`ƒƒ‚ð‹L˜^
+	 */
+	function inputGesture(gesture) {
+		var len = gestures.length;
+		if (len < gestureLimit) { // ’·‚·‚¬‚é‚Æ‚ ‚ê‚È‚Ì‚ÅƒŠƒ~ƒbƒg
+			if (len == 0 || gestures[len-1] != gesture) {
+				gestures += gesture; // ’¼‘O‚ÌƒWƒFƒXƒ`ƒƒ‚ÆˆÙ‚È‚ê‚Îpush
+				//dm("inputGesture:"+gesture, "gestures:"+gestures);
+			}
+		} else {
+			gestureOverflow = true;
+		}
+	}
+	/**
+	 * ƒWƒFƒXƒ`ƒƒ‚ÌƒNƒŠƒAA’†’f
+	 */
+	function clearGesture() {
+		isMouseDown = false;
+		gestures = "";
+		gestureOverflow = false;
+	}
+	/**
+	 * ƒWƒFƒXƒ`ƒƒ‚ðŽÀs
+	 * @return ƒWƒFƒXƒ`ƒƒŽÀs‚µ‚½‚©
+	 */
+	function doGesture() {
+		if (canDoGesture()) {
+//			dm("doGesture:"+gestures);
+			if (gestureFunc[gestures] !== void) {
+				gestureFunc[gestures](gestures);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * ƒWƒFƒXƒ`ƒƒ‚ªŽÀs‰Â”\‚Èó‘Ô‚©
+	 * ŒÂ•Ê‚ÌƒWƒFƒXƒ`ƒƒ‚ÌðŒ‚Íƒ`ƒFƒbƒN‚µ‚Ü‚¹‚ñ
+	 */
+	function canDoGesture() {
+		return gestureEnabled && gestures.length != 0 && !gestureOverflow;
+	}
+
+	//ŸƒZ[ƒuƒ[ƒh‘Î‰ž
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	// •Û‘¶‚³‚ê‚é‚Ì‚Í gestureEnabled‚Ì‚Ý!
+	/**
+	 * •Û‘¶‚·‚é‚Æ‚«‚ÉŒÄ‚Ô
+	 */
+	function onStore(f) {
+		f._mg = %[
+			gestureEnabled : gestureEnabled
+		];
+	}
+	/**
+	 * “Ç‚Ýž‚Þ‚Æ‚«‚ÉŒÄ‚Ô
+	 */
+	function onRestore(f) {
+		if (f._mg === void) return;
+		gestureEnabled = f._mg.gestureEnabled;
+	}
+	
+	//ŸƒWƒFƒXƒ`ƒƒ“o˜^ˆ—
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	/**
+	 * ƒWƒFƒXƒ`ƒƒŠÖ”‚ðƒZƒbƒg
+	 * @param gestures ƒZƒbƒg‚·‚éƒWƒFƒXƒ`ƒƒ‚ÌŽí—Þ
+	 * @param func ƒZƒbƒg‚·‚éŠÖ”
+	 */
+	function setGestureFunc(gestures, func) {
+		gestureFunc[gestures] = func;
+	}
+
+	/**
+	 * ƒWƒFƒXƒ`ƒƒŠÖ”‚Ì“o˜^‚ðíœ
+	 * @param gestures íœ‚·‚éƒWƒFƒXƒ`ƒƒ‚ÌŽí—Þ
+	 */
+	function deleteGestureFunc(gestures) {
+		delete gestureFunc[gestures];
+	}
+	/**
+	 * ƒWƒFƒXƒ`ƒƒŠÖ”‚ðƒNƒŠƒA
+	 */
+	function clearGestureFunc() {
+		(Dictionary.clear incontextof gestureFunc)();
+	}
+}

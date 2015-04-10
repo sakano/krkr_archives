@@ -1,0 +1,17 @@
+dataフォルダが実行可能なKAGEXのプロジェクトフォルダになっています。
+
+Override.tjsでSKN_CatSystem.tjsを読み込んでいます。
+スクリプトのサンプルとしてはfirst.ksを見てください。
+data/scenarioフォルダにあります。
+
+立ち絵画像はdata/fgimageフォルダにあります。
+※キャラクターなんとか機(http://khmix.sakura.ne.jp/)の画像を使用しています。
+csvファイルもdata/fgimageフォルダに入れています。
+
+psdフォルダには変換前のpsdファイルが入っています。
+CatSystem2の画像コンバータ"WGC.exe"もしくは同梱のフォトショップスクリプト"krkrCharCSV.jsx"でそのまま変換できます。
+"WGC.exe"のオプションは出力形式hg3, 先頭に@が付いたレイヤをコンバート, 出力画像を上下反転させる, その他はオフ, としてください。
+
+catsystemフォルダにはCatSystem2の立ちキャラビューアの設定ファイルが入っています。
+
+不明な点はメール(sakano@rg7.so-net.ne.jp)なりブログ(http://kasekey.blog101.fc2.com/)で訊いてください。

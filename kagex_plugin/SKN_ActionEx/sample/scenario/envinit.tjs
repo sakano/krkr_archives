@@ -1,0 +1,12 @@
+%[
+	actions : %[
+		—¬‚ê‚éƒAƒNƒVƒ‡ƒ“ : %[
+			top : %[
+				handler : MoveAction,
+				value : "@+1520",
+				time : 30000,
+				boost : 200,
+			],
+		],
+	],
+]

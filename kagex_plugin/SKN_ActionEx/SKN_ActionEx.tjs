@@ -1,0 +1,83 @@
+//ŸWindowActiveTest
+//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+if (typeof KAGWindow.isActive === "undefined") {
+	with (kag) {
+		.isActive = true; // ƒEƒBƒ“ƒhƒE‚ªƒAƒNƒeƒBƒu‚©
+		
+		.onActivate_sknacttest = .onActivate;
+		.onActivate = function() {
+			isActive = true;
+			return onActivate_sknacttest(...);
+		} incontextof kag;
+
+		.onDeactivate_sknacttest = .onDeactivate;
+		.onDeactivate = function() {
+			isActive = false;
+			return onDeactivate_sknacttest(...);
+		} incontextof kag;
+	}
+}
+
+
+//ŸƒAƒNƒVƒ‡ƒ“‹@”\Šg’£
+//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+with (ActionSequense) {
+	.boost = 0; // ‰Á‘¬‚·‚é’l
+	.boosted = 0; // ‰Á‘¬‚³‚ê‚½’l
+	.canClickSkip = false; // ƒNƒŠƒbƒN‚ÅƒXƒLƒbƒv‚Å‚«‚é‚©
+	.keyUp = false; // ƒL[‚ª—£‚³‚ê‚½‚©
+	
+	/**
+	 * •¡»‚Ì¶¬
+	 */
+	.clone_sknactionex = .clone;
+	.clone = function() {
+		var ret = .clone_sknactionex(...);
+		ret.boost = boost if boost !== void;
+		ret.canClickSkip = canClickSkip;
+		ret.keyUp = keyUp;
+		return ret;
+	} incontextof ActionSequense;
+    /**
+     * ƒAƒNƒVƒ‡ƒ“‚ğ’Ç‰Á‚·‚é
+     * @param propName ƒvƒƒpƒeƒB–¼
+     * @param handler ƒAƒNƒVƒ‡ƒ“ƒnƒ“ƒhƒ‰
+     * @param elm ‰Šú‰»ƒpƒ‰ƒ[ƒ^
+     */
+	.addAction_sknactionex = .addAction;
+	.addAction = function(propName, handler, elm) {
+		boost = +elm.boost if elm.boost !== void;
+		canClickSkip = +elm.canskip if elm.canskip !== void;
+		with (kag) keyUp = !(.getKeyState(VK_LBUTTON) || .getKeyState(VK_CONTROL) || .getKeyState(VK_RETURN) || .getKeyState(VK_SPACE));
+		return addAction_sknactionex(...);
+	} incontextof ActionSequense;
+    /**
+     * •¡”‚ÌƒAƒNƒVƒ‡ƒ“‚ğ“¯“o˜^‚·‚é
+     * @param dict ƒAƒNƒVƒ‡ƒ“î•ñ‚Ì“ü‚Á‚½«‘
+     */
+	.addActions_sknactionex = .addActions;
+	.addActions = function(dict) {
+		boost = +dict.boost if dict.boost !== void;
+		canClickSkip = +dict.canskip if dict.canskip !== void;
+		with (kag) keyUp = !(.getKeyState(VK_LBUTTON) || .getKeyState(VK_CONTROL) || .getKeyState(VK_RETURN) || .getKeyState(VK_SPACE));
+		return addActions_sknactionex(...);
+	} incontextof ActionSequense;
+    /**
+     * ƒAƒNƒVƒ‡ƒ“Às
+     * @param now Œ»İ
+     * @param stopFlag ‹­§’â~w’è
+     * @param I—¹‚µ‚½‚ç true
+     */
+	.doAction_sknactionex = .doAction;
+	.doAction = function(now, stopFlag) {
+		with (kag) if (.isActive && (.getKeyState(VK_LBUTTON) || .getKeyState(VK_CONTROL) || .getKeyState(VK_RETURN) || .getKeyState(VK_SPACE))) {
+			boosted += boost;
+			if (canClickSkip && keyUp) stopFlag = true; // ‚·‚®‚É’â~‚µ‚È‚¢‚æ‚¤‚É keyUp ‚ğƒ`ƒFƒbƒN
+			// ƒXƒLƒbƒv‚Ìˆ—‚È‚Ç‚ÍƒAƒNƒVƒ‡ƒ“ŒÄ‚Ño‚µŒ³‚Åˆ—‚·‚é•K—v‚ª‚ ‚é‚Ì‚Å’ˆÓ
+		} else {
+			keyUp = true;
+		}
+		now += boosted;
+		return doAction_sknactionex(now, stopFlag);
+	} incontextof ActionSequense;
+}

@@ -1,0 +1,89 @@
+// ラベル変換用
+//Scripts.execStorage(System.getArgument("-scriptspath") + "common/Biscrat_ScriptsInitialize.tjs");
+Plugins.link("savestruct.dll");
+
+var win = new Window();
+win.innerSunken = false;
+win.onFileDrop = function(files) {
+	for (var i = 0; i < files.count; ++i) {
+		convert(files[i]);
+	}
+};
+var lay = new Layer(win, null);
+lay.setSize(300,200);
+lay.fillRect(0,0,300,200,0xFFFFFF);
+lay.font.height=12;
+lay.drawText(10,10,"ラベルを入れるksファイルをドロップしてください。",0x000000);
+lay.drawText(10,30,"元のファイル名_label.ks が作成されます。",0x000000);
+lay.visible = true;
+win.setInnerSize(300,200);
+win.visible = true;
+
+var labelCount;
+
+function convert(path) {
+	nextLabel = false;
+	normalLinePassed = false;
+	emptyLinePassed = false;
+	labelCount = 0;
+	var lines = [];
+	lines.load(path);
+	
+	var out = [];
+	for (var i = 0; i < lines.count; ++i) {
+		out.push(convertLine(lines[i])*);
+	}
+	out.save2(Storages.chopStorageExt(path) + "_label.ks");	
+}
+
+var commandLineReg = /^\t*@.+$/;
+var nameLineReg = /^\t*【.+?】/;
+var commentLineReg = /^\t*;.+$/;
+var nextLabel;
+var normalLinePassed;
+var emptyLinePassed;
+
+var convertLine = function(line) {
+	var insertLabel = false;
+	Debug.message(line);
+	if (commandLineReg.match(line).count != 0) {
+		Debug.message("COMMAND", nextLabel);
+		if (normalLinePassed && emptyLinePassed) {
+			insertLabel = true;
+			emptyLinePassed = false;
+			normalLinePassed = false;
+		}
+	} else if (commentLineReg.match(line).count != 0) {
+		Debug.message("COMMENT");
+	} else if (nameLineReg.match(line).count != 0) {
+		Debug.message("NAME");
+		if (normalLinePassed && emptyLinePassed) {
+			insertLabel = true;
+			emptyLinePassed = false;
+			normalLinePassed = false;
+		}
+	} else if (line.length == 0) {
+		Debug.message("EMPTY");
+		emptyLinePassed = true;
+	} else {
+		Debug.message("NORMAL");
+		if (normalLinePassed && emptyLinePassed) {
+			insertLabel = true;
+			emptyLinePassed = false;
+			normalLinePassed = false;
+		}
+		normalLinePassed = true;
+	}
+	
+	
+	if (insertLabel) {
+		insertLabel = false;
+		++labelCount;
+		return [
+			"*label%05d|".sprintf(labelCount),
+			line
+		];
+	}
+	return [ line ];
+};
+

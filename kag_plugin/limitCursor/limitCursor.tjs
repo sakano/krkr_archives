@@ -1,0 +1,172 @@
+// カーソルの移動範囲制限プラグイン
+
+
+@if(___SKN_LIMITCURSOR_TJS___==0)
+@set(___SKN_LIMITCURSOR_TJS___=1)
+
+class LimitCursor extends KAGPlugin {
+	var kag; //< kagへの参照
+	var _enabled = false; //< マウス移動制限が有効か
+	var menuHeight = 0; //< メニュー高さ
+	var left = 0, top = 0, right = 0, bottom = 0; //< 移動不可能領域の幅
+	var menuItem;
+	
+	property enabled {
+		setter(value) {
+			this._enabled = value;
+			menuItem.caption = _enabled ? "カーソル制御on(&D)" : "カーソル制御off(&D)";
+		}
+		getter() { return this._enabled; }
+	}
+	/// イベント、タグの登録
+	function LimitCursor(kag) {
+		this.kag = kag;
+		menuHeight = System.getSystemMetrics("CYMENU");
+		
+		// イベントの登録
+		this.onActivate_org = kag.onActivate;
+		kag.onActivate = this.onActivate;
+		this.onDeactivate_org = kag.onDeactivate;
+		kag.onDeactivate = this.onDeactivate;
+		this.onMouseLeave_org = kag.primaryLayer.onMouseLeave;
+		kag.primaryLayer.onMouseLeave = this.onMouseLeave;
+		this.onMouseEnter_org = kag.primaryLayer.onMouseEnter;
+		kag.primaryLayer.onMouseEnter = this.onMouseEnter;
+		kag.onMoveSizeBegin = this.onMoveSizeBegin;
+		kag.onMoveSizeEnd = this.onMoveSizeEnd;
+		kag.registerExEvent();
+		
+		// タグの追加
+		kag.tagHandlers.curlimit = function(elm) {
+			left = +elm.left if elm.left !== void;
+			top = +elm.top if elm.top !== void;
+			right = +elm.right if elm.right !== void;
+			bottom = +elm.bottom if elm.bottom !== void;
+			enabled = +elm.enabled if elm.enabled !== void;
+			updateClipRect();
+			return 0;
+		} incontextof this;
+		
+		
+		// メニュー登録
+		kag.menu.add(this.menuItem = new KAGMenuItem(kag, "カーソル制御off(&D)", 0, onLimitCursorMenuItemClick, false));
+
+	}
+	
+	function onLimitCursorMenuItemClick(sender) {
+		enabled = !enabled;
+		updateClipRect();
+	}
+	
+	/// 終了時に呼ばれる
+	function finalzie() {}
+	
+//◆移動範囲制限
+//￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+	/// クリップ領域を更新
+	function updateClipRect() {
+		if (kag.fullScreened) {
+			var pos = getLayerScreenPos();
+			if (enabled) {
+				// フルスクリーンかつ制限が有効
+				with (pos) { System.clipCursor(.l + left, .t + top, .r - right, .b - bottom); }
+			}
+			else {
+				// フルスクリーンかつ制限が無効のときはレイヤ内に制限
+				with (pos) { System.clipCursor(.l, .t, .r, .b); }
+			}
+		} else {
+			if (enabled) {
+				// ウィンドウかつ制限が有効
+				with (kag.getClientRect()) { System.clipCursor(.x + left, .y + top - menuHeight, .x + .w - right, .y + .h - bottom); }
+			} else {
+				// 制限無効
+				System.clipCursor();
+			}
+		}
+	}
+	/// レイヤのスクリーン座標を得る
+	function getLayerScreenPos() {
+		var rect = kag.getClientRect();
+		var ret = %[];
+		with (kag.primaryLayer) {
+			var x = .cursorX, y = .cursorY;
+			.setCursorPos(0,0);
+			var pos = System.getCursorPos();
+			ret.l = pos.x; ret.t = pos.y;
+			.setCursorPos(.width, .height);
+			pos = System.getCursorPos();
+			ret.r = pos.x; ret.b = pos.y;
+			.setCursorPos(x, y);
+		}
+		return ret;
+	}
+	
+//◆イベント
+//￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+	/// マウスがレイヤ外に出ていったときに呼ばれる
+	function onMouseLeave() {
+		this.onMouseLeave_org(...);
+		if (kag.fullScreened) {
+			// メニューにアクセス出来るようにクリップ無効化
+			System.clipCursor();
+		}
+	}
+	/// マウスがレイヤ内に入ってきたときに呼ばれる
+	function onMouseEnter() {
+		this.onMouseEnter_org(...);
+		updateClipRect();
+	}
+	/// アクティブになったときに呼ばれる
+	function onActivate() {
+		this.onActivate_org(...);
+		// onMoveSizeBeginとonMoveSizeEndの間で呼ばれることがあるので_movingをチェック
+		if (!_moving) { updateClipRect(); }
+	}
+	/// 非アクティブになったときに呼ばれる
+	function onDeactivate() {
+		this.onDeactivate_org(...);
+		System.clipCursor(); // 無効化
+	}
+	/// 位置が変更されるときに呼ばれる
+	var _moving = false;
+	function onMoveSizeBegin() {
+		_moving = true;
+		System.clipCursor(); // 無効化
+	}
+	/// 位置が変更されたときに呼ばれる
+	function onMoveSizeEnd() {
+		_moving = false;
+		updateClipRect();
+	}
+	
+//◆セーブ/ロード
+//￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+	/// 保存時に呼ばれる
+	function onStore(f) {
+		if (f.limitCursor === void) { f.limitCursor = %[]; }
+		with (f.limitCursor) {
+			.left = left;
+			.top = top;
+			.right = right;
+			.bottom = bottom;
+			.enalbed = enabled;
+		}
+	}
+	/// 復帰時に呼ばれる
+	function onRestore(f, clear, elm) {
+		if (f.limitCursor !== void) with (f.limitCursor) {
+			left = .left;
+			top = .top;
+			right = .right;
+			bottom = .bottom;
+			enabled = false; // ロード時は無効にする
+			updateClipRect();
+		}
+	}
+}
+
+// プラグイン登録
+kag.addPlugin(global.limitCursor = new LimitCursor(kag));
+
+@endif

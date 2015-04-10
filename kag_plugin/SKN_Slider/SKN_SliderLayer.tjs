@@ -1,0 +1,359 @@
+// SKN_SliderLayer.tjs
+
+
+	//◆スライダ管理クラス
+	//￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+class SKN_Slider {
+	var window;	// KAGWindowオブジェクト
+	var fore = %[];	// 表ページ
+	var back = %[];	// 裏ページ
+	/******* fore, backの中身 ********
+       baseLayer,	ベースの表示レイヤ
+       thumbLayer,	つまみの表示レイヤ
+       baseImage,	ベースに表示している画像ファイル名
+       thumbImage,	つまみに表示している画像ファイル名
+       mleft, mright,	つまみの移動範囲
+       mtop, mbottom, つまみの移動範囲(垂直スライダ未実装なのでtop == bottom)
+       left, top, スライダの表示位置
+       hitThreshold, ベースのhitThreshold
+       curValue,	現在の値(px単位)
+       changingValue,	ベース画像ワンクリックで変化する値
+       cursorChanging, カーソルキー入力で変化する値
+       visible,	可視か
+       enabled,	入力を受け付けるか
+       cursorEnabled, 十字キー入力を受け付けるか
+	*/
+	// var oriental = "HORIZONTAL";	// スライダの方向
+	
+	function SKN_Slider(_window) {
+		// オブジェクト生成, デフォルト値設定
+		window = _window;
+		with (fore) {
+			.baseLayer = new SKN_SliderBaseLayer(window, window.fore.base, this, fore);
+			.thumbLayer = new SKN_SliderThumbLayer(window, window.fore.base, this, fore);
+			.baseImage = .thumbImage = "";
+			.mtop = .mleft = .mbottom = .mtop = .top = .left = 0;
+			.hitThreshold = 16;
+			.curValue = 0;
+			.changingValue = .cursorChanging = 10;
+			.visible = false;
+			.enabled = false;
+			.cursorEnabled = false;
+		}
+		with (back) {
+			.baseLayer = new SKN_SliderBaseLayer(window, window.back.base, this, back);
+			.thumbLayer = new SKN_SliderThumbLayer(window, window.back.base, this, back);
+			.baseImage = back.thumbImage= "";
+			.mtop = .mleft = .mbottom = .mtop = .top = .left = 0;
+			.hitThreshold = 16;
+			.curValue= 0;
+			.changingValue = .cursorChanging = 10;
+			.visible = false;
+			.enabled = false;
+			.cursorEnabled = false;
+		}
+	}
+	
+	function finalize() {
+		// オブジェクト無効化
+		invalidate fore.baseLayer;
+		invalidate back.baseLayer;
+		invalidate fore.thumbLayer;
+		invalidate back.thumbLayer;
+	}
+	
+	function onExchangeForeBack() {
+		// トランジション時に呼びだす
+		fore <-> back;
+	}
+	
+	function setImages(elm) {
+		// レイヤの画像を設定
+		if (elm.forebase != void) {
+			fore.baseLayer.loadImages(elm.forebase);
+			fore.baseImage = elm.forebase;
+		}
+		if (elm.backbase != void) {
+			back.baseLayer.loadImages(elm.backbase);
+			back.baseImage = elm.backbase;
+		}
+		if (elm.forethumb != void) {
+			fore.thumbLayer.loadImages(elm.forethumb);
+			fore.thumbImage = elm.forethumb;
+		}
+		if (elm.backthumb != void) {
+			back.thumbLayer.loadImages(elm.backthumb);
+			back.thumbImage = elm.backthumb;
+		}
+	}
+	/*
+       left, top, スライダの表示位置
+       hitThreshold, ベースのhitThreshold
+       curValue,	現在の値(px単位)
+       changingValue,	ベース画像ワンクリックorキー入力で変化する値
+       visible,	可視か
+       enabled,		入力を受け付けるか
+       */
+	function clearImages(page) {
+		// レイヤの画像をクリア
+		// page==voidのときは表、裏画面どちらもクリア
+		if (page != "back") {
+			with (fore) {
+				.baseImage = .thumbImage = "";
+				.mtop = .mleft = .mbottom = .mtop = .top = .left = 0;
+				.visible = false;
+				.enabled = false;
+				with(.baseLayer) {
+					.setSize(32, 32);
+					.setImageSize(32, 32);
+					.fillRect(0, 0, 32, 32, 0);
+					.visible = false;
+				}
+				with(.thumbLayer) {
+					.setSize(32, 32);
+					.setImageSize(32, 32);
+					.fillRect(0, 0, 32, 32, 0);
+					.visible = false;
+				}
+			}
+		}
+		if (page != "fore") {
+			with (back) {
+				.baseImage = .thumbImage = "";
+				.mtop = .mleft = .mbottom = .mtop = .top = .left = 0;
+				.visible = false;
+				.enabled = false;
+				with(.baseLayer) {
+					.setSize(32, 32);
+					.setImageSize(32, 32);
+					.fillRect(0, 0, 32, 32, 0);
+					.visible = false;
+				}
+				with(.thumbLayer) {
+					.setSize(32, 32);
+					.setImageSize(32, 32);
+					.fillRect(0, 0, 32, 32, 0);
+					.visible = false;
+				}
+			}
+		}
+	}
+	function setThumbRange(page, min, max) {
+		// つまみの移動範囲を調整
+		with (page) {
+			.mleft  = min if min !== void;
+			.mright = max if max !== void;
+		}
+	}
+	
+	function setVisible(page, visible) {
+		// 可視、不可視を設定
+		with (page) {
+			.baseLayer.visible = visible;
+			.thumbLayer.visible = visible;
+			.visible = visible;
+		}
+	}
+	
+	function setPosition(page, _top, _left, _mtop) {
+		// 表示位置を設定
+		with (page) {
+			.top = .baseLayer.top  = _top if _top !== void;
+			.mtop = .mbottom = _mtop if _mtop !== void;
+			.thumbLayer.top  = .top + .mtop;
+			.left = .baseLayer.left = _left if _left !== void;
+			setValue(page, .curValue);
+		}
+	}
+	
+	function setHitThreshold(page, value) {
+		// hitThresholdを設定
+		with (page) {
+			.hitThreshold = .baseLayer.hitThreshold = value;
+		}
+	}
+	
+	function setValue(page, value) {
+		// スライダの値を設定、つまみ位置も移動
+		with(page) {
+			if (value > .mright - .mleft + 1) { value = .mright - .mleft + 1; }
+			else if (value < 0) { value = 0; }
+			.thumbLayer.setValue(value);
+			
+			var oldValue = .curValue;
+			.curValue = value;
+			if (oldValue !== value) {	// スライダの値が変わっていたらonValueChangedを呼び出す
+				onValueChanged(page === fore ? "fore" : "back");
+			}
+		}
+	}
+	
+	function onValueChanged(page) {
+		// スライダの値が変更された時に呼ばれる
+		// page:値の変わったページ("fore" または "back")
+	}
+	
+	function setEnabled(page, enabled) { page.enabled = enabled; }
+	function setCursorEnabled(page, enabled) {
+		page.cursorEnabled = enabled;
+		with (page.thumbLayer) .joinFocusChain = .focusable = enabled;
+	}
+	function setChangingValue(page ,value) { page.changingValue = value; }
+	function setCursorChanging(page, value) { page.cursorChanging = value; }
+	function getCurrentValue(page) { return page.curValue; }
+	function getThumbMoveWidth(page) { return (page.mright - page.mleft + 1); }
+}
+
+
+	//◆ベース部分の表示レイヤ
+	//￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+class SKN_SliderBaseLayer extends Layer {
+	var manager;	// 管理オブジェクト(SKN_Sliderクラスのオブジェクト)
+	var page;		// 自身が属するページ(SKN_Slider::foreもしくはSKN_Slider::back)
+	
+	function SKN_SliderBaseLayer(_window, _parentLayer, _manager, _page) {
+		manager = _manager;
+		page = _page;
+		super.Layer(_window, _parentLayer);
+		
+		joinFocusChain = focusable = false;
+		absolute = 1500000;	// メッセージの前, 履歴の後ろ
+	}
+	
+	function onMouseDown(x, y, button, shift) {
+		super.onMouseDown(...);
+		with (page) {
+			if (.enabled) {
+				var clickedValue = window.primaryLayer.cursorX - .mleft - .left;
+				if (.curValue < clickedValue ) {	// つまみより右側がクリックされた
+					var newValue = .curValue + .changingValue;
+					if (newValue > clickedValue) { newValue = clickedValue; }
+					manager.setValue(page, newValue);
+				} else {	// つまみより左側がクリックされた。
+					var newValue = .curValue - .changingValue;
+					if (newValue < clickedValue) { newValue = clickedValue; }
+					manager.setValue(page, newValue);
+				}
+				.thumbLayer.focusedFlag = false;
+				.thumbLayer.focus();
+			}
+		}
+	}
+	
+	function loadImages(image, colorkey=clNone) {
+		super.loadImages(...);
+		setSizeToImageSize();
+	}
+}
+
+
+	//◆つまみ部分の表示レイヤ
+	//￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+class SKN_SliderThumbLayer extends Layer {
+	/*
+	つまみ画像には、
+	・通常の状態
+	・ボタンが押された状態
+	・ボタンの上にマウスカーソルがある状態
+	の3つの画像が左から順に横並びになった画像を指定。(KAGのグラフィカルボタンと同じ)
+	*/
+	var manager; // 管理オブジェクト(SKN_Sliderクラスのオブジェクト)
+	var page; // 自身が属するページ(SKN_Slider::foreもしくはSKN_Slider::back)
+	var dragging = false; // つまみをドラッグしているか
+	var dragOriginX, dragOriginY; // ドラッグ開始座標
+	var focusedFlag = true;
+	
+	function SKN_SliderThumbLayer(_window, _parentLayer, _manager, _page) {
+		manager = _manager;
+		page = _page;
+		
+		super.Layer(_window, _parentLayer);
+		
+		joinFocusChain = focusable = false;
+		absolute = 1600000;	// SKN_SliderBaseLayerの前
+	}
+	
+	function setValue(value) {
+		// つまみの表示位置をvalueの位置にする
+		with (page) {
+			var _left = .left + .mleft;	// つまみの移動範囲の左端
+			var _right = .left + .mright; // つまみの移動範囲の右端
+			var _value = value + _left; // 指定されたvalueの位置
+			
+			if (_right < _value) { left = _right; }
+			else if (_value < _left) { left = _left; }
+			else { left = _value; }
+		}
+	}
+	function onMouseDown(x, y, button, shift) {
+		if (page.enabled) {
+			dragging = true;
+			dragOriginX = x;
+// 			dragOriginY = y;
+			imageLeft = -width;
+		}
+		focus();
+		super.onMouseDown(...);
+	}
+	function onMouseUp(x, y, button, shift) {
+		dragging = false;
+		if (page.enabled) {
+			imageLeft = -width*2;
+		}
+		super.onMouseUp(...);
+	}
+	function onMouseEnter() {
+		if (page.enabled) {
+			imageLeft = -width*2;
+		}
+		super.onMouseEnter();
+	}
+	function onMouseLeave() {
+		imageLeft = 0;
+		super.onMouseLeave();
+	}
+	
+	function onMouseMove(x, y, shift) {
+		if (page.enabled && dragging) {
+			with (page) { // つまみがドラッグされたら値更新
+				manager.setValue(page, (window.primaryLayer.cursorX - dragOriginX) - (.left + .mleft));
+			}
+		}
+		super.onMouseMove(...);
+	}
+	
+	function loadImages(image, colorkey=clNone) {
+		super.loadImages(...);
+		height = imageHeight;
+		width = imageWidth / 3;
+	}
+
+	function onKeyDown(key, shift, process) {
+		with (page) {
+			if (.enabled &&  .cursorEnabled) {
+				switch (key) {
+				case VK_RIGHT:
+					var newValue = .curValue + .cursorChanging;
+					manager.setValue(page, newValue);
+					process = false;
+					break;
+				case VK_LEFT:
+					var newValue = .curValue - .cursorChanging;
+					manager.setValue(page, newValue);
+					process = false;
+					break;
+				}
+			}
+		}
+		super.onKeyDown(key, shift, process);
+	}
+
+	function onFocus(focused, direction) {
+		if (focusedFlag) {
+			setCursorPos(width/2, height/2);
+		} else {
+			focusedFlag = true;
+		}
+		super.onFocus(...);
+	}
+}

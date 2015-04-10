@@ -1,0 +1,95 @@
+class SKN_RecordFlagsTJS extends KAGPlugin {
+	var kag;
+	function SKN_RecordFlagsTJS(kag) {
+		this.kag = kag;
+		kag.recordFileNameFormat = "%s_read.ksd"; ///< 既読フラグを保存するファイル名
+		kag.currentRecordStorage = ""; ///< 現在のシナリオファイル名
+		kag.currentRecordLabel = ""; ///< 現在のラベル名
+		kag.recordFlags = void; ///< 既読フラグ
+		this.setRecordLabel_org = kag.setRecordLabel;
+		this.incRecordLabel_org = kag.incRecordLabel;
+		this.getCurrentRead_org = kag.getCurrentRead;
+		kag.getRecordFileStorage = this.getRecordFileStorage incontextof kag;
+		kag.saveRecordFile = this.saveRecordFile incontextof kag;
+		kag.setRecordLabel = this.setRecordLabel incontextof kag;
+		kag.incRecordLabel = this.incRecordLabel incontextof kag;
+		kag.getCurrentRead = this.getCurrentRead incontextof kag;
+	}
+
+	function finalize() {
+		delete kag.getRecordFileStorage;
+		delete kag.saveRecordFile;
+		kag.setRecordLabel = this.setRecordLabel_org;
+		kag.incRecordLabel = this.incRecordLabel_org;
+		kag.getCurrentRead = this.getCurrentRead_org;
+		delete kag.currentRecordStorage;
+		delete kag.currentRecordLabel;
+		invalidate kag.recordFlags;
+		delete kag.recordFlags;
+		
+	}
+	/// @return 既読フラグを保存するファイルへのパス
+	function getRecordFileStorage(name) {
+		return kag.saveDataLocation + recordFileNameFormat.sprintf(name);
+	}
+
+	/// 既読フラグをファイルへ保存
+	/// @param recordStorage シナリオファイル名
+	/// @param flags 既読フラグ
+	function saveRecordFile(recordStorage, flags) {
+		if (recordStorage != "" && recordFlags != void) {
+			(Dictionary.saveStruct incontextof flags)(getRecordFileStorage(recordStorage), saveDataMode);
+		}
+	}
+
+	/// 現在のラベルを設定する。
+	/// @param storage 現在のシナリオファイル名
+	/// @param label 現在のラベル名
+	function setRecordLabel(storage, label) {
+		if (autoRecordPageShowing) {
+			if (label != "") {
+				if(label[0] == '*') label = label.substring(1);
+				if(label[1] == '-') return;
+			}
+			var nextRecordStorage = Storages.chopStorageExt(Storages.extractStorageName(storage));
+			if (nextRecordStorage != currentRecordStorage) {
+				if (recordFlags != void) {
+					saveRecordFile(currentRecordStorage, recordFlags);
+					recordFlags = void;
+				}
+				var nextFile = getRecordFileStorage(nextRecordStorage);
+				if (Storages.isExistentStorage(nextFile)) {
+					recordFlags = Scripts.evalStorage(nextFile);
+				}
+			}
+			currentRecordStorage = nextRecordStorage;
+			currentRecordLabel = label;
+		}
+	}
+
+	/// 既読フラグをたてる
+	/// @param count false の時はフラグを立てない
+	function incRecordLabel(count) {
+		if (autoRecordPageShowing) {
+			if (currentRecordLabel != "") {
+				if (count) {
+					if (recordFlags == void) { recordFlags = %[]; }
+					recordFlags[currentRecordLabel] = true;
+				}
+				currentRecordLabel = "";
+			}
+		}
+	}
+
+	/// @return 現在のシナリオ部分が既読か
+	function getCurrentRead() {
+		return autoRecordPageShowing && currentRecordLabel != "" && recordFlags != void && recordFlags[currentRecordLabel] || !autoRecordPageShowing;
+	}
+
+	/// 既読フラグをファイルへ保存
+	function onSaveSystemVariables() {
+		kag.saveRecordFile(kag.currentRecordStorage, kag.recordFlags);
+	}
+}
+
+kag.addPlugin(global.skn_record = new SKN_RecordFlagsTJS(kag));

@@ -1,0 +1,29 @@
+sampleフォルダをkrkr.exeにドラッグ＆ドロップすると実際に実行できます。
+一番上のスライダがBGMの音量調整
+二番目のスライダが効果音の音量調整(再生を押すと実際に流れます)
+残りのスライダがメッセージレイヤの色及び透明度調整です。
+とりあえず実行して弄ってみればわかります。
+
+スクリプトのサンプルとしてはfirst.ksを見てください。
+少し長めになってしまったのでここに短いサンプルを書いておきます。
+
+; プラグイン読み込み
+@call storage="SKN_Slider.ks"
+; スライダの数設定
+@setSliderCount sliders="1"
+; スライダの画像設定
+@setSliderImages slider="0" forebase="base_pink" forethumb="thumb_brown"
+; スライダ表示
+@setSliderOptions slider="0" page="fore" visible="true" enabled="true"
+@s
+
+これでとりあえずスライダが１つ表示されます。
+setSliderOptionsの属性を変えてみたりトランジションしたり色々試してみてください。
+それでも不明な点はメール(corehahidoi@yahoo.co.jp)なりブログ(http://kasekey.blog101.fc2.com/)で訊いてください。
+
+スライダの画像はimageフォルダにあります。
+
+
+サンプルで流れているBGMはhttp://hm.aitai.ne.jp/~y-kato/のものを使用しています。
+背景の写真はhttp://lovefreephoto.blog110.fc2.com/のものを加工して使用しています。
+その他の画像及び効果音の著作権はsakanoにあります。好きに使ってもらって構いません。

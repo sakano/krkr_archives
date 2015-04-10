@@ -1,0 +1,42 @@
+class SKN_MouseSkip
+{
+	var kag;
+	var mTimer;
+	function SKN_MouseSkip(kag) {
+		this.kag = kag;
+		// フック登録
+		kag.addHook("leftClick", leftClickHook);
+		// マウス左ボタンを読み進めキーに
+		kag.skipKeyPressing_sknmouseskip = kag.skipKeyPressing;
+		kag.skipKeyPressing = function() {
+			var ret = skipKeyPressing_sknmouseskip(...);
+			if (getKeyState(VK_LBUTTON)) {
+				ret = true;
+			}
+			return ret;
+		} incontextof kag;
+		// タイマ生成
+		mTimer = new Timer(this, "beginSkip");
+		mTimer.interval = 500;
+		mTimer.capacity = 1;
+	}
+
+	function leftClickHook() {
+		if (kag.getKeyState(VK_LBUTTON)) {
+			mTimer.enabled = false;
+			mTimer.enabled = true;
+		}
+	
+	}
+
+	function beginSkip() {
+		with (kag) {
+			if (.getKeyState(VK_LBUTTON) && .conductor.status != .conductor.mStop && .clickSkipEnabled && .skipMode < SKIP_FAST) {
+				.skipToStop2(); // まだskipMode 4に入っていない場合は早送りモードに入る
+			}
+		}
+		mTimer.enabled = false;
+	}
+}
+
+var mouseSkip = new SKN_MouseSkip(kag);

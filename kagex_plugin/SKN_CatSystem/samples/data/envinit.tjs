@@ -1,0 +1,16 @@
+%[
+	yoffset : 240,
+	
+    levels : [
+    	%[ zoom:100, ],
+    	%[ zoom:200, ],
+    ],
+    
+    	// キャラクタ定義情報
+	characters : %[
+		しおり : %[
+			csID : 0,
+			csv : "cs0",
+		],
+	],
+];

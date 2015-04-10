@@ -1,0 +1,134 @@
+// CatSystem2Œ`®—§‚¿ŠG•\¦
+
+
+// ŸKAGEnvironment‘‚«Š·‚¦
+// PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+// csCharMap¶¬
+// resetEnvƒI[ƒo[ƒ‰ƒCƒh
+// csCharMap‚ğenvinit.tjs‚ÌcsID‚É]‚¢’è‹`
+// w’è‚³‚ê‚½csv‚à“Ç‚İ‚İ
+KAGEnvironment.resetEnv_cs = KAGEnvironment.resetEnv;
+KAGEnvironment.resetEnv = function() {
+	resetEnv_cs();
+	this.csCharMap = [];
+	if (true) {
+		var chinit = [];
+		chinit.assign(characterInits);
+		for (var i = 0; i < chinit.count; i+=2) {
+			with (characterInits[chinit[i]]) {
+				if (.csID !== void) { csCharMap[+.csID] = chinit[i]; }
+				if (.csv !== void)  { loadCharacterCSV(.csv); }
+			}
+		}
+	}
+} incontextof KAGEnvironment;
+
+	
+// csv“Ç‚İ‚İŠÖ”
+KAGEnvironment.loadCharacterCSV = function(filename) {
+	var file = [].load(filename + ".csv");
+	for (var i = 0; i < file.count; ++i) {
+		if (file[i].length == 0 || file[i].charAt(0) == '#') continue; // #‚©‚çn‚Ü‚és‚ÍƒRƒƒ“ƒg
+		var line = file[i].split(",");
+		with (characterInits[line[0]] = %[]) {
+			.offs_x = line[1];
+			.offs_y = line[2];
+			.width = line[3];
+			.height = line[4];
+		}
+	}
+} incontextof KAGEnvironment;
+	
+// ƒLƒƒƒ‰ƒNƒ^w’è•ÏŠ·(csX... : X‚Ì•”•ª‚ÅƒLƒƒƒ‰”»•Ê)
+// csCharMap‚ÍresetEnv‚Å’è‹`
+KAGEnvironment.getCSCharacter = function (name, initName) {
+	return getCharacter(csCharMap[name[2]]);
+} incontextof KAGEnvironment;
+
+// ƒ^ƒO‚Ìˆ—
+// unknownƒI[ƒo[ƒ‰ƒCƒh
+// cs‚©‚çn‚Ü‚éƒ^ƒO‚ÍCS2Œ`®w’è
+KAGEnvironment.unknown_cs = KAGEnvironment.unknown;
+KAGEnvironment.unknown = function(tagName, elm) {
+	if (tagName.substr(0,2) == "cs") {
+		var ch = getCSCharacter(tagName);
+		if (ch !== void) {
+			ch.pose = "cs"; // ƒ|[ƒY–¼‚Í"cs"ŒÅ’è
+			ch.redraw = true; // ‹­§Ä•`‰æ
+			elm.level = tagName[4]; // ƒŒƒxƒ‹İ’è(csXYZ...FZ‚Ì•”•ª‚ÅƒLƒƒƒ‰”»•Ê)
+			ch.csTag = tagName; // ƒ^ƒO–¼‚ğ•Û‚µ‚Ä‚¨‚­
+			return ch.tagfunc(elm);
+		}
+	}		
+	return unknown_cs(...);
+} incontextof KAGEnvironment;
+
+
+// ŸKAGEnvCharacterƒNƒ‰ƒX
+// PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+
+// ƒLƒƒƒ‰ƒNƒ^•`‰æŠÖ”
+// _drawLayerPoseƒI[ƒo[ƒ‰ƒCƒh
+KAGEnvCharacter._drawLayerPose_cs= KAGEnvCharacter._drawLayerPose;
+KAGEnvCharacter._drawLayerPose = function(layer, levelName, _pose) {
+	if (_pose=="cs") { return cs_drawLayerPose(...); } // CSŒ`®ƒLƒƒƒ‰ƒNƒ^
+	return _drawLayerPose_cs(...);
+} incontextof KAGEnvCharacter;
+
+// CS2Œ`®ƒLƒƒƒ‰ƒNƒ^•`‰æŠÖ”
+KAGEnvCharacter.cs_drawLayerPose = function(layer) {
+	var elm = csTag.split('_'); // ”z—ñ‚É•ÏŠ· "cs012_1_1_1_1_1_0_1" Ë ["cs012", "1", "1", "1", "1", "1", "0", "1"]
+	elm[0] += "_"; // [cs012_, 1, 1, 1, 1, 1, 0, 1]
+	imageFile = elm[0] + elm[1]; // "cs012_1"
+	
+	var info = env.characterInits;
+	var baseInfo = info[imageFile];
+
+		// ƒx[ƒX‰æ‘œ‚Ìƒ[ƒh
+	if (baseImageName != imageFile) {
+		baseImageName = imageFile;
+		if (baseImage === void) {
+			baseImage = new global.Layer(kag, kag.fore.base);
+			baseImage.name = "—§‚¿ŠG‰æ‘œƒLƒƒƒbƒVƒ…:" + name;
+		}
+		baseImage.loadImages(imageFile);
+	}
+	with (layer) {
+		.assignImages(baseImage); // ‰æ‘œ‚ğƒŒƒCƒ„‚ÉŠ„‚è“–‚Ä‚é
+		// ‰Šú‰»ˆ—XXX ‚¿‚å‚Á‚ÆÄŒŸ“¢•K—v‚©‚à
+		.type	= 	._initType	= baseImage.type;
+		.opacity = 	._initOpacity = baseImage.opacity;
+	}
+	
+	if (faceImage === void) {
+		faceImage = new global.Layer(kag, kag.fore.base);
+		faceImage.name = "—§‚¿ŠGŠç‰æ‘œˆ——p:" + name;
+	}
+	
+	with (faceImage) {
+		for (var i = 2; i < elm.count; ++i) {
+			elm[0] += "0";
+			if (elm[i] == 0) continue; // 0‚Ì‚Í‚È‚µ
+			var filename = elm[0] + elm[i];
+			.loadImages(filename);
+			with (info[filename]) {
+				layer.operateRect(.offs_x - baseInfo.offs_x, .offs_y - baseInfo.offs_y, faceImage, 0, 0, .width, .height, omAuto);
+			}
+		}
+	}
+	return true;
+} incontextof KAGEnvCharacter;
+
+// ƒZ[ƒu/ƒ[ƒh‘Î‰
+// onStore/onRestoreƒI[ƒo[ƒ‰ƒCƒh
+// csTag‚ğ‹L˜^‚·‚é
+KAGEnvCharacter.onStore_cs = KAGEnvCharacter.onStore;
+KAGEnvCharacter.onStore = function(f) {
+	onStore_cs(f);
+	f.csTag = csTag;
+} incontextof KAGEnvCharacter;
+KAGEnvCharacter.onRestore_cs = KAGEnvCharacter.onRestore;
+KAGEnvCharacter.onRestore = function(f) {
+	this.csTag = f.csTag;
+	onRestore_cs(f);
+} incontextof KAGEnvCharacter;

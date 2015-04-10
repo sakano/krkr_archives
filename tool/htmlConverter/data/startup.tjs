@@ -1,0 +1,252 @@
+var win = new Window();
+var file;
+var lines = [];
+var output = [];
+var keys = [
+	"break", "continue", "const", "catch", "class", "case",
+	"debugger", "default", "delete", "do", "extends", "export",
+	"enum", "else", "function", "finally", "false", "for",
+	"global", "getter", "goto", "incontextof", "Infinity",
+	"invalidate", "instanceof", "isvalid", "import", "int", "in",
+	"if", "NaN", "null", "new", "octet", "protected", "property",
+	"private", "public", "return", "real", "synchronized", "switch",
+	"static", "setter", "string", "super", "typeof", "throw",
+	"this", "true", "try", "void", "var", "while", "with"
+];
+
+// ƒp[ƒXƒ‚[ƒh
+var KAG_MODE = false; // ksƒtƒ@ƒCƒ‹
+var TJS_MODE = false; // tjsƒtƒ@ƒCƒ‹
+var INIT_MODE = false; // envinit.tjs
+var insertBr = false; // ‰üs‚²‚Æ‚É<br>ƒ^ƒO‚ğ“ü‚ê‚é‚©
+
+// ƒEƒBƒ“ƒhƒEİ’è
+with (win) {
+	.setSize(200, 200);
+	.visible = true;
+	.onFileDrop = function(files) {
+		// ƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚Åƒp[ƒX
+		file = files[0];
+		chkFile(file);
+		lines.load(file);
+		
+		
+        Reading();
+		output[0] = "<div class=\"src_sources\">" + output[0];
+        output.push("</div>");
+		
+		output.save(Storages.chopStorageExt(file)+"HTML.txt");
+		System.shellExecute(Storages.chopStorageExt(file)+"HTML.txt");
+		System.exit();
+	};
+}
+
+// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”‚Åƒp[ƒX
+var tmp = System.getArgument("-file");
+if (tmp !== void) {
+	win.onFileDrop([tmp]);
+}
+
+
+// ŸŠÖ”’è‹`
+//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+function chkFile(file) {
+	var name = Storages.extractStorageName(file);
+	if (name == "envinit.tjs") {
+		KAG_MODE = false;
+		TJS_MODE = true;
+		INIT_MODE = true;
+		return;
+	}
+	var ext = Storages.extractStorageExt(file);
+	if (ext == ".ks") {
+		KAG_MODE = true;
+		TJS_MODE = false;
+		INIT_MODE = false;
+		return;
+	}
+	if (ext == ".tjs") {
+		KAG_MODE = false;
+		TJS_MODE = true;
+		INIT_MODE = false;
+		return;
+	}
+}
+
+function Reading() {
+	var right = "";
+	var commented = false;
+	
+		// ˆês‚¸‚Â’€Ÿˆ—
+	for (var i=0; i <lines.count; ++i) {
+		var str = lines[i];
+		
+		// Ÿ“Áê•¶š‚Ìˆ—
+		//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+		str = /&/g.replace(str, "&amp;");	// &
+		str = /</g.replace(str, "&lt;");	// <
+		str = />/g.replace(str, "&gt;"); 	// >
+		str = /\"[^\"]*\"/g.replace(str, doubleQuote);	// ƒ_ƒuƒ‹ƒNƒH[ƒg"
+		
+		// Ÿ•¡”sƒRƒƒ“ƒg‚Ìˆ—
+		//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+		if (TJS_MODE) {
+			if (str.indexOf("/*") != -1) {
+				str = /\/\*/g.replace(str, "<span___SPACE___CLASS=\"src_multilinecomment\">___SLASH*");
+				commented = true;
+			}
+			if (str.indexOf("*/") != -1) {
+				str = /\*\//g.replace(str, "*___SLASH<___SLASHspan>");
+				commented = false;
+			}
+		}
+		
+		// Ÿ•¡”sƒRƒƒ“ƒgŠO‚Ìˆ—
+		//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+		if (!commented) {
+			if (TJS_MODE) {
+				var regTJSSingleComment = new RegExp("\/\/");
+				var commented = false;
+				// TJSˆêsƒRƒƒ“ƒg‚Ìˆ—‚P(ƒRƒƒ“ƒg•”•ª‚ğ’Šo)
+				if (str.indexOf("//") != -1) {
+					regTJSSingleComment.exec(str);
+					str = regTJSSingleComment.leftContext;
+					commented = true;
+				}
+				// TJSƒL[ƒ[ƒh‚Ìˆ—
+				for (var j = 0; j < keys.count; j++) {
+					var reg = new RegExp("[ \t!%&()-=~^|{}\\;+*,<>.\/]"+keys[j]+"[ \t!%&()-=~^|{}\\;+*,<>.\/]", "g");
+					str = " " + str + " ";
+					str = reg.replace(str, keyword);
+					str = str.substr(1, str.length-2);
+				}
+				
+				// ”šƒŠƒeƒ‰ƒ‹‚Ìˆ—
+				str = " "+str;
+				str = /[ \t!%&()-=~^|{}\\;+*,<>.\/][0-9]+/g.replace(str, digitInvert);
+				str = str.substr(1);
+				
+				// TJSˆêsƒRƒƒ“ƒg‚Ìˆ—‚Q(ƒRƒƒ“ƒg•”•ª‚ğ–ß‚·)
+				if (commented) {
+					str += TJSSingleCommentInvert(regTJSSingleComment.rightContext);
+					commented = false;
+				}
+			}
+			
+			if (KAG_MODE) {
+				// kagƒRƒƒ“ƒg‚Ìˆ—
+				if (str[0] == ';') {
+					str = kagncommentInvert(str);
+				}
+				// kag ƒ‰ƒxƒ‹‚Ìˆ—
+				else if (str[0] == '*') {
+					str = labelInvert(str);
+				}				
+				// kagƒ^ƒO‚Ìˆ—(@)
+				else if (str[0] == '@') {
+					var i = 1;
+					var len = str.length;
+					for (; (str[i] != ' ' && str[i] != void); ++i)	{}
+					str = tagnameInvert(str, 1, i);
+					i += str.length - len + 1;
+					while (i < str.length) {
+						var j = i;
+						for (; str[i] != ' ' && str[i] != '=' && str[i] != void; ++i) {}
+						len = str.length;
+						str = tagattributeInvert(str, j, i);
+						i += str.length - len - 15;
+						i = str.indexOf("<___SLASHspan>", i) + 15;
+					}
+				}
+				// kagƒ^ƒO‚Ìˆ— []
+				else {
+					var start = 0;
+					var end = 0;
+					var len = 0;
+					var mid = 0;
+					
+					while (true) {
+						
+						start = str.indexOf("\[", end) + 1;
+						if (start == 0) { break; }
+						end = str.indexOf("\]", start) - 1;
+						mid = start;
+						for (; (str[mid] != ' ' && mid <= end); ++mid) {}
+						len = str.length;
+						str = tagnameInvert(str, start, mid);	// tagname
+						end = str.indexOf("\]", start) - 1 ;
+						
+						mid += str.length - len + 1;						
+						while (mid <= end) {	// attribute
+							var j = mid;
+							for (; str[mid] != ' ' && str[mid] != '='; ++mid) {}
+							len = str.length;
+							str = tagattributeInvert(str, j, mid);
+							mid += str.length - len + 1;
+							mid = str.indexOf("<___SLASHspan>", mid) + 15;
+							end = str.indexOf("\]", start) - 1 ;
+						}
+					}
+				}
+				
+				str = str.replace(/=<span___SPACE___CLASS=\"src_tagattribute\">/g, "=<span___SPACE___CLASS=\"src_tagvalue\">");
+			}
+			
+			if (INIT_MODE) {
+				str =/[^ \t]* :/.replace(str, dickeysInvert);
+			}
+		}
+		
+		// Ÿ‚»‚Ì‘¼
+		//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+		str = / /g.replace(str, "&nbsp;");	// ”¼ŠpƒXƒy[ƒX
+		str = /\t/g.replace(str, "&nbsp;&nbsp;");	// ƒ^ƒu
+
+		// ‘Ş”ğ‚³‚¹‚Ä‚¢‚½‚à‚Ì‚ğ–ß‚·
+		str = /___SPACE/g.replace(str, " ");
+		str = /___CLASS/gi.replace(str, "class");
+		str = /___SLASH/gi.replace(str, "/");
+
+		if (insertBr) str += "<br>";	// ‰üsƒ^ƒO‚ğ“ü‚ê‚é
+		
+		output.push(str);
+	}
+}
+
+function labelInvert(str) {
+	return "<span___SPACE___CLASS=\"src_label\">"+ str +"<___SLASHspan>";
+}
+
+function TJSSingleCommentInvert(str) {
+	return "<span___SPACE___CLASS=\"src_singlelinecomment\">___SLASH___SLASH"+ str +"<___SLASHspan>";
+}
+
+function kagncommentInvert(str) {
+	return "<span___SPACE___CLASS=\"src_singlelinecomment\">"+ str +"<___SLASHspan>";
+}
+
+function tagnameInvert(str, start, end) {
+	return str.substr(0, start) + "<span___SPACE___CLASS=\"src_tagname\">" + str.substr(start, end-start) + "<___SLASHspan>" + str.substr(end);
+}
+
+function tagattributeInvert(str, start, end) {
+	return str.substr(0,start) + "<span___SPACE___CLASS=\"src_tagattribute\">" +  str.substr(start, end - start) + "<___SLASHspan>" + str.substr(end);
+}
+
+function doubleQuote(matches) {
+	return "<span___SPACE___CLASS=\"src_doublequotation\">&quot;"+ matches[0].substr(1,matches[0].length-2) +"&quot;<___SLASHspan>";
+}
+
+function keyword(matches) {
+	var str = matches[0];
+	return str[0]+ "<span___SPACE___CLASS=\"src_keyword\">"+ str.substr(1, str.length -2) +"<___SLASHspan>" + str[str.length-1];
+}
+
+function digitInvert(matches) {
+	
+	return matches[0][0]+ "<span___SPACE___CLASS=\"src_digit\">" + matches[0].substr(1) + "<___SLASHspan>";
+}
+
+function dickeysInvert(matches) {
+	return "<span___SPACE___CLASS=\"src_dickeys\">" + matches[0].substr(0, matches[0].length-2) + "<___SLASHspan>" + matches[0].substr(matches[0].length-2);
+}

@@ -1,0 +1,59 @@
+global.ignoreSEMissing = false;
+global.ignoreImageMissing = false;
+
+SESoundBuffer.play = function(elm, resetvolume = true) {
+    var SUPER = global.WaveSoundBuffer;
+    SUPER.stop();
+    stopFade();
+    var storage = elm.storage;
+    var start = elm.start;
+    var found = true;
+    if (!Storages.isExistentStorage(storage)) {
+        var test;
+        if(test = storage + ".wav", Storages.isExistentStorage(test)) storage = test;
+        else if(test = storage + ".ogg", Storages.isExistentStorage(test)) storage = test;
+        else if(test = storage + ".tcw", Storages.isExistentStorage(test)) storage = test;
+        else found = false;
+    }
+    if(!found) {
+        if (global.ignoreSEMissing) { // 例外を抑制
+            dm("効果音 " + storage + " が見つかりません");
+            return;
+        } else {
+            throw new Exception("効果音 " + storage + " が見つかりません");
+        }
+    }
+    var loop = elm.loop === void ? false : +elm.loop;
+    looping = loop;
+    if(loop) currentStorage = storage;
+    else currentStorage = "";
+    try {
+                SUPER.open(storage);
+                if(resetvolume) SUPER.volume = currentVolume * 1000;
+                // 再生位置指定
+                if (start !== void &&
+                    SUPER.labels !== void &&
+                    (start = SUPER.labels[start]) !== void &&
+                    (start = start.samplePosition) !== void) {
+                    SUPER.samplePosition = start;
+                }
+                SUPER.play();
+    } catch(e) {
+            dm("効果音の再生に失敗しました(実行は続行できます) : " + e.message);
+    }
+};
+
+KAGLayer.loadImages = function(storage, key) {
+    var SUPER = global.Layer;
+    key = adjustColorKey(key);
+    try {
+        return SUPER.loadImages(storage, key);
+    } catch(e) {
+        if (global.ignoreImageMissing) { // 例外を抑制
+            dm("画像(" + storage + ")の読み込みに失敗しました。" + e.message);
+            return;
+        } else {
+            throw e;
+        }
+    }
+};

@@ -1,0 +1,27 @@
+class MyWindow extends Window
+{
+	function MyWindow(parent, width = 150, height = 60) {
+		super.Window(parent);
+		borderStyle = bsSingle;
+		setInnerSize(width, height);
+		with (this.primary = new Layer(this, null)) {
+			.setSize(width, height);
+			.fillRect(0, 0, width, height, 0xFFFFFFFF);
+			.drawText(0, 5, "pngに変換したいtlgファイルを", 0x000000);
+			.drawText(0, 20, "ドロップしてください。", 0x000000);
+			.visible = true;
+		}
+	}
+	
+	function onFileDrop(files) {
+		var b = new Bitmap();
+		for (var i = 0; i < files.count; ++i) {
+			b.load(files[i]);
+			b.save(Storages.chopStorageExt(files[i]) + ".png", "png");
+		}
+	}
+}
+
+var win = new MyWindow();
+win.visible = true;
+

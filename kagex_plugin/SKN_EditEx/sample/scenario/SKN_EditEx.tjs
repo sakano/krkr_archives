@@ -1,0 +1,111 @@
+// SKN_EditEx.tjs
+// override.tjs ‚©‚ç“Ç‚İ‚İ
+
+with (MessageLayer) {
+	/**
+	 * ’PˆêsƒGƒfƒBƒ^‚ğ”z’u
+	 */
+	.addEdit_skneditex = .addEdit;
+	.addEdit = function(elm) {
+		addEdit_skneditex(...);
+		// edit ƒ^ƒO‚Ì‘®«‚ğ’Ç‰Á
+		with (this.links[numLinks-1].object) {
+			.passwordMode = +elm.password if elm.password !== void;
+			.passwordMark = elm.passwordmark if elm.passwordmark !== void;
+			.placeholderText = elm.placeholder if elm.placeholder !== void;
+			.placeholderTextColor = +elm.placeholdercolor if elm.placeholdercolor !== void;
+			.caretColor = +elm.caretcolor if elm.caretcolor !== void;
+			.Edit_highlightColor = +elm.highlightbgcolor if elm.highlightbgcolor !== void;
+			.Edit_highlightTextColor = +elm.highlightcolor if elm.highlightcolor !== void;
+		}
+	};
+
+}
+
+with (EditLayer) {
+	.placeholderText = ""; // placeholder‚Æ‚µ‚Ä•\¦‚·‚é•¶š
+	.placeholderTextColor = 0x666666; // placeholder ‚Ì•¶šF
+	.caretColor = System.toActualColor(clWindowText); // ƒLƒƒƒŒƒbƒg‚ÌF
+	
+	// placeholder ‚ª•\¦‚³‚ê‚Ä‚¢‚é‚Æ‚«‚ÉA‘I‘ğ‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+	.onMouseDown_skneditex = .onMouseDown;
+	.onMouseDown = function(x, y, button, shift) {
+		if (Edit_text == "") {
+			focus();
+			global.KAGLayer.onMouseDown(...);
+		} else {
+			onMouseDown_skneditex(...);
+		}
+	};
+
+	// Ÿ’Êí‚Ì•¶šF(_Edit_textColor’Ç‰Á)
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	._Edit_textColor = System.toActualColor(clWindowText);
+	property textColor {
+		setter(x) { _Edit_textColor = Edit_textColor = int x; update(); }
+		getter { return _Edit_textColor; }
+	}
+	._textColor_skneditex = &.textColor;
+	&.textColor = &textColor;
+
+	// Ÿ•\¦‚·‚é•¶š—ñ(placeholder’Ç‰Á)
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	property _viewtext { getter {
+		var ret = "";
+		if (Edit_text.length == 0) {
+			ret = placeholderText;
+			Edit_textColor = placeholderTextColor; // •¶šF‚à•Ï‚¦‚é
+		}
+		else if (Edit_passwordView) {
+			ret = Edit_passwordMark.repeat(Edit_text.length);
+			Edit_textColor = _Edit_textColor;
+		}
+		else {
+			ret = Edit_text;
+			Edit_textColor = _Edit_textColor;
+		}
+		return ret;
+	} }
+	._viewtext_skneditex = &._viewtext;
+	&._viewtext = &_viewtext;
+	
+	// ŸƒLƒƒƒŒƒbƒg‚ÌF‚ğw’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	.resizeCaret = function() {
+		// ƒLƒƒƒŒƒbƒg‚ÌƒTƒCƒY‚Ì‰Šú‰»
+		if(Edit_vertical)
+		{
+			var h = 2; // 2 ŒÅ’è
+			var w = font.height;
+			w = -w if(w<0);
+			Edit_caretLayer.setImageSize(w, h);
+			Edit_caretLayer.setSizeToImageSize();
+			Edit_caretLayer.colorRect(0, 0, w, h, caretColor);
+		}
+		else
+		{
+			var w = 2; // 2 ŒÅ’è
+			var h = font.height;
+			h = -h if(h<0);
+			Edit_caretLayer.setImageSize(w, h);
+			Edit_caretLayer.setSizeToImageSize();
+			Edit_caretLayer.colorRect(0, 0, w, h, caretColor);
+		}
+	};
+
+	// ŸƒL[“ü—Í‚ğŠg’£
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	.onKeyDown_skneditex = .onKeyDown;
+	.onKeyDown = function(key, shift) {
+		// ctrl + ƒJ[ƒ\ƒ‹ƒL[‘€ì
+		if (shift & ssCtrl) {
+			switch (key) {
+			case VK_UP:     if ( Edit_vertical) return moveHead(shift&ssShift); break;
+			case VK_LEFT:   if (!Edit_vertical) return moveHead(shift&ssShift); break;
+			case VK_DOWN:   if ( Edit_vertical) return moveTail(shift&ssShift); break;
+			case VK_RIGHT:  if (!Edit_vertical) return moveTail(shift&ssShift); break;
+			}
+		}
+		onKeyDown_skneditex(...);
+	};
+}

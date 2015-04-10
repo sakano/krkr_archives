@@ -1,0 +1,194 @@
+//Ÿƒ}ƒEƒXƒWƒFƒXƒ`ƒƒKAGEXƒ‰ƒbƒpƒNƒ‰ƒX
+//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+class SKN_MouseGestureKAGEXWrapper extends KAGPlugin, SKN_MouseGesture {
+	var kag = null; // KAGEXƒIƒuƒWƒFƒNƒg
+	var info = %[]; // ƒWƒFƒXƒ`ƒƒî•ñ
+	/**
+	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 */
+	function SKN_MouseGestureKAGEXWrapper(kag) {
+		this.kag = kag;
+		SKN_MouseGesture(...);
+		
+		with (kag) {			
+			//ŸƒCƒxƒ“ƒgˆ—ŠÖ”‚ğ“o˜^
+			.addHook("mouseMove", this.onMouseMove);
+			.addHook("rightClick", this.rightClickHook);
+			.addHook("onModeChangeHook", this.clearGesture); // ‰½‚©•ÏX‚ª‚ ‚Á‚½‚ç“ü—Í’†’f
+			this.onMouseUp_org = .onMouseUp;
+			.onMouseUp = function(x, y, btn) {
+				if (btn == mbRight) {
+					if (isMouseDown && !this.onMouseUp(x, y, btn)) {
+						// ƒWƒFƒXƒ`ƒƒ‚ª“ü—Í‚³‚ê‚È‚¯‚ê‚Î–{—ˆ‚Ì‰EƒNƒŠƒbƒN‚Ì“®ì
+						// isMouseDown ‚ª false ‚Ì‚Í“ü—Í‚ª’†’f‚³‚ê‚Ä‚¢‚é‚Ì‚Å–³‹
+						kag.onPrimaryRightClick();
+					}
+				}
+				this.onMouseUp_org(...);
+			} incontextof this;
+
+			//Ÿƒvƒ‰ƒOƒCƒ““o˜^
+			.addPlugin(this);
+
+			//Ÿƒ^ƒO‚Ì’Ç‰Á
+			.tagHandlers["mousegesture"] = function(elm) {
+				mouseGesture(elm);
+				return 0;
+			} incontextof this;
+			.tagHandlers["setgesture"] = function(elm) {
+				setGesture(elm);
+				return 0;
+			} incontextof this;
+		}
+	}
+	/**
+	 * ƒfƒXƒgƒ‰ƒNƒ^
+	 */
+	function finalize() {
+		with (kag) {
+			.onMouseUp = this.onMouseUp_org;
+			.removeHook("onModeChangeHook", this.clearGesture);
+			.removeHook("rightClick", this.rightClickHook);
+			.removeHook("mouseMove", this.onMouseMove);
+		}
+		clearGestureInfo();
+		global.SKN_MouseGesture.finalize(...);
+	}
+	function rightClickHook() {
+		if (kag.getKeyState(VK_RBUTTON)) {
+			onMouseDown(kag.primaryLayer.cursorX, kag.primaryLayer.cursorY, mbRight);
+			return true;
+		}
+	}
+	//Ÿƒ^ƒOƒnƒ“ƒhƒ‰ŠÖ”
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	/**
+	 * ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒ‘S‘Ì‚Ìİ’è
+	 */
+	function mouseGesture(elm) {
+		gestureEnabled = +elm.enabled if elm.enabled !== void;
+		type = +elm.type if elm.type !== void;
+		gestureLimit = +elm.limit if elm.limit !== void;
+		clearGestureInfo() if elm.clear;
+	}
+	/**
+	 * ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒƒ‹[ƒ`ƒ“‚Ì“o˜^
+	 */
+	function setGesture(elm) {
+		if (elm.gesture !== void) {
+			elm.gesture = elm.gesture.toUpperCase();
+			if (info[elm.gesture] == void) {
+				info[elm.gesture] = %[
+					call : false,
+					jump : false,
+					target : "",
+					storage : "",
+					exp : "",
+					enabled : false,
+				];
+			}
+			if (elm.clear) {
+				(Dictionary.clear incontextof info[elm.gesture])();
+			} else {
+				with (info[elm.gesture]) {
+					.call = +elm.call if elm.call;
+					.jump = +elm.jump if elm.jump;
+					.target = elm.target if elm.target !== void;
+					.storage = elm.storage if elm.storage !== void;
+					.exp = elm.exp if elm.exp !== void;
+					.enabled = +elm.enabled if elm.enabled !== void;
+				}
+			}
+		}
+	}
+	/**
+	 * ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒî•ñ‚ÌƒNƒŠƒA
+	 */
+	function clearGestureInfo() {
+		(Dictionary.clear incontextof info)();
+	}
+	
+	//ŸƒWƒFƒXƒ`ƒƒÀs
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	/**
+	 * ƒWƒFƒXƒ`ƒƒ‚ğÀsiƒI[ƒo[ƒ‰ƒCƒhj
+	 * ‰EƒNƒŠƒbƒNƒ‹[ƒ`ƒ“‚Æ‚¨‚È‚¶‹@\
+	 * @return ƒWƒFƒXƒ`ƒƒ‚ª“ü—Í‚³‚ê‚½‚©
+	 */
+	function doGesture() {
+		var ret = false;
+		var gestures = this.gestures;
+		var gestureEnabled = this.gestureEnabled;
+
+		if (gestures.length != 0) {
+			if (gestureOverflow) {
+				ret = true;
+			} else if (gestureEnabled && info[gestures] !== void && kag.inStable && info[gestures].enabled) {
+				// ƒWƒFƒXƒ`ƒƒ‚ÌÀs
+				if (info[gestures].exp != void) {
+					Scripts.eval(info[gestures].exp);
+				}
+				if (info[gestures].call) {
+					callMouseGestureSubRoutine(info[gestures]);
+				} else if (info[gestures].jump) {
+					jumpToMouseGestureTarget(info[gestures]);
+				}
+				ret = true;
+			} else {
+				ret = !!unknownGesture(gestureEnabled, gestures);
+			}
+		}
+		return ret;
+	}
+	/**
+	 * ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒƒ^[ƒQƒbƒg‚ÖƒWƒƒƒ“ƒv
+	 */
+	function jumpToMouseGestureTarget(info) {
+		kag.process(info.storage, info.target);
+	}
+	/**
+	 * ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒƒ‹[ƒ`ƒ“‚ğŒÄ‚Ño‚·
+	 */
+	function callMouseGestureSubRoutine(info) {
+		kag.isLeavePeriodEvent = true;
+		kag.callExtraConductor(info.storage, info.target, restoreFromMouseGesture);
+		kag.lockMessageLayerSelProcess(); // ‘I‘ğˆƒƒbƒN
+	}
+	/**
+	 * ƒ}ƒEƒXƒWƒFƒXƒ`ƒƒƒ‹[ƒ`ƒ“‚©‚ç”²‚¯‚é‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
+	 */
+	function restoreFromMouseGesture() {
+	}
+	/**
+	 * “o˜^‚³‚ê‚Ä‚¢‚È‚¢ƒWƒFƒXƒ`ƒƒ‚ª“ü—Í‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
+	 * @param enabled ƒWƒFƒXƒ`ƒƒ‚ª—LŒø‚©
+	 * @param gesture “ü—Í‚³‚ê‚½ƒWƒFƒXƒ`ƒƒ
+	 */
+	function unknownGesture(enabled, gesture) {
+		return false;
+	}
+	
+	//ŸƒZ[ƒuƒ[ƒh‘Î‰
+	//PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+	/**
+	 * •Û‘¶‚·‚é‚Æ‚«‚ÉŒÄ‚Î‚ê‚éiƒI[ƒo[ƒ‰ƒCƒhj
+	 */
+	function onStore(f) {
+		global.SKN_MouseGesture.onStore(f);
+		f._mg.info = %[];
+		(Dictionary.assignStruct incontextof f._mg.info)(info, true);
+	}
+	/**
+	 * “Ç‚İ‚Ş‚Æ‚«‚ÉŒÄ‚Î‚ê‚éiƒI[ƒo[ƒ‰ƒCƒhj
+	 */
+	function onRestore(f) {
+		if (f._mg === void) return;
+		global.SKN_MouseGesture.onRestore(f);
+		delete f._mg.gestureEnabled;
+		clearGestureInfo();
+		(Dictionary.assignStruct incontextof info)(f._mg.info);
+	}
+	
+}
+
+kag.addPlugin(global.skn_mouseGesture = new SKN_MouseGestureKAGEXWrapper(kag));

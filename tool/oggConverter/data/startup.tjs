@@ -1,0 +1,145 @@
+// wav->ogg変換
+
+Storages.addAutoPath("kwidgets/");
+Scripts.execStorage("KInitialize.tjs");
+
+Plugins.link("scriptsEx.dll");
+Plugins.link("shellExecute.dll");
+
+var CONVERTER_PATH = System.getArgument("-aotuvpath");
+if (!Storages.isExistentStorage(CONVERTER_PATH)) {
+	System.inform(CONVERTER_PATH+"が見つかりません。", "エラー");
+	System.exit();
+}
+
+@if (CONSOLE_OUTPUT==1)
+if (!System.attachConsole() && !System.allocConsole()) {
+	System.inform("コンソールに接続できません。", "ERROR");
+	System.exit();
+}
+@endif
+
+function stdout(message) {
+	@if (CONSOLE_OUTPUT==1)
+	System.stdout(...);
+	@endif
+	@if (CONSOLE_OUTPUT!=1)
+	Debug.message(...);
+	@endif
+}
+
+function errorMessage(msg) {
+	stdout(@"\n\n${msg}\n\n");
+	System.inform(msg, "エラー");
+}
+
+
+class SoundConvertWindow extends KWindow
+{
+	var defaultQuality = "q4";
+	var qualities = [ "q-2", "q-1", "q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10" ];
+	property currentQuality {
+		getter {
+			if (qualityList.selectionIndex < 0) return defaultQuality;
+			return qualities[qualityList.selectionIndex];
+		}
+		setter(value) {
+			var v = qualities.find(value);
+			if (v < 0) return;
+			qualityList.childList[v].select();
+		}
+	}
+	var convertQueue = []; ///< 変換キュー
+	
+	/// コンストラクタ
+	function SoundConvertWindow() {
+		super.KWindow("soundWindow");
+		setWindowIcon("icon_16.ico", true);
+		
+		System.title = caption = "サウンド変換";
+    defaultFocusable = true;
+		
+		var grid = new KGridLayout(this);
+		primaryWidget.add(grid);
+		
+		grid.add(0,0, new KTextLabel(this, "変換したいファイルをドロップ！"));
+		var frame = new KFrameLayout(this, FRAME_SUNKEN, "音質");
+		var list = new KList(this, "qualityList");
+		for (var i = 0; i < qualities.count; ++i) { list.add(new KListItem(qualities[i])); }
+		frame.add(list);
+		grid.add(0,1,frame);
+		
+		frame = new KFrameLayout(this, FRAME_SUNKEN, "変換キュー");
+		list = new KList(this, "queueList");
+		frame.add(list);
+		grid.add(1,1,frame);
+		
+		currentQuality = defaultQuality;
+	}
+	
+	/// 変換キューに溜まっているファイルの変換の開始
+	function beginConvert() {
+		if (convertQueue.count == 0) {
+			onEndConvert();
+			return;
+		}
+		@if (CONSOLE_OUTPUT!=1)
+		Debug.console.visible = true;
+		@endif
+		qualityList.enabled = false;
+		var data = convertQueue.pop();
+		var file = data[0];
+		if (!Storages.isExistentStorage(file)) {
+			errorMessage(@"ファイルが存在しません(${file})");
+			convertQueue.clear();
+			onEndConvert();
+			return;
+		}
+		queueList.remove(data[1]);
+		var cmd = @"-${currentQuality} \"${file}\"";
+		stdout(@"\n\n>${CONVERTER_PATH} ${cmd}\n");
+		var result = System.commandExecute(CONVERTER_PATH, cmd);
+		Scripts.foreach(result.stdout, function(idx, value) {
+			stdout(@"${value}\n");
+		});
+		var success = true;
+		if (result.status !== "ok") {
+			success = false;
+			errorMessage(@"コマンドの実行に失敗しました(${file})");
+		} else if(result.exitcode !== 0) {
+			success = false;
+			errorMessage(@"変換に失敗しました(${file})");
+		}
+		if (success) {
+			asyncCaller.callOnce(beginConvert);
+		} else {
+			convertQueue.clear();
+			onEndConvert();
+		}
+	}
+	
+	/// 全てのファイルの変換が終了した時に呼ばれる。
+	function onEndConvert() {
+		stdout(@"\n\n\n変換が終了しました\n\n");
+		System.inform("変換が終了しました。");
+		qualityList.enabled = true;
+		qualityList.focus();
+	}
+	
+	
+	/// ファイルがドロップされた時に呼ばれる
+	function onFileDrop(files) {
+		for (var i = 0; i < files.count; ++i) {
+			var item = new KListItem(Storages.extractStorageName(files[i]));
+			queueList.insert(0, item);
+			convertQueue.push([
+				Storages.getLocalName(files[i]),
+				item
+			]);
+		}
+		beginConvert();
+	}
+}
+
+var win = new SoundConvertWindow();
+win.visible = true;

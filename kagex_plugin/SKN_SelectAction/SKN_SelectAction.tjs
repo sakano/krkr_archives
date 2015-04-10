@@ -1,0 +1,172 @@
+// SKN_SelectAction.tjs
+// 選択肢の拡張。 SKN_ActionEx.tjs必須
+// afterinit.tjsから読み込み。
+
+with (SelectLayer) {
+	/**
+	 * 選択肢を追加
+	 */
+	.addSelect_selact = .addSelect;
+	.addSelect = function(elm) {
+		addSelect_selact(...);
+		with (selects[selects.count-1]) {
+			.showaction = elm.showaction if elm.showaction != void;
+			.hideaction = elm.hideaction if elm.hideaction != void;
+		}
+	} incontextof SelectLayer;
+	
+	/**
+	 * 選択肢処理開始
+	 */
+	.start_selact = .start;
+	.start = function(parent, absolute) {
+		setParent(...);
+		var cnt = selects.count;
+		var pos = getSelectPositions(cnt);
+		var isAction = true;
+		for (var i=0; i<cnt; i++) {
+			with (selects[i]) {
+				var xy = pos[i];
+				.setPos(xy[0] - .width/2, xy[1] - .height/2);
+				isAction &= (typeof .showaction != "undefined");
+			}
+		}
+		
+		if (isAction) {
+			// アクションで表示
+			actionCnt = cnt;
+			visible = true;
+			opacity = 0;
+			enabled = false;
+			for (var i=0; i<cnt; i++) {
+				window.beginAction(selects[i], selects[i].showaction, onStartCompleted, false);
+			}
+		} else {
+			// 通常の方法で表示
+			setVisibleTime(true, fadeTime, doneActFadeIn);
+		}
+		
+		playSE(opense, opensebuf);
+	} incontextof SelectLayer;
+
+	.actionCnt = 0;
+	.onStartCompleted = function() {
+		actionCnt--;
+		if (actionCnt == 0) {
+			doneActFadeIn();
+		}
+	} incontextof SelectLayer;
+	
+	/**
+	 * 選択肢終了
+	 */
+	.end = function(select) {
+		var isAction = true;
+		var cnt = selects.count;
+		for (var i=0; i<cnt; i++) {
+			isAction &= (typeof selects[i].hideaction != "undefined");
+		}
+		var elm;
+		if (select) with (select) elm = %[ tag:.tag, storage:.storage, target:.target ];
+		window.processGo();
+		window.insertTag("doneselect", elm !== void ? elm : %[]);
+        window.insertTag("se", %[storage:closese, buf:closesebuf]); // バグ修正の部分
+		if (isAction) {
+			// アクションで隠す
+			window.insertTag("s");
+			enabled = false;
+			actionCnt = cnt;
+			for (var i=0; i<cnt; i++) {
+				window.beginAction(selects[i], selects[i].hideaction, onEndCompleted, false);
+			}
+		} else {
+			// 通常の方法で隠す
+			if (setVisibleTime(false, fadeTime)) {
+				window.insertTag("wact", %[ target:this ]);
+			}
+		}
+	} incontextof SelectLayer;
+	.onEndCompleted = function() {
+		actionCnt--;
+		if (actionCnt == 0) {
+			window.processGo();
+		}
+	} incontextof SelectLayer;
+}
+with (kag) {
+	.selectAction = function(elm) {
+		if (elm.type != void) {
+			var target = elm.hide ? "hideaction" : "showaction";
+			var canskip = elm.canskip !== void ? +elm.canskip : true;
+			
+			switch (elm.type) {
+			case "scroll":
+				var actDic = %[
+					time : elm.time !== void ? +elm.time : 500,
+					canskip : canskip,
+					left : %[ handler:MoveAction, start:"@", value:"@"],
+					top  : %[ handler:MoveAction, start:"@", value:"@"],
+					opacity : %[ handler:MoveAction, start:255, value:255 ],
+				];
+				switch (elm.from) {
+				case "left":
+					if (target == "showaction") { actDic.left.start = "@-"+kag.width; }
+					else { actDic.left.value = "@+"+kag.width; }
+					break;
+				case "up":
+					if (target == "showaction") { actDic.top.start = "@-"+kag.height; }
+					else { actDic.top.value = "@+"+kag.height; }
+					break;
+				case "right":
+					if (target == "showaction") { actDic.left.start = "@+"+kag.width; }
+					else { actDic.left.value = "@-"+kag.width; }
+					break;
+				case "bottom":
+					if (target == "showaction") { actDic.top.start = "@+"+kag.height; }
+					else { actDic.top.value = "@-"+kag.height; }
+					break;
+				}
+				dm(elm.reverse);
+				_internalSelectAction(actDic, elm.waittime !== void ? +elm.waittime : 0, target, elm.reverse == "void" ? false : +elm.reverse);
+				break;
+			case "fade":
+				var actDic = %[
+					time : elm.time !== void ? +elm.time : 500,
+					canskip : canskip,
+					opacity : %[ handler:MoveAction, start:0, value:255 ],
+				];
+				_internalSelectAction(actDic, elm.waittime !== void ? +elm.waittime : 0, target);
+				break;
+			default:
+				break;
+			}
+		}
+		return 0;
+	} incontextof kag;
+	/**
+	 * selectAction の内部関数
+	 * @param dic アクション情報の入った辞書
+	 * @param interval アクションを実行する間隔(ms単位)
+	 * @param target "showaction" または "hideaction"
+	 * @param reverse true を指定すると逆順
+	 */
+	._internalSelectAction = function(dic, interval, target, reverse) {
+		if (reverse) {
+			for (var i=0; i<f.selectInfos.count; ++i) {
+				f.selectInfos[i][target] = %[];
+				dic.delay = interval*(f.selectInfos.count-i-1);
+				(Dictionary.assignStruct incontextof f.selectInfos[i][target])(dic);
+			}
+		} else {
+			for (var i=0; i<f.selectInfos.count; ++i) {
+				f.selectInfos[i][target] = %[];
+				dic.delay = interval*i;
+				(Dictionary.assignStruct incontextof f.selectInfos[i][target])(dic);
+			}
+		}
+	} incontextof kag;
+
+	.tagHandlers.selact = function(elm) {
+		return selectAction(elm);
+	} incontextof kag;
+}

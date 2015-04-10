@@ -1,0 +1,22 @@
+
+// windowEx.dll リンク
+if (typeof Window.maximize === "undefined") {
+	try {
+		Plugins.link("windowEx.dll");
+		dm("windowEx.dllをリンクしました。");
+	} catch() {
+		System.inform("windowEx.dllのリンクに失敗しました。");
+		System.exit();
+	}
+}
+
+// clipcursor.dll リンク
+if (typeof Window.isActive === "undefined") {
+	try {
+		Plugins.link("clipcursor.dll");
+		dm("clipcursor.dllをリンクしました。");
+	} catch() {
+		System.inform("clipcursor.dllのリンクに失敗しました。");
+		System.exit();
+	}
+}
