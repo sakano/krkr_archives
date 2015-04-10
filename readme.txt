@@ -84,3 +84,12 @@ http://kasekey.blog101.fc2.com/blog-entry-127.html
 + SKN_SelectAction
 選択肢を表示、消去する際にアクションが使えるようになります。
 http://kasekey.blog101.fc2.com/blog-entry-121.html
+
++ KAGParserExb
+KAGParserクラスの機能を拡張します。
+http://kasekey.blog101.fc2.com/blog-entry-203.html
+
+
+
+## utilフォルダ
+吉里吉里Z用のtjsライブラリです。
