@@ -1,0 +1,16 @@
+type,opaSlider,slider,379,563,260,23
+type,b1,button,644,397,132,54
+type,b2,button,644,444,132,54
+type,b3,button,644,492,132,54
+type,b4,button,644,539,132,54
+type,base,base,31,400,740,191
+file,opaSlider,windowSample@opaSlider&slider;on,0,0,17,23,on
+file,opaSlider,windowSample@opaSlider&slider;over,0,0,17,23,over
+file,opaSlider,windowSample@opaSlider&slider;normal,0,0,17,23,normal
+file,b1,windowSample@b1&button;on,0,0,132,54,on
+file,b1,windowSample@b1&button;over,0,0,132,54,over
+file,b1,windowSample@b1&button;normal,9,9,114,36,normal
+file,base,windowSample@base&base,0,0,740,191
+copy,b2,b1
+copy,b3,b1
+copy,b4,b1

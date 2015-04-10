@@ -106,3 +106,14 @@ http://www.biscrat.com/krkr/docs/kagex/contents/index.html
 
 + kagex_book
 2011年のコミケで頒布したKAGEXの解説本です。
+
+
+
+## photoshopフォルダ
+Adobe Photoshop用のスクリプトファイルが入っています。
+
++ psd2uicsv
+psdファイルからKAGEXのUI定義ファイルを出力します。
+
++ misc
+その他、細々としたスクリプトです。

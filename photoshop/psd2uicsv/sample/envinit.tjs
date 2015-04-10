@@ -1,0 +1,14 @@
+%[
+	times : %[
+		’‹ : %[
+			prefix : "01",
+		],
+	],
+	defaultTime : "’‹",
+	
+	stages : %[
+		“¹˜H : %[
+			image : "bg01_TIME",
+		],
+	],
+];

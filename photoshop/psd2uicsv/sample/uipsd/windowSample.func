@@ -1,0 +1,5 @@
+func,opaSlider,	value,kag.fore.messages[0].opacity,	min,100,	max,255,	jumpmode,true
+func,b1,	exp,System.inform("B1 CLICKED!");
+func,b2,	exp,System.inform("B2 CLICKED!");
+func,b3,	exp,System.inform("B3 CLICKED!");
+func,b4,	exp,System.inform("B4 CLICKED!");
