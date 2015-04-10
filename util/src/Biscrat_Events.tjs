@@ -1,0 +1,134 @@
+class Biscrat_Events
+{
+	var _eventCallbacks = %[];
+	function Biscrat_Events() {}
+	
+	function finalize() {
+		foreach(_eventCallbacks, function(event, callbacks) {
+			invalidate callbacks;
+		});
+		invalidate _eventCallbacks;
+	}
+	
+	/**
+	 * Bind a callback function to an event.
+	 * The callback will be invoked whenever the event is fired.
+	 *
+	 * Callbacks bound to the special "all" event will be invoked when any event is fired.
+	 * These callbacks are passed the name of the event as the first argument.
+	 * @param string event The event name to bind.
+	 * @param func callback The function to bind.
+	 */
+	function bind(event, callback) {
+		if (_eventCallbacks[event] === void) {
+			_eventCallbacks[event] = [];
+		}
+		_eventCallbacks[event].add(callback);
+	}
+	
+	/**
+	 * Bind callbacks to events according to a specified dictionary.
+	 * The following two lines are almost same.
+	 *   bindMap(%[ event => callback, even2 => callback2 ]);
+	 *   bind(event, callback), bind(event2, callback2);
+	 * @param dictionary map The dictionary object contains evant names and callbacks.
+	 */
+	function bindMap(map) {
+		foreach(map, bind);
+	}
+	
+	/**
+	 * Remove a callback function from an event.
+	 * If no event is specified, callback for all events will be removed.
+	 * If no callback is specified, all callback for the event will be removed.
+	 * If neither event nor callback is specified, all callback will be removed.
+	 * @param string event The event name to unbind.
+	 * @param func callback The function to unbind.
+	 */
+	function unbind(event, callback) {
+		if (event !== void) {
+			if (_eventCallbacks[event] !== void) {
+				if (callback !== void) {
+					_eventCallbacks[event].remove(callback, true);
+				} else {
+					invalidate _eventCallbacks[event];
+					delete _eventCallbacks[event];
+				}
+			}
+		} else  {
+			if (callback !== void) {
+				foreach(_eventCallbacks, function(event, callbacks, callback) {
+					callbacks.remove(callback, true);
+				}, callback);
+			} else {
+				(Dictionary.clear incontextof _eventCallbacks)();
+			}
+		}
+	}
+	
+	/**
+	 * Trigger callback for the given event.
+	 * Subsequent arguments will be passed along to the event callbacks.
+	 * @param string event The event name to trigger.
+	 * @param mixed * The arguments passed to callbacks.
+	 */
+	function trigger(event, *) {
+		var callbacks = [];
+		if (_eventCallbacks.all !== void) {
+			callbacks.assign(_eventCallbacks.all);
+			for (var i = 0; i < callbacks.count; ++i) {
+				callbacks[i](...);
+			}
+			callbacks.clear();
+		}
+		if (event !== "all" && _eventCallbacks[event] !== void) {
+			callbacks.assign(_eventCallbacks[event]);
+			for (var i = 0; i < callbacks.count; ++i) {
+				callbacks[i](*);
+			}
+		}
+	}
+	
+	/**
+	 * Trigger callback for the given event.
+	 * Subsequent arguments will be passed along to the event callbacks.
+	 * Unlike trigger(), this funcntion stop calling callbacks if a callback returns true.
+	 * @param string event The event name to trigger.
+	 * @param mixed * The arguments passed to callbacks.
+	 * @return bool True, If a callback is called.
+	 */
+	function triggerOne(event, *) {
+		var callbacks = [];
+		if (_eventCallbacks.all !== void) {
+			callbacks.assign(_eventCallbacks.all);
+			for (var i = 0; i < callbacks.count; ++i) {
+				if (callbacks[i](...)) { return true; }
+			}
+			callbacks.clear();
+		}
+		if (event !== "all" && _eventCallbacks[event] !== void) {
+			callbacks.assign(_eventCallbacks[event]);
+			for (var i = 0; i < callbacks.count; ++i) {
+				if (callbacks[i](*)) { return true; }
+			}
+		}
+		return false;
+	}
+}
+
+function Bindable(object) {
+	__ASSERT(typeof object._event === "undefined")
+	__ASSERT(typeof object.bind === "undefined")
+	__ASSERT(typeof object.bindMap === "undefined")
+	__ASSERT(typeof object.unbind === "undefined")
+	with (object) {
+		._event = new Biscrat_Events();
+		.bind = ._event.bind;
+		.bindMap = ._event.bindMap;
+		.unbind = ._event.unbind;
+	}
+}
+
+function BindableFinalize(object) {
+	invalidate object._event;
+}

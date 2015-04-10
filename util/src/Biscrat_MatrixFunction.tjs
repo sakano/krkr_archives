@@ -1,0 +1,44 @@
+class Biscrat_MatrixFunction
+{
+	function createTranslationMatrix(x, y) {
+		return new Biscrat_Drawing2DMatrix(
+			1, 0, x,
+			0, 1, y
+		);
+	}
+
+	function createScalingMatrix(x, y) {
+		return new Biscrat_Drawing2DMatrix(
+			x, 0, 0,
+			0, y, 0
+		);
+	}
+	
+	function createRotationMatrix(angle) {
+		angle *= __PI / 180;
+		var sin = Math.sin(angle);
+		var cos = Math.cos(angle);
+		return new Biscrat_Drawing2DMatrix(
+			cos, -sin, 0,
+			sin, cos,  0
+		);
+	}
+	
+	function createShearMatrix(x, y) {
+		return new Biscrat_Drawing2DMatrix(
+			1, x, 0,
+			y, 1, 0
+		);
+	}
+	
+	function createMultipliedMatrix(lhs, rhs) {
+		with (lhs) return new Biscrat_Drawing2DMatrix(
+			._11 * rhs._11 + ._12 * rhs._21,
+			._11 * rhs._12 + ._12 * rhs._22,
+			._11 * rhs._13 + ._12 * rhs._23 + ._13,
+			._21 * rhs._11 + ._22 * rhs._21,
+			._21 * rhs._12 + ._22 * rhs._22,
+			._21 * rhs._13 + ._22 * rhs._23 + ._23
+		);
+	}
+}

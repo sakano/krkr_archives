@@ -1,0 +1,102 @@
+class Biscrat_TransformImage
+{
+	var _bitmap = null;
+	var _matrix = new Biscrat_Drawing2DMatrix();
+	var _matrixUpdate = true;
+	var _transformUpdate = true;
+	m4_define(/*@TRANSFORM_PROP@*/,
+		var _$1 = $2;
+		property $1 {
+			setter(v) {
+				_$1 = v;
+				_transformUpdate = true;
+				_matrixUpdate = true;
+				_event.trigger("transformUpdated");
+			}
+			getter { return _$1; }
+		})
+	TRANSFORM_PROP(originX, 0)
+	TRANSFORM_PROP(originY, 0)
+	TRANSFORM_PROP(scaleX, 1)
+	TRANSFORM_PROP(scaleY, 1)
+	TRANSFORM_PROP(shearX, 0)
+	TRANSFORM_PROP(shearY, 0)
+	TRANSFORM_PROP(angle, 0)
+	TRANSFORM_PROP(x, 0)
+	TRANSFORM_PROP(y, 0)
+	m4_undefine(/*@TRANSFORM_PROP@*/)
+	
+	var _parent = null;
+	property parent {
+		setter(v) {
+			if (_parent !== null) {
+				_parent.unbind("transformUpdated", this.onParentTransformUpdated);
+			}
+			if (v !== null) {
+				v.bind("transformUpdated", this.onParentTransformUpdated);
+			}
+			_parent = v;
+			_transformUpdate = true;
+			_matrixUpdate = true;
+			_event.trigger("transformUpdated");
+		}
+		getter { return _parent; }
+	}
+	
+	property matrix {
+		getter {
+			if (_matrixUpdate) {
+				with (_matrix) {
+					if (_parent === null) {
+						.reset();
+					} else {
+						.clone(_parent.matrix);
+					}
+					.translate(_x + _originX, _y + _originY);
+					.rotate(_angle);
+					.shear(_shearX, shearY);
+					.scale(_scaleX, _scaleY);
+					.translate(-_originX, -_originY);
+				}
+				_matrixUpdate = false;
+			}
+			return _matrix;
+		}
+	}
+	
+	function Biscrat_TransformImage() {
+		Bindable(this);
+	}
+	
+	function onParentTransformUpdated() {
+		_transformUpdate = true;
+		_matrixUpdate = true;
+		_event.trigger("transformUpdated");
+	}
+	
+	function finalize() {
+		BindableFinalize(this);
+		if (_bitmap !== null) { invalidate _bitmap; }
+		invalidate _matrix;
+		invalidate _event;
+	}
+	
+	function load(filename) {
+		if (_bitmap === null) {
+			_bitmap = new Bitmap(filename);
+		} else {
+			_bitmap.load(filename);
+		}
+	}
+	
+	function setBitmap(bitmap) {
+		_bitmap = bitmap;
+	}
+	
+	function draw(dest, force = false) {
+		if (_transformUpdate || force) {
+			matrix.operateAffine(dest, _bitmap);
+			_transformUpdate = false;
+		}
+	}
+}

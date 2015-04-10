@@ -1,0 +1,226 @@
+class Biscrat_TextDrawer
+{
+	var _appearance;
+	var _updateAppearance = true;
+	var _font;
+	var _color = 0xFFFFFFFF;
+	var _gradationBrush;
+	
+	var _antialiased = true;
+	var _hinting = false;
+	var _edge = false;
+	var _edgeWidth = 1;
+	var _edgeColor = 0xFF000000;
+	var _shadow = false;
+	var _shadowColor = 0x99000000;
+	var _shadowOffsetX = 2;
+	var _shadowOffsetY = 2;
+	var _shadowWidth = 1;
+	
+	/**
+	 * @param string face A font name to draw text.
+	 * @param int size The size of text.
+	 */
+	function Biscrat_TextDrawer(face = __ENV_DEFAULT_FONT, size = 24) {
+		_appearance = new GdiPlus.Appearance();
+		_font = new GdiPlus.Font(face, size, GdiPlus.FontStyleRegular);
+	}
+	
+	/**
+	 * Gets or sets the color to draw text. 0xAARRGGBB
+	 * @type 0xAARRGGBB
+	 */
+	property color {
+		setter(v) { _updateAppearance = true; _color = v; _gradationBrush = void; }
+		getter { return _color; }
+	}
+	
+	/**
+	 * Gets or sets the gradation brush to draw text.
+	 * If this is not void, color property is ignored.
+	 * @type object
+	 */
+	property gradationBrush {
+		setter(v) { _updateAppearance = true; _color = void; _gradationBrush = v; }
+		getter { return _gradationBrush; }
+	}
+	
+	/**
+	 * Gets or sets the font name to draw text.
+	 * @type string
+	 */
+	property face {
+		setter(v) { _font.familyName = v; }
+		getter { return _font.familyName; }
+	}
+	
+	/**
+	 * Gets or sets the size of text.
+	 * @type int
+	 */
+	property size {
+		setter(v) { _font.emSize = v; }
+		getter { return _font.emSize; }
+	}
+	
+	/**
+	 * Gets or sets whether antialias is used.
+	 * @type bool
+	 */
+	property antialiased {
+		setter(v) { _antialiased = v; }
+		getter { return _antialiased; }
+	}
+
+	/**
+	 * Gets or sets whether hinting is used.
+	 * @type bool
+	 */
+	property hinting {
+	 setter(v) { _hinting = v; }
+	 getter { return _hinting; }
+	}
+	
+	/**
+	 * Gets or sets whether the text border is drawn.
+	 * @type bool
+	 */
+	property edge {
+		setter(v) { _edge = v; _updateAppearance = true; }
+		getter { return _edge; }
+	}
+	
+	/**
+	 * Gets or sets the text border's width.
+	 * @type int
+	 */
+	property edgeWidth {
+		setter(v) { _edgeWidth = v; _updateAppearance = true; }
+		getter { return _edgeWidth; }
+	}
+	
+	/**
+	 * Gets or sets whether the text border is drawn.
+	 * @type 0xAARRGGBB
+	 */
+	property edgeColor {
+		setter(v) { _edgeColor = v; _updateAppearance = true; }
+		getter { return _edgeColor; }
+	}
+	
+	/**
+	 * Gets or sets whether the text shadow is drawn.
+	 * @type bool
+	 */
+	property shadow {
+		setter(v) { _shadow = v; _updateAppearance = true; }
+		getter { return _shadow; }
+	}
+	
+	/**
+	 * Gets or sets the text shadow's color.
+	 * @type 0xAARRGGBB
+	 */
+	property shadowColor {
+		setter(v) { _shadowColor = v; _updateAppearance = true; }
+		getter { return _shadowColor; }
+	}
+	
+	/**
+	 * Gets or sets the text shadow's position.
+	 * @type int
+	 */
+	property shadowOffsetX {
+		setter(v) { _shadowOffsetX = v; _updateAppearance = true; }
+		getter { return _shadowOffsetX; }
+	}
+	
+	/**
+	 * Gets or sets the text shadow's position.
+	 * @type int
+	 */
+	property shadowOffsetY {
+		setter(v) { _shadowOffsetY = v; _updateAppearance = true; }
+		getter { return _shadowOffsetY; }
+	}
+	
+	/**
+	 * Gets or sets the text shadow's width
+	 * @type int
+	 */
+	property shadowWidth {
+		setter(v) { _shadowWidth = v; _updateAppearance = true; }
+		getter { return _shadowWidth; }
+	}
+	
+	/**
+	 * Gets or sets whether text is drawn in italic letter.
+	 * @type bool
+	 */
+	property italic {
+		setter(v) { _font.style = v ? (_font.style | GdiPlus.FontStyleItalic) : (_font.style & ~GdiPlus.FontStyleItalic); }
+		getter { return _font.style & GdiPlus.FontStyleItalic; }
+	}
+	
+	/**
+	 * Gets or sets whether text is drawn with underline.
+	 * @type bool
+	 */
+	property underline {
+		setter(v) { _font.style = v ? (_font.style | GdiPlus.FontStyleUnderline) : (_font.style & ~GdiPlus.FontStyleUnderline); }
+		getter { return _font.style & GdiPlus.FontStyleUnderline; }
+	}
+	
+	/**
+	 * Gets or sets whether draw text with strikeout.
+	 * @type bool
+	 */
+	property strikeout {
+		setter(v) { _font.style = v ? (_font.style | GdiPlus.FontStyleStrikeout) : (_font.style & ~GdiPlus.FontStyleStrikeout); }
+		getter { return _font.style & GdiPlus.FontStyleStrikeout; }
+	}
+	
+	/**
+	 * Gets or sets whether draw text in bold type.
+	 * @type bool
+	 */
+	property bold {
+		setter(v) { _font.style = v ? (_font.style | GdiPlus.FontStyleBold) : (_font.style & ~GdiPlus.FontStyleBold); }
+		getter { return _font.style & GdiPlus.FontStyleBold; }
+	}
+	
+	/**
+	 * Draw text to a specified Layer.
+	 * @param object layer A layer to draw text.
+	 * @param int x The text position
+	 * @param int y The text position
+	 * @param string text Text to draw.
+	 * @return object Update rect.
+	 */
+	function drawTextToLayer(layer, x, y, text = "")
+	{
+		// apply antialiased and hinting
+		if (_antialiased) {
+			if (_hinting) { layer.textRenderingHint =  GdiPlus.TextRenderingHintAntiAliasGridFit; }
+			else { layer.textRenderingHint = GdiPlus.TextRenderingHintAntiAlias; }
+		} else {
+			if (_hinting) { layer.textRenderingHint =  GdiPlus.TextRenderingHintSingleBitPerPixelGridFit; }
+			else { layer.textRenderingHint = GdiPlus.TextRenderingHintSingleBitPerPixel; }
+		}
+		// update appearance
+		if (_updateAppearance) {
+			_appearance.clear();
+			if (_shadow) {
+				if (_shadowWidth > 0) { _appearance.addPen(_shadowColor, _shadowWidth, _shadowOffsetX, _shadowOffsetY); }
+				_appearance.addBrush(_shadowColor, _shadowOffsetX, _shadowOffsetY);
+			}
+			if (_edge) { _appearance.addPen(_edgeColor, _edgeWidth, 0, 0); }
+			if (_gradationBrush === void) {
+				_appearance.addBrush(_color, 0, 0);
+			} else {
+				_appearance.addBrush(_gradationBrush, 0, 0);
+			}
+		}
+		return layer.drawPathString(this._font, this._appearance, x, y, text);
+	}
+}

@@ -1,0 +1,91 @@
+class Biscrat_EventWindow extends Window
+{
+	var _mouseGesture = new Biscrat_MouseGesture();
+	
+	function Biscrat_EventWindow() {
+		super.Window(...);
+		
+		Serializable(this, [
+			"_mouseGesture"
+		]);
+		Bindable(this);
+		
+		enableTouch = false;
+		
+		_mouseGesture.enabled = true;
+		_event.bind("mouseDown", _mouseGesture.onMouseDown);
+		_event.bind("mouseMove", _mouseGesture.onMouseMove);
+		_event.bind("mouseUp", _mouseGesture.onMouseUp);
+		_mouseGesture.bind("gesture", onMouseGesture);
+		_mouseGesture.bind("overflow", onMouseGestureOverflow);
+	}
+	
+	function finalize() {
+		BindableFinalize(this);
+		super.finalize(...);
+	}
+	
+	function onKeyDown() {
+		super.onKeyDown(...);
+		_event.triggerOne("keyDown", *);
+	}
+	
+	function onKeyUp() {
+		super.onKeyUp(...);
+		_event.trigger("keyUp", *);
+	}
+	
+	function onActivate() {
+		super.onActivate(...);
+		_event.trigger("activate", *);
+	}
+	
+	function onDeactivate() {
+		super.onDeactivate(...);
+		_event.trigger("deactivate", *);
+	}
+	
+	
+	function onFileDrop() {
+		super.onFileDrop(...);
+		_event.trigger("fileDrop", *);
+	}
+	
+	function onMouseDown() {
+		super.onMouseDown(...);
+		_event.triggerOne("mouseDown", *);
+	}
+	
+	function onMouseEnter() {
+		super.onMouseEnter(...);
+		_event.trigger("mouesEnter", *);
+	}
+	
+	function onMouseLeave() {
+		super.onMouseLeave(...);
+		_event.trigger("mouveLeave", *);
+	}
+	
+	function onMouseMove() {
+		super.onMouseMove(...);
+		_event.triggerOne("mouseMove", *);
+	}
+	
+	function onMouseUp() {
+		super.onMouseUp(...);
+		_event.triggerOne("mouseUp", *);
+	}
+	
+	function onMouseWheel() {
+		super.onMouseWheel(...);
+		_event.trigger("mouseWheel", *);
+	}
+	
+	function onMouseGesture() {
+		_event.trigger("mouseGesture", *);
+	}
+	
+	function onMouseGestureOverflow() {
+		_event.trigger("mouseGestureOverflow", *);
+	}
+}

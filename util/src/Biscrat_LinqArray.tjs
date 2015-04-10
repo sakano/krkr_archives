@@ -1,0 +1,576 @@
+/**
+ * Returns the element at a specified index.
+ * An exception will be thrown when the index is out of range.
+ * @param int index The index of the element to retrieve.
+ * @return mixed The element at the specified position.
+ */
+Array.elementAt = function(index) {
+  if (index < 0 || index >= this.count) {
+    throw new Exception(__EXCEPTION_ARRAY_OUT_OF_RANGE);
+  }
+  return this[index];
+};
+
+/**
+ * Create an Array object that is a shallow copy of the current instance.
+ * @return array An array object.
+ */
+Array.clone = function() {
+  var tmp = [];
+  tmp.assign(this);
+  return tmp;
+};
+
+/**
+ * Apply a function to each element.
+ * @param func func A function to apply.
+ * @param mixed * The arguments passed to the function.
+ */
+Array.foreach = function(func, *) {
+  for (var i = 0; i < this.count; ++i) {
+  	func(i, this[i], *);
+  }
+};
+
+/**
+ * Create a Dictionary object according to a keySelector and an elementSelector.
+ * @param func keySelector A function to extract key from each element.
+ * @param func elementSelector A function to extract element from each element.
+ * @param mixed * The arguments passed to the functions.
+ * @return dictionary A dictionary that contains keys and values.
+ */
+Array.toDictionary = function(keySelector, elementSelector, *) {
+  if (elementSelector === void) elementSelector = function(elm) { return elm; };
+  var tmp = %[];
+  for (var i = 0; i < this.count; ++i) {
+    var key = keySelector(this[i], i, *);
+    if (tmp[key] !== void) throw new Exception(__EXCEPTION_LINQ_ARRAY_DUPLICATE_KEYS);
+    tmp[key] = elementSelector(this[i], i, *);
+  }
+  return tmp;
+};
+
+/**
+ * Create a Dictionary object according to a keySelector and an elementSelector.
+ * Each value of the dictionary is mapped to an Array.
+ * @param func keySelector A function to extract key from each element.
+ * @param func elementSelector A function to extract element from each element.
+ * @param mixed * The arguments passed to the functions.
+ * @return dictionary An one-to-many dictionary that maps keys to arrays of values.
+ */
+Array.toLookup = function(keySelector, elementSelector, *) {
+  if (elementSelector === void) elementSelector = function(elm) { return elm; };
+  var tmp = %[];
+  for (var i = 0; i < this.count; ++i) {
+    var key = keySelector(this[i], i, *);
+    if (tmp[key] === void) tmp[key] = [];
+    tmp[key].add(elementSelector(this[i], i, *));
+  }
+  return tmp;
+};
+
+/**
+ * Projects each element into a new form.
+ * @param func selector A transform function to apply to each element.
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object whose elements are return values of selector.
+ */
+Array.select = function(selector, *) {
+  var tmp = [];
+  for (var i = 0; i < this.count; ++i) {
+    tmp.add(selector(this[i], i, *));
+  }
+  return tmp;
+};
+
+
+/**
+ * Projects each element into a new form.
+ * One element is transformed into one or more elements.
+ * @param func selector A transform function to apply to each element.
+ *   This function must return an array object.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements are return values of selector.
+ */
+Array.selectMany = function(selector, *) {
+  var tmp = [];
+  for (var i = 0; i < this.count; ++i) {
+    tmp.push(selector(this[i], i, *)*);
+  }
+  return tmp;
+};
+
+/**
+ * Filter an array based on a predicate.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements satisfy the condition.
+ */
+Array.where = function(predicate, *) {
+  var tmp = [];
+  for (var i = 0; i < this.count; ++i) {
+    if (predicate(this[i], i, *)) {
+      tmp.push(this[i]);
+    }
+  }
+  return tmp;
+};
+
+/**
+ * Groups the elements according to a specified keySelector.
+ * @param func keySelector A function to extract the key for each element.
+ * @param mixed * The arguments passed to the function.
+ * @return dictionary A one-to-many dictionary that maps keys to arrays of values.
+ */
+Array.groupBy = function(keySelector, *) {
+  var tmp = %[];
+  for (var i = 0; i < this.count; ++i) {
+    var key = keySelector(this[i], i, *);
+    if (tmp[key] === void) tmp[key] = [];
+    tmp[key].push(this[i]);
+  }
+  return tmp;
+};
+
+/**
+ * Sorts the elements in ascending order by using a specified comparer.
+ * @param func keySelector A function to extract a key from each element.
+ * @param func comparer A function to compare keys.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements are sorted according to a key.
+ */
+Array.orderBy = function(keySelector, comparer, *) {
+  if (comparer === void) {
+    comparer = function(first, second) { return first < second; };
+  }
+  var tmp = [];
+  for (var i = 0; i < this.count; ++i) {
+    var key = keySelector(this[i], i, *);
+    var inserted = false;
+    for (var j = 0; j < tmp.count; ++j) {
+      if (comparer(key, tmp[j])) {
+        tmp.insert(j, this[i]);
+        inserted = true;
+        break;
+      }
+    }
+    if (!inserted) tmp.push(this[i]);
+  }
+  return tmp;
+};
+
+/**
+ * Sorts the elements in descending order by using a specified comparer.
+ * @param func keySelector A function to extract a key from each element.
+ * @param func comparer A function to compare keys.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements are sorted according to a key.
+ */
+Array.orderByDescending = function(keySelector, comparer, *) {
+  if (comparer === void) {
+    comparer = function(first, second) { return first > second; };
+  } else {
+    comparer = function { return !comparer(...); } incontextof %[ comparer:comparer ];
+  }
+  return orderBy(keySelector, comparer, *);
+};
+
+/**
+ * Correlate the elements of two arrays based on matching keys.
+ * @param array inner An array to join.
+ * @param func outerKeySelector A function to extract the join key from each element of the current instance.
+ * @param func innerKeySelector A function to extract the join key from each element of inner.
+ * @param func resultSelector A function to create a result element from two matching elments.
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object whose elements are return value of resultSelector.
+ */
+Array.innerJoin = function(inner, outerKeySelector, innerKeySelector, resultSelector, *) {
+  var outerKeys = %[];
+  for (var i = 0; i < this.count; ++i) {
+    var key = outerKeySelector(this[i], i, *);
+    if (outerKeys[key] === void) outerKeys[key] = [];
+    outerKeys[key].add(this[i]);
+  }
+  
+  var results = [];
+  for (var i = 0; i < inner.count; ++i) {
+    var key = innerKeySelector(inner[i], i, *);
+    if (outerKeys[key] === void) continue;
+    for (var j = 0; j < outerKeys[key].count; ++j) {
+      results.add(resultSelector(outerKeys[key][j], inner[i], *));
+    }
+  }
+  return results;
+};
+
+/**
+ * Correlate the elements of two sequennces based on key equality, nad groups the results.
+ * @param array inner An array to join.
+ * @param func outerKeySelector A function to extract the join key from each element of the current instance.
+ * @param func innerKeySelector A function to extract the join key from each element of inner.
+ * @param func resultSelector A function to create a result element from an element from the current instance
+ * @param mixed * The arguments passed to the functions.
+ *   and an array object of matching elements from inner.
+ * @return array An array object whose elements are return value of resultSelector.
+ */
+Array.groupJoin = function(inner, outerKeySelector, innerKeySelector, resultSelector, *) {
+  var innerKeys = %[];
+  for (var i = 0; i < inner.count; ++i) {
+    var key = innerKeySelector(inner[i], i, *);
+    if (innerKeys[key] === void) innerKeys[key] = [];
+    innerKeys[key].add(inner[i]);
+  }
+  
+  var results = [];
+  for (var i = 0; i < this.count; ++i) {
+    var key = outerKeySelector(this[i], i, *);
+    results.add(resultSelector(this[i], innerKeys[key] !== void ? innerKeys[key] : []));
+  }
+  return results;
+};
+
+/**
+ * Returns a specified number of continuous elements from the start.
+ * @param int count The number of elements to return
+ * @return array An array object that contains the specified number of elements from the start.
+ */
+Array.take = function(count) {
+  if (count > this.count) count = this.count;
+  var tmp = [];
+  for (var i = count-1; i >= 0; --i) {
+    tmp[i] = this[i];
+  }
+  return tmp;
+};
+
+/**
+ * Bypasses a specified number of elements and then returns the remaining elements.
+ * @param int count The number of elements to skip.
+ * @return array An array object that contains the remaining elements.
+ */
+Array.skip = function(count) {
+  var tmp = [];
+  for (var i = count; i < this.count; ++i) {
+    tmp.add(this[i]);
+  }
+  return tmp;
+};
+
+/**
+ * Returns a continuous element from the start as long as a specified condition is true.
+ * @param func predicate A function to test each element for condition.
+ * @param mixed * The arguments passed to the function.
+ * @return array An array object whose elements satisfy the condition continuously.
+ */
+Array.takeWhile = function(predicate, *) {
+	var tmp = [];
+	for (var i = 0; i < this.count; ++i) {
+		if (!predicate(this[idx], idx, *)) { break; }
+		tmp.add(this[i]);
+	}
+	return tmp;
+};
+
+/**
+ * Bypasses elements in a sequence as long as a specified condition is true and
+ * then returnn the remaining elements.
+ * @param func predicate A function to test each eleemnt for a condition
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object that contains the remaining elements.
+ */
+Array.skipWhile = function(predicate, *) {
+	var idx = 0;
+	for (; idx < this.count; ++idx) {
+		if (!predicate(this[idx], idx, *)) break;
+	}
+	var tmp = [];
+	for (; idx < this.count; ++idx) {
+		tmp.add(this[idx]);
+	}
+	return tmp;
+};
+
+/**
+ * Returns distinct elements.
+ * @return array An array object that contains distinct elements.
+ */
+Array.distinct = function() {
+  var tmp = [];
+  var values = %[];
+  for (var i = 0; i < this.count; ++i) {
+    var value = this[i];
+    if (values[value]) continue;
+    tmp.add(value);
+    values[value] = true;
+  }
+  return tmp;
+};
+
+/**
+ * Concatenates a specified array.
+ * @param array array An array object to concatenate.
+ * @return array An array object concatenated.
+ */
+Array.concat = function(array) {
+  var tmp = [];
+  tmp.push(this*, array*);
+  return tmp;
+};
+
+/**
+ * Create an Array object by merging two elements whose indexes are equal.
+ * If two arrays differ in length the length of the new array will be the same as the shorter.
+ * @param array array An array object to merge.
+ * @param func resultSelector A function to get a merged element from two.
+ * @param mixed * The arguments passed to the functions.
+ * @return array An array object whose elements are return values of resultSelector.
+ */
+Array.zip = function(array, resultSelector, *) {
+  var tmp = [];
+  var count = this.count > array.count ? array.count : this.count;
+  for (var i = 0; i < count; ++i) {
+    tmp[i] = resultSelector(this[i], array[i], i, *);
+  }
+  return tmp;
+};
+
+/**
+ * Produces the set union with a specified array.
+ * @param array array An array object.
+ * @return array An array object whose elements are in the current array or the specified array.
+ */
+Array.union = function(array) {
+  var tmp = [];
+  var values = %[];
+  for (var i = 0; i < this.count; ++i) {
+    var value = this[i];
+    if (values[value]) continue;
+    tmp.add(value);
+    values[value] = true;
+  }
+  for (var i = 0; i < array.count; ++i) {
+    var value = array[i];
+    if (values[value]) continue;
+    tmp.add(value);
+    values[value] = true;
+  }
+  return tmp;
+};
+
+/**
+ * Produces the set intersection with a specified array.
+ * @param array array An array object.
+ * @return array An array object whose elements are in the current array and the specified array.
+ */
+Array.intersect = function(array) {
+  var values = %[];
+  for (var i = this.count-1; i >= 0; --i) {
+    values[this[i]] = true;
+  }
+  var tmp = [];
+  for (var i = 0; i < array.count; ++i) {
+    if (!values[array[i]]) continue;
+    tmp.add(array[i]);
+    values[array[i]] = false;
+  }
+  return tmp;
+};
+
+/**
+ * Produces the set difference with a specified array.
+ * @param array array An array object.
+ * @return array An array object whose elements are in the current array but not in a specified array.
+ */
+Array.except = function(array) {
+  var values = %[];
+  for (var i = array.count-1; i >= 0; --i) {
+    values[array[i]] = true;
+  }
+  var tmp = [];
+  for (var i = 0; i < this.count; ++i) {
+    if (values[this[i]]) continue;
+    tmp.add(this[i]);
+    values[this[i]] = true;
+  }
+  return tmp;
+};
+
+/**
+ * Determines whether two arrays are equal by comparing their elements by using a specified comparer.
+ * @param array array An array object to compare.
+ * @param func comparer A function to compare elements.
+ * @param mixed * The arguments passed to the function.
+ * @return bool true if the two arrays are the same length and their corresponding elements compare equal.
+ */
+Array.sequenceEqual = function(array, comparer, *) {
+  if (this.count != array.count) return false;
+  for (var i = this.count-1; i >= 0; --i) {
+    if (!comparer(this[i], array[i], *)) return false;
+  }
+  return true;
+};
+
+/**
+ * Returns the first element that satisfies a specified condition.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed defaultValue A return value when no element specify the condition.
+ * @param mixed * The arguments passed to the function.
+ * @return mixed The first element that passes the test in the specified predicate function.
+ */
+Array.first = function(predicate, defaultValue=void, *) {
+  for (var i = 0; i < this.count; ++i) {
+    if (predicate(this[i], i, *)) return this[i];
+  }
+  return defaultValue;
+};
+
+/**
+ * Returns the last element that satisfies a specified condition.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed defaultValue A return value when no element specify the condition.
+ * @param mixed * The arguments passed to the functions.
+ * @return mixed The last element that passes the test.
+ */
+Array.last = function(predicate, defaultValue=void, *) {
+  for (var i = this.count-1; i >= 0; --i) {
+    if (predicate(this[i], i, *)) return this[i];
+  }
+  return defaultValue;
+};
+
+/**
+ * Generate an array object of integral numbers within a specified range.
+ * @param int start The value of the first integer.
+ * @param int count The number of integers to generate.
+ * @return array An array object that contains a range of sequential integral numbers.
+ */
+Array.range = function(start, count) {
+  var tmp = [];
+  for (var i = count-1; i >= 0; --i) {
+    tmp[i] = start + i;
+  }
+  return tmp;
+};
+
+/**
+ * Generates an array that contains one repeated value.
+ * @param mixed element The value to be repeated.
+ * @param int count The number of times to repeat.
+ * @return array An array object that countains a repeated value.
+ */
+Array.repeat = function(element, count) {
+  var tmp = [];
+  for (var i = count-1; i >= 0; --i) {
+    tmp[i] = element;
+  }
+  return tmp;
+};
+
+/**
+ * Generate an empty array object.
+ * @return array An array object that contains no element.
+ */
+Array.empty = function() {
+  return [];
+};
+
+/**
+ * Determines whether any element satisfies a condtion.
+ * @param func predicate A function to test each element for a condition.
+ * @param mixed * The arguments passed to the function.
+ * @return bool true if any elements pass the test.
+ */
+Array.any = function(predicate, *) {
+  for (var i = 0; i < this.count; ++i) {
+    if (predicate(this[i], i, *)) return true;
+  }
+  return false;
+};
+
+/**
+ * Determines whether all elements satisfy a condition.
+ * @param func predicate A function ot test each element for a condition.
+ * @param mixed * The arguments passed to the function.
+ * @return bool true if every element passes the test.
+ */
+Array.all = function(predicate, *) {
+  for (var i = 0; i < this.count; ++i) {
+    if (!predicate(this[i], i, *)) return false;
+  }
+  return true;
+};
+
+/**
+ * Determines whether a specified element exists.
+ * @param mixed value The value to find.
+ * @param func comparer A function to compare two elements.
+ * @param mixed * The arguments passed to the functions.
+ * @return bool true if the specified value exist.
+ */
+Array.contains = function(value, comparer, *) {
+  if (comparer === void) {
+    comparer = function(first, second) { return first === second; };
+  }
+  for (var i = 0; i < this.count; ++i) {
+    if (comparer(value, this[i], *)) return true;
+  }
+  return false;
+};
+
+/**
+ * Computes the sum. Every element is converted to numeric value.
+ * @return number The sum of the elements.
+ */
+Array.sum = function() {
+  var v = 0;
+  for (var i = this.count-1; i >= 0; --i) {
+    v += +this[i];
+  }
+  return v;
+};
+
+/**
+ * Returns the minimum value.
+ * @return mixed The minimum value.
+ */
+Array.min = function() {
+  var v = this[-1];
+  for (var i = this.count-2; i >= 0; --i) {
+    if (v > this[i]) v = this[i];
+  }
+  return v;
+};
+
+/**
+ * Returns the maximum value.
+ * @return mixed The maximum value.
+ */
+Array.max = function() {
+  var v = this[-1];
+  for (var i = this.count-2; i >= 0; --i) {
+    if (v < this[i]) v = this[i];
+  }
+  return v;
+};
+
+/**
+ * Computes the average.
+ * @return number The average.
+ */
+Array.average = function() {
+  return this.sum() / this.count;
+};
+
+/**
+ * Applies an accumulator function.
+ * @param func func An accumulator function.
+ * @param mixed * The arguments passed to the function.
+ * @return mixed The last return value of accumulator.
+ */
+Array.aggregate = function(func, *) {
+  var tmp = void;
+  for (var i = 0; i < this.count; ++i) {
+    tmp = func(tmp, this[i], i, *);
+  }
+  return tmp;
+};

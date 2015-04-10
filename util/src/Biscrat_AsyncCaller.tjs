@@ -1,0 +1,65 @@
+class Biscrat_AsyncCaller
+{
+	var _trigger = new AsyncTrigger(this);
+	var _registered = [];
+	
+	property mode {
+		setter(v) { _trigger.mode = v; }
+		getter()  { return _trigger.mode; }
+	}
+	
+	function Biscrat_AsyncCaller(mode=atmNormal) {
+		_trigger.cached = true;
+		_trigger.mode = mode;
+	}
+	
+	function finalize() {
+		invalidate _trigger;
+	}
+	
+	/**
+	 * Call the specified function asynchronously.
+	 * @param object func The function to be called.
+	 * @param mixed args* The arguments to be passed to the function.
+	 */
+	function call(func, args*) {
+		_registered.push(func, args);
+		_trigger.trigger();
+	}
+	
+	/**
+	 * Call the specified function asynchronously.
+	 * The identical functions are called once.
+	 * @param object func The function to be called.
+	 * @param mixed args* The arguments to be passed to the function.
+	 */
+	function callOnce(func, args*) {
+		for (var i = 0; i < _registered.count; i += 2) {
+			if (_registered[i] !== func) { continue; }
+			var registerdArgs = _registered[i+1];
+			if (registerdArgs.count != args.count) { continue; }
+			var equal = true;
+			for (var j = 0; j < registerdArgs.count; ++j) {
+				if (registerdArgs[j] !== args[j]) {
+					equal = false;
+					break;
+				}
+			}
+			if (equal) { return; }
+		}
+		call(...);
+	}
+	
+	function action {
+		var registered = _registered;
+		_registered = [];
+		for (var i = 0; i < registered.count; i += 2) {
+			var context = Scripts.getObjectContext(registered[i]);
+			if (registered[i] isvalid && (context === null || context isvalid)) {
+				registered[i](registered[i+1]*);
+			} else {
+				dm(__WARNING_ASYNC_CALLER_INVALID_CALLBACK);
+			}
+		}
+	}
+}

@@ -1,0 +1,132 @@
+class Biscrat_Drawing2DMatrix
+{
+	var _11, _12, _13;
+	var _21, _22, _23;
+	
+	function Biscrat_Drawing2DMatrix(a11=1, a12=0 , a13=0, a21=0, a22=1, a23=0) {
+		_11 = a11, _12 = a12, _13 = a13;
+		_21 = a21, _22 = a22, _23 = a23;		
+	}
+	
+	/**
+	 * Reset this matrix to be identity matrix.
+	 */
+	function reset() {
+		_11 = _22 = 1;
+		_12 = _13 = _21 = _23 = 0;
+	}
+	
+	/**
+	 * Clone the specified matrix.
+	 */
+	function clone(rhs) {
+		with (rhs) {
+			_11 = ._11;
+			_12 = ._12;
+			_13 = ._13;
+			_21 = ._21;
+			_22 = ._22;
+			_23 = ._23;
+		}
+	}
+	
+	/**
+	 * Multiply this matrix by the translation matrix.
+	 * @param number x The value to translate along the X axis.
+	 * @param number y The value to translate along the Y axis.
+	 */
+	function translate(x, y) {
+		_13 += _11 * x + _12 * y;
+		_23 += _21 * x + _22 * y;
+	}
+	
+	/**
+	 * Multiply this matrix by the scaling matrix.
+	 * @param number angle The clockwise angle of the rotaion.
+	 */
+	function scale(x, y) {
+		_11 *= x;
+		_21 *= x;
+		_12 *= y;
+		_22 *= y;	
+	}
+	
+	/**
+	 * Multiply this matrix by the rotation matrix.
+	 * @param number angle The clockwise angle of the rotaion.
+	 */
+	function rotate(angle) {
+		if (angle === 0) return;
+		angle *= __PI / 180;
+		var sin = Math.sin(angle);
+		var cos = Math.cos(angle);
+		var t11 = _11, t21 = _21;
+		_11 = t11 * cos  + _12 * sin;
+		_12 = t11 * -sin + _12 * cos;
+		_21 = t21 * cos  + _22 * sin;
+		_22 = t21 * -sin + _22 * cos;
+	}
+	
+	/**
+	 * Multiply this matrix by the shear matrix.
+	 * @param number x The value to shear horizontally.
+	 * @param number y The value to shear vertically.
+	 */
+	function shear(x, y) {
+		var t11 = _11, t21 = _21;
+		_11 += _12 * y;
+		_12 += t11 * x;
+		_21 += _22 * y;
+		_22 += t21 * x;
+	}
+	
+	/**
+	 * Multiply this matrix by the specified matrix.
+	 * @param object rhs The matrix object.
+	 */
+	function multiply(rhs) {
+		var t11 = _11, t12 = _12, t21 = _21, t22 = _22;
+		with (rhs) {
+			_11 = t11 * ._11 + t12 * ._21;
+			_12 = t11 * ._12 + t12 * ._22;
+			_13 = t11 * ._13 + t12 * ._23 + _13;
+			_21 = t21 * ._11 + t22 * ._21;
+			_22 = t21 * ._12 + t22 * ._22;
+			_23 = t21 * ._13 + t22 * ._23 + _23;
+		}
+	}
+	
+	function multiplyMatrixVector(matrix, x, y) {
+		var _x, _y;
+		with (matrix) {
+			_x = ._11 * x + ._12 * y + ._13;
+			_y = ._21 * x + ._22 * y + ._23;
+		}
+		return [_x-0.5, _y-0.5];
+	}
+	
+	/**
+	 * Apply the transform represented by this matrix.
+	 * @param number x The x-coordinate value.
+	 * @param number y The y-coordinate value.
+	 * @return array The first element represents x, and the second represetns y.
+	 */
+	function applyTransformToPoint(x, y) {
+		return [
+			_11 * x + _12 * y + _13,
+			_21 * x + _22 * y + _23
+		];
+	}
+	
+	/**
+	 * Apply the transform represeted by this matrix and copy the specified bitmap.
+	 * @param object dest The Bitmap object to be drawn.
+	 * @param object src The Bitmap object to be transformed and copied.
+	 */
+	function operateAffine(dest, src) {
+		ImageFunction.operateAffine(dest, src, _13 - 0.5 , _23 - 0.5,
+			_11 * src.width  + _13 - 0.5, _21 * src.width  + _23 - 0.5,
+			_12 * src.height + _13 - 0.5, _22 * src.height + _23 - 0.5,
+			null, null, false, omAlpha, dfAlpha, 255, stFastLinear|stRefNoClip);
+	}
+}

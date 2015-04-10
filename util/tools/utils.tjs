@@ -1,0 +1,180 @@
+Plugins.link("fstat.dll");
+Plugins.link("shellexecute.dll");
+Plugins.link("scriptsex.dll");
+Plugins.link("json.dll");
+
+var dm = Debug.message;
+var foreach = Scripts.foreach;
+
+/**
+ * Replace old strings between braces to new strings.
+ * @param string message The string contains strings between braces to be replaced.
+ * @param strign lists* The old strings and new strings in turn.
+ * @return string The message expanded.
+ */
+function expandMessageStrings(message, lists*) {
+	for (var i = lists.count-2; i >= 0; i -= 2) {
+		message = message.replace(@"/\\{&lists[i];\\}/"!, lists[i+1]);
+	}
+	return message;
+}
+
+/**
+ * Get paths to the files in the specified directory.
+ * @param string dirPath The path to the directory.
+ * @param bool recur If true, files in subdirectories are included.
+ * @return array The paths to the files.
+ */
+function getFilesInDirectory(dirPath, recur=true) {
+	var list = Storages.dirlist(dirPath);
+	var files = [];
+	for (var i = list.count-1; i >= 0; --i) {
+		var file = list[i];
+		if (file[file.length-1] == "/") { // directory
+			if (file[0] == ".") { continue; }
+			if (!recur) { continue; }
+			var r = getFilesInDirectory(dirPath + file);
+			for (var j = r.count-1; j >= 0; --j) { r[j] = file + r[j]; }
+			files.push(r*);
+		} else { // file
+			files.push(file);
+		}
+	}
+	return files;
+}
+
+
+/**
+ * Create the directory.
+ * @param string path The path to the directory.
+ */
+function createDirectoryIfNotExist(path) {
+	if (!Storages.isExistentDirectory(path) && !Storages.createDirectory(path)) {
+		dm(@"フォルダを作成できません。\n(${path})");
+	}
+}
+/**
+ * Output an object's members.
+ * @param object object value The value to output.
+ * @param func function out Called to output message.
+ */
+function dv(value, out = global.Debug.message) {
+	var printer = %[
+		"count" => 0,
+		"indent" => function() {
+			flash();
+			++this.count; return this;
+		},
+		"outdent" => function() {
+			flash();
+			--this.count;
+			return this;
+		},
+		"buffer" => "",
+		"push" => function(line) {
+			buffer += line;
+			return this;
+		},
+		"flash" => function(line) {
+			buffer += line;
+			if (buffer.length == 0) return this;
+			out("\t".repeat(this.count) + buffer);
+			buffer = "";
+			return this;
+		}
+	];
+	printer.out = out;
+	var stack = [ value ];
+	var pushDictionary = function(currentValue, endString) {
+		var keys = global.Scripts.getObjectKeys(currentValue);
+		stack.push(%[
+			"dvValueType" => "Dictionary",
+			"value" => currentValue,
+			"keys" => keys,
+			"index" => 0,
+			"count" => keys.count,
+			"endString" => endString
+		]);
+	} incontextof %[ stack:stack ];
+	for(;;) {
+		if (stack.count == 0) break;
+		var currentValue = stack.pop();
+		
+		switch(typeof currentValue) {
+		case "Object":
+			if (currentValue === null) {
+				printer.push("(null)");
+				break;
+			}
+			try { currentValue instanceof "Array"; }
+			catch {
+				printer.push("(native?)" + currentValue);
+				break;
+			}
+			if (currentValue instanceof "Array") {
+				stack.push(%[
+					"dvValueType" => "Array",
+					"value" => currentValue,
+					"index" => 0,
+					"count" => currentValue.count
+				]);
+				printer.flash("[").indent();
+			} else if (currentValue instanceof "Dictionary") {
+				switch (currentValue.dvValueType) {
+				case "Array":
+					if (currentValue.index === currentValue.count) {
+						printer.outdent().push("]");
+					} else {
+						if (currentValue.index != 0) {
+							printer.flash(",");
+						}
+						++currentValue.index;
+						stack.push(currentValue, &currentValue.value[currentValue.index-1]);
+					}
+					break;
+				case "Dictionary":
+					if (currentValue.index === currentValue.count) {
+						printer.outdent().push(currentValue.endString);
+					} else {
+						if (currentValue.index != 0) {
+							printer.flash(",");
+						}
+						with (currentValue) {
+							printer.push("\""+ .keys[.index] + "\" => ");
+							++.index;
+							stack.push(currentValue, &.value[.keys[.index-1]]);
+						}
+					}
+					break;
+				case void:
+					printer.flash("%[").indent();
+					pushDictionary(currentValue, "]");
+					break;
+				}
+			} else if (currentValue instanceof "Class") {
+				printer.flash("(class)" + currentValue + " {").indent();
+				pushDictionary(currentValue, "}");
+			} else if (currentValue instanceof "Function") {
+				printer.push("(function)" + currentValue);
+			} else if (currentValue instanceof "Property") {
+				printer.push("(property)" + currentValue);
+			} else {
+				printer.flash("(object)" + currentValue + " {").indent();
+				pushDictionary(currentValue, "}");
+			}
+			break;
+		case "void": printer.push("(void)"); break;
+		case "Integer": printer.push("(int)" + currentValue); break;
+		case "Real": printer.push("(real)" + currentValue); break;
+		case "String": printer.push("(string)\"" + currentValue + "\""); break;
+		case "Octet":
+			printer.push("(octet)<% ");
+			for (var i = 0; i < currentValue.length; ++i) {
+				printer.push("%02x ".sprintf(currentValue[i]));
+			}
+			printer.push("%>");
+			break;
+		}
+	}
+	printer.flash();
+}

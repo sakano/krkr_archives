@@ -1,0 +1,243 @@
+/**
+ * Output an object's members.
+ * @param object object value The value to output.
+ * @param func function out Called to output message.
+ */
+function dv(value, out = global.Debug.message) {
+	var printer = %[
+		"count" => 0,
+		"indent" => function() {
+			flash();
+			++this.count; return this;
+		},
+		"outdent" => function() {
+			flash();
+			--this.count;
+			return this;
+		},
+		"buffer" => "",
+		"push" => function(line) {
+			buffer += line;
+			return this;
+		},
+		"flash" => function(line) {
+			buffer += line;
+			if (buffer.length == 0) return this;
+			out("\t".repeat(this.count) + buffer);
+			buffer = "";
+			return this;
+		}
+	];
+	printer.out = out;
+	var stack = [ value ];
+	var pushDictionary = function(currentValue, endString) {
+		var keys = global.Scripts.getObjectKeys(currentValue);
+		stack.push(%[
+			"dvValueType" => "Dictionary",
+			"value" => currentValue,
+			"keys" => keys,
+			"index" => 0,
+			"count" => keys.count,
+			"endString" => endString
+		]);
+	} incontextof %[ stack:stack ];
+	for(;;) {
+		if (stack.count == 0) break;
+		var currentValue = stack.pop();
+		
+		switch(typeof currentValue) {
+		case "Object":
+			if (currentValue === null) {
+				printer.push("(null)");
+				break;
+			}
+			try { currentValue instanceof "Array"; }
+			catch {
+				printer.push("(native?)" + currentValue);
+				break;
+			}
+			if (currentValue instanceof "Array") {
+				stack.push(%[
+					"dvValueType" => "Array",
+					"value" => currentValue,
+					"index" => 0,
+					"count" => currentValue.count
+				]);
+				printer.flash("[").indent();
+			} else if (currentValue instanceof "Dictionary") {
+				switch (currentValue.dvValueType) {
+				case "Array":
+					if (currentValue.index === currentValue.count) {
+						printer.outdent().push("]");
+					} else {
+						if (currentValue.index != 0) {
+							printer.flash(",");
+						}
+						++currentValue.index;
+						stack.push(currentValue, &currentValue.value[currentValue.index-1]);
+					}
+					break;
+				case "Dictionary":
+					if (currentValue.index === currentValue.count) {
+						printer.outdent().push(currentValue.endString);
+					} else {
+						if (currentValue.index != 0) {
+							printer.flash(",");
+						}
+						with (currentValue) {
+							printer.push("\""+ .keys[.index] + "\" => ");
+							++.index;
+							stack.push(currentValue, &.value[.keys[.index-1]]);
+						}
+					}
+					break;
+				case void:
+					printer.flash("%[").indent();
+					pushDictionary(currentValue, "]");
+					break;
+				}
+			} else if (currentValue instanceof "Class") {
+				printer.flash("(class)" + currentValue + " {").indent();
+				pushDictionary(currentValue, "}");
+			} else if (currentValue instanceof "Function") {
+				printer.push("(function)" + currentValue);
+			} else if (currentValue instanceof "Property") {
+				printer.push("(property)" + currentValue);
+			} else {
+				printer.flash("(object)" + currentValue + " {").indent();
+				pushDictionary(currentValue, "}");
+			}
+			break;
+		case "void": printer.push("(void)"); break;
+		case "Integer": printer.push("(int)" + currentValue); break;
+		case "Real": printer.push("(real)" + currentValue); break;
+		case "String": printer.push("(string)\"" + currentValue + "\""); break;
+		case "Octet":
+			printer.push("(octet)<% ");
+			for (var i = 0; i < currentValue.length; ++i) {
+				printer.push("%02x ".sprintf(currentValue[i]));
+			}
+			printer.push("%>");
+			break;
+		}
+	}
+	printer.flash();
+}
+
+/**
+ * Output current stack trace.
+ * @param int limit The max depth to get a stack trace.
+ * @param func out Called to output message.
+ * @return string The message of stack trace.
+ */
+function outputTraceString(limit = 0, out = global.Debug.message) {
+	var trace = global.Scripts.getTraceString(limit);
+	trace = /<--/g.replace(trace, "\n <-- ");
+	if (out !== null) { out("====== Get Trace String ======\n" + trace); }
+	return trace;
+}
+
+/**
+ * Replace old strings between braces to new strings.
+ * @param string message The string contains strings between braces to be replaced.
+ * @param strign lists* The old strings and new strings in turn.
+ * @return string The message expanded.
+ */
+function expandMessageStrings(message, lists*) {
+	for (var i = lists.count-2; i >= 0; i -= 2) {
+		message = message.replace(@"/\\{&lists[i];\\}/g"!, lists[i+1]);
+	}
+	return message;
+}
+
+/**
+ * Get paths to the files in the specified directory.
+ * @param string dirPath The path to the directory.
+ * @param bool recur If true, files in subdirectories are included.
+ * @return array The paths to the files.
+ */
+function getFilesInDirectory(dirPath, recur=true) {
+	var list = Storages.dirlist(dirPath);
+	var files = [];
+	for (var i = list.count-1; i >= 0; --i) {
+		var file = list[i];
+		if (file[file.length-1] == "/") { // directory
+			if (file[0] == ".") { continue; }
+			if (!recur) { continue; }
+			var r = getFilesInDirectory(dirPath + file);
+			for (var j = r.count-1; j >= 0; --j) { r[j] = file + r[j]; }
+			files.push(r*);
+		} else { // file
+			files.push(file);
+		}
+	}
+	return files;
+}
+
+/**
+ * Create string with Regexp.
+ * @param object reg The RegExp object.
+ * @param string targetString The string to match a regular expression.
+ * @param string patternString The string where the placeholders like $1 will be replaced by matched string.
+*/
+global.createStringWithRegExp = function(reg, targetString, patternString) {
+	var start = reg.start;
+	reg.exec(targetString);
+	while(1) {
+		var newString = patternString.replace(r, (f incontextof %[reg:reg]));
+		if (newString === patternString) { break; }
+		patternString= newString;
+	}
+	reg.start = start;
+	return patternString;
+} incontextof %[
+	r:/\$[0-9]+/,
+	f:function(matches) {
+		var num = +matches[0].substr(1);
+		return reg.matches[num];
+	}
+];
+
+/**
+ * Transform and copy an Bitmap.
+ * @param object dest The Bitmap object to be drawn.
+ * @param object src The Bitmap object to be transformed and copied.
+ * @param number originX The x-coordinate of transform origin.
+ * @param number originY The y-coordinate of transform origin.
+ * @param number scaleX The rate of magnification in the horizontal direction.
+ * @param number scaleY The rate of magnification in the vertical direction.
+ * @param number angle The clockwise angle to rotate the image.
+ * @param number translateX The value to translate the image along the X axis.
+ * @param number translateY The value to translate the image along the Y axis.
+ */
+ImageFunction.operateTransform = function(dest, src, originX = 0, originY = 0, scaleX = 1, scaleY = 1, angle=0, translateX=0, translateY=0) {
+	var _11 = scaleX, _12 = 0;
+	var _21 = 0,     _22 = scaleY;
+	if (angle !== 0) {
+		angle *= __PI / 180;
+		var sin = Math.sin(angle);
+		var cos = Math.cos(angle);
+		var t11 = _11, t12 = _12;
+		_11 = t11 * cos - _21 * sin;
+		_21 = t11 * sin + _21 * cos;
+		_12 = t12 * cos - _22 * sin;
+		_22 = t12 * sin + _22 * cos;
+	}
+	var aX = -originX,            aY = -originY;
+	var bX = src.width - originX, bY = -originY;
+	var cX = -originX,            cY = src.height - originY;
+	m4_define(/*@MULTIPLY_MATRIX22_VECTOR2@*/,/*@
+	{
+		var tx = $5;
+		$5 = $1 * tx + $2 * $6;
+		$6 = $3 * tx + $4 * $6;
+	}@*/)
+	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, aX, aY)
+	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, bX, bY)
+	MULTIPLY_MATRIX22_VECTOR2(_11, _12, _21, _22, cX, cY)
+	var dX = originX + translateX - 0.5;
+	var dY = originY + translateY - 0.5;
+	ImageFunction.operateAffine(dest, src, aX + dX, aY + dY, bX + dX, bY + dY, cX + dX, cY + dY,
+		null, null, false, omAlpha, dfAlpha, 255, stFastLinear|stRefNoClip);
+	m4_undefine(MULTIPLY_MATRIX22_VECTOR2)
+};

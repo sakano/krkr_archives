@@ -1,0 +1,175 @@
+class Biscrat_MouseGesture
+{
+	var _threshold = 50;
+	var _type = __BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION;
+	var _limit = 1;
+	var _mouseButton = mbRight;
+	
+	var _isMouseDown = false;
+	var _px, _py;
+	var _gestures = "";
+	var _enabled = false;
+	var _overflow = false;
+	
+	/**
+	 * Gets or sets whether the mouse gesture sensitivity.
+	 * @type int
+	 */
+	property threshold {
+		setter(v) { clear(); _threshold = +v; }
+		getter { return _threshold; }
+	}
+	
+	/**
+	 * Gets or sets gesture types.
+	 * @type int
+	 */
+	property type {
+		setter(v) { clear(); _type = v; }
+		getter { return _type; }
+	}
+	
+	/**
+	 * Gets or sets the max length of a mouse gesture.
+	 * @type int
+	 */
+	property limit {
+		setter(v) { clear(); _limit = v; }
+		getter { return _limit; }
+	}
+	
+	/**
+	 * Gets or sets the mouse button used to ditect gestures.
+	 * @type int
+	 */
+	property button {
+		setter(v) { clear(); _mouseButton = v; }
+		getter { return _mouseButton; }
+	}
+	
+	/**
+	 * Gets or sets whether the mouse gesture is enabled.
+	 * @type bool
+	 */
+	property enabled {
+		setter(v) { clear(); _enabled = !!v; }
+		getter { return _enabled; }
+	}
+	
+	
+	function Biscrat_MouseGesture() {
+		Serializable(this, [
+			"_threshold",
+			"_type",
+			"_limit",
+			"_mouseButton",
+			"_enabled"
+		]);
+		Bindable(this);
+	}
+	
+	function finalize() {
+		BindableFinalize(this);
+		invalidate _event;
+	}
+	
+	/**
+	 * This function must be called when the mouse button is down.
+	 * @param number x the x-coordinate of the mouse.
+	 * @param number y the y-coordinate of the mouse.
+	 * @param int button the mouse button clicked.
+	 * @return bool True if the mouse gesture is ditected.
+	 */
+	function onMouseDown(x, y, button) {
+		if (button & _mouseButton) {
+			clear();
+			_isMouseDown = true;
+			_px = x;
+			_py = y;
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * This function must be called when the mouse pointer is moved.
+	 * @param number x the x-coordinate of the mouse.
+	 * @param number y the y-coordinate of the mouse.
+	 * @param bool True while ditecting the mouse gesture.
+	 */
+	function onMouseMove(x, y) {
+		if (!_isMouseDown) { return false; }
+		if (_type === __BISCRAT_MOUSE_GESTURE_TYPE_FOUR_DIRECTION) {
+			if      (_px-x >= _threshold) input("4");
+			else if (x-_px >= _threshold) input("6");
+			else if (_py-y >= _threshold) input("2");
+			else if (y-_py >= _threshold) input("8");
+			else return true;
+		} else {
+			if (Math.pow(x-_px, 2) + Math.pow(y-_py, 2) >= _threshold * _threshold) {
+				var qpi = __PI/8;
+				var theta = Math.atan2(y-_py, x-_px);
+				if      (theta < -qpi*7) input("4");
+				else if (theta < -qpi*5) input("1");
+				else if (theta < -qpi*3) input("2");
+				else if (theta < -qpi  ) input("3");
+				else if (theta <  qpi  ) input("6");
+				else if (theta <  qpi*3) input("9");
+				else if (theta <  qpi*5) input("8");
+				else if (theta <  qpi*7) input("7");
+				else input("4");
+			} else {
+				return true;
+			}
+		}
+		_px = x, _py = y;
+		return true;
+	}
+	
+	/**
+	 * This function must be called when the mouse is up.
+	 * @param number x the x-coordinate of the mouse.
+	 * @param number y the y-coordinate of the mouse.
+	 * @param int button the mouse button clicked.
+	 * @param bool True if the mouse gesture is ditected.
+	 */
+	function onMouseUp(x, y, button) {
+		if (!_enabled || !_isMouseDown || !(button & _mouseButton)) return false;
+		if (_gestures.length === 0) {
+			clear();
+			return false;
+		}
+		if (!_overflow) {
+			_event.trigger("gesture", _gestures);
+			_event.trigger(_gestures);
+		}
+		clear();
+		return true;
+	}
+
+	/**
+	 * Records mouse gesture while mouse moving.
+	 * @param string gesture Gesture input.
+	 */
+	function input(gesture) {
+		if (_overflow) { return; }
+		var len = _gestures.length;
+		if (len == 0 || _gestures[len-1] != gesture) {
+			// Record the gesture if it differs from previous gesture.
+			_gestures += gesture;
+		}
+		if (_gestures.length > _limit) {
+			_overflow = true;
+			_event.trigger("overflow", _gestures);
+		}
+	}
+	
+	/**
+	 * Cancels the current input.
+	 */
+	function clear() {
+		_isMouseDown = false;
+		_gestures = "";
+		_overflow = false;
+	}
+}

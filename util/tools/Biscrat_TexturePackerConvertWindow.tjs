@@ -1,0 +1,51 @@
+class Biscrat_TexturePackerConvertWindow extends Window
+{
+	function Biscrat_TexturePackerConvertWindow(parent, width = 200, height = 200) {
+		super.Window(parent);
+		setInnerSize(width, height);
+		with (this.primary = new Layer(this, null)) {
+			.setSize(width, height);
+			.fillRect(0, 0, width, height, 0xFFFFFFFF);
+			.drawText(20, 20, "pngファイルとjsonファイルを", 0x000000);
+			.drawText(20, 40, "ドロップしてください。", 0x000000);
+			.visible = true;
+		}
+	}
+	
+	function onFileDrop(files) {
+		var pngFile, jsonFile;
+		for (var i = 0; i < files.count; ++i) {
+			switch (Storages.extractStorageExt(files[i])) {
+			case ".json": jsonFile = files[i]; break;
+			case ".png":  pngFile = files[i]; break;
+			}
+		}
+		if (pngFile === void || jsonFile === void) { return; }
+		var json = Scripts.evalJSONStorage(jsonFile);
+		var metaData = extractJsonData(json);
+		save(pngFile, metaData);
+	}
+	
+	function extractJsonData(json) {
+		var metaData = %[];
+		foreach(json.frames, function(filename, data, metaData) {
+			filename = Storages.chopStorageExt(filename);
+			metaData[filename] = %[];
+			with (metaData[filename]) {
+				.x = data.frame.x;
+				.y = data.frame.y;
+				.w = data.frame.w;
+				.h = data.frame.h;
+			}
+		}, metaData);
+		return metaData;
+	}
+	
+	function save(srcFilename, metaData) {
+		var bitmap = new Bitmap(srcFilename);
+		var filename = Storages.chopStorageExt(srcFilename);
+		var destFilename = filename + ".tlg";
+		bitmap.save(destFilename, "tlg5", metaData);
+		(Dictionary.saveStruct incontextof metaData)(filename + ".tex", "b");
+	}
+}
