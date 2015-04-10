@@ -31,6 +31,10 @@ TexturePackerからtjsの辞書形式で出力するためのexporterです。
 + labelInserter
 KAGEXのスクリプトファイルにページごとのラベルを挿入します。
 
++ MysticThumbsTlgPlugin
+エクスプローラ上でTLG画像のサムネイルを表示できるようになります。
+MysticThumbs(http://mysticcoder.net/mysticthumbs.html)を利用しています。
+
 
 
 ## kag_pluginフォルダ

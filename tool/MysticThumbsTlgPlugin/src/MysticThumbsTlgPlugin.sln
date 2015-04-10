@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtlg", "libtlg\libtlg.vcxproj", "{212D2C55-A0C0-4F28-A892-3866E96F171D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MysticThumbsTlgPlugin", "MysticThumbsTlgPlugin.vcxproj", "{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{212D2C55-A0C0-4F28-A892-3866E96F171D} = {212D2C55-A0C0-4F28-A892-3866E96F171D}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Debug|Win32.Build.0 = Debug|Win32
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Debug|x64.ActiveCfg = Debug|Win32
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Release|Win32.ActiveCfg = Release|Win32
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Release|Win32.Build.0 = Release|Win32
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Release|x64.ActiveCfg = Release|x64
+		{212D2C55-A0C0-4F28-A892-3866E96F171D}.Release|x64.Build.0 = Release|x64
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Debug|Win32.Build.0 = Debug|Win32
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Debug|x64.ActiveCfg = Debug|x64
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Debug|x64.Build.0 = Debug|x64
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Release|Win32.ActiveCfg = Release|Win32
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Release|Win32.Build.0 = Release|Win32
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Release|x64.ActiveCfg = Release|x64
+		{DF63D3CA-508C-4953-A14F-AC8E2D3285DC}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

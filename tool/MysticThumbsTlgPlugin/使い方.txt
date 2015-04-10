@@ -1,0 +1,11 @@
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+                  MysticThumbsTlgPlugin使い方
+■□━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━□■
+
+MysticThumbs(http://mysticcoder.net/mysticthumbs.html)をインストールしたフォルダに
+『Plugins』フォルダを作成します。その中に「MysticThumbsTlgPlugin64.dll」及び
+「MysticThumbsTlgPlugin32.dll」をコピーしてください。
+エクスプローラ上でtlg画像のサムネイルが表示されるようになります。
+
+サムネイルが表示されない場合は、MysticThumbsのコントロールパネルの、
+『カスタムプラグインの管理』でTLGPluginが登録されていることを確認してください。
