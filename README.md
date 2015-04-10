@@ -103,3 +103,6 @@ http://kasekey.blog101.fc2.com/blog-entry-203.html
 KAGEXのワールド拡張を含まない部分のリファレンスです。
 以下のURLで同じものを公開しています。
 http://www.biscrat.com/krkr/docs/kagex/contents/index.html
+
++ kagex_book
+2011年のコミケで頒布したKAGEXの解説本です。
