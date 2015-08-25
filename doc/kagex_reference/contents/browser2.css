@@ -1,4 +1,4 @@
-@charset "shift_jis";
+@charset "UTF-8";
 
 body{
 	padding: 0px;
@@ -9,7 +9,7 @@ body{
 }
 
 h1:before{
-	content: "Åü ";
+	content: "‚óÜ ";
 }
 
 h1{
@@ -263,11 +263,11 @@ div.tagremarks {
 }
 
 span.toindexanchor:before {
-	content: "Å¢ ";
+	content: "‚ñ≥ ";
 }
 
 span.toindexanchor:after {
-	content: " Å¢";
+	content: " ‚ñ≥";
 }
 
 div.toindex{
