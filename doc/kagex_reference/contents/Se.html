@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SEコマンドリファレンス</title>
+	<meta name="author" content="sakano" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />
+	<link href="browser.css" type="text/css" rel="stylesheet" title="吉里吉里関連リファレンス用標準スタイル" />
+	<link href="mailto:komatsu@biscrat.com" rev="Made" />
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-37580101-1']);
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+</head>
+<body>
+
+
+<h1><a name="tags" id="tags">SEコマンド</a></h1>
+<div class="para">[se]タグでは効果音の再生、停止などができます。</div>
+
+<h1><a name="abbreviation" id="abbreviation">省略表記</a></h1>
+<div class="para">
+<div class="tagremarks">seから始まる不明なタグ名は[se]タグの<a class="jump" href="#play_name">name</a>属性かつ<a class="jump" href="#play_play">play</a>属性と見なされます。</div>
+<div class="tagexample"><code class="bq"><span class="weak">例:</span><br />
+@se01 time=1000 loop<br />
+; @se name=se01 play=se01 time=1000 loop と見なされる<br />
+<br />
+@se01 stop=1000<br />
+; @se name=se01 play=se01 stop=1000 と見なされる<br />
+; stop属性がplay属性より優先されるのでse01の再生を停止できます
+</code></div>
+</div>
+<div class="para">
+<div class="tagremarks">[se]タグの不明な属性名は<a class="jump" href="#play_play">play</a>属性の属性値と見なされます。</div>
+<div class="tagexample"><code class="bq"><span class="weak">例:</span><br />
+@se test time=1000<br />
+; @se play=test time=1000 と見なされる
+</code></div>
+</div>
+
+<h1><a name="play" id="play" class="targanchor">効果音の再生</a></h1>
+<table class="tagparams" frame="box" rules="all"><thead><tr><td>属性名</td><td>属性値</td><td>説明</td></tr></thead><tbody>
+<tr><td class="tagattribname"><a class="targanchor" name="play_play" id="play_play">play</a></td><td class="tagattribformat">音声ファイル名</td><td class="tagattribdesc">指定されたファイルを再生開始します。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_storage" id="play_storage">storage</a></td><td class="tagattribformat">音声ファイル名</td><td class="tagattribdesc"><a class="jump" href="#play_play">play</a>属性の別名。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_start" id="play_start">start</a></td><td class="tagattribformat">ラベル名</td><td class="tagattribdesc">再生開始位置を指定します。ループチューナで設定したラベル名を指定します。<br />省略時はファイルの最初から再生されます。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_loop" id="play_loop">loop</a></td><td class="tagattribformat">true/false</td><td class="tagattribdesc">trueを指定するとループ再生します。省略時はfalse。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_time" id="play_time">time</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">フェードイン時間を指定します。省略時はフェードせずすぐに再生開始します。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_sync" id="play_sync">sync</a></td><td class="tagattribformat">true</td><td class="tagattribdesc">trueを指定すると再生が同期実行されます。つまり再生終了を待つようになります。<br />ただしループ再生の場合は再生終了しないため待てません。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_nosync" id="play_nosync">nosync</a></td><td class="tagattribformat">true</td><td class="tagattribdesc">trueを指定すると再生が非同期実行されます。つまり再生終了を待ちません。<br />デフォルトで非同期実行のためこの属性は常に無視されます。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_wait" id="play_wait">wait</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">指定すると再生が同期実行され、さらに終了してから追加で指定された時間だけ待ちます。<br />同期実行の詳細は<a class="jump" href="#play_sync">sync</a>属性の欄を参照してください。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_canskip" id="play_canskip">canskip</a></td><td class="tagattribformat">true/false</td><td class="tagattribdesc"><a class="jump" href="#play_sync">sync</a>属性または<a class="jump" href="#play_wait">wait</a>属性と一緒に使います。falseを指定すると終了待ちをクリックでスキップできなくなります。省略時はtrue。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_buf" id="play_buf">buf</a></td><td class="tagattribformat">バッファ番号</td><td class="tagattribdesc">再生に使うバッファを番号で指定します。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="play_name" id="play_name">name</a></td><td class="tagattribformat">音声ファイル名</td><td class="tagattribdesc">再生に使うバッファをファイル名で指定します。そのファイルを再生しているバッファで再生します。<br />再生しているバッファが存在しなければ未使用のバッファが自動的に使われます。</td></tr>
+</tbody></table>
+<div class="para">
+<div class="tagremarks"><a class="jump" href="#play_play">play</a>属性にファイル名を指定して効果音を再生します。<br />使用するバッファが再生中なら現在のファイルを停止してから再生します。<br /><a class="jump" href="#play_buf">buf</a>属性と<a class="jump" href="#play_name">name</a>属性をどちらも省略した場合は未使用のバッファが自動的に使われます。</div>
+</div>
+
+<h1><a name="stop" id="stop" class="targanchor">効果音の停止</a></h1>
+<table class="tagparams" frame="box" rules="all"><thead><tr><td>属性名</td><td>属性値</td><td>説明</td></tr></thead><tbody>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_stop" id="stop_stop">stop</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">再生中の効果音を停止します。<br />属性値を省略するとすぐに停止します。属性値に時間を指定するとその時間でフェードアウトして停止します。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_time" id="stop_time">time</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">フェード時間を指定します。<a class="jump" href="#stop_stop">stop</a>属性に数値を指定するのと同じです。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_sync" id="stop_sync">sync</a></td><td class="tagattribformat">true</td><td class="tagattribdesc">trueを指定するとフェードアウトが同期実行されます。つまりフェード終了を待つようになります。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_nosync" id="stop_nosync">nosync</a></td><td class="tagattribformat">true</td><td class="tagattribdesc">trueを指定するとフェードアウトが非同期実行されます。つまりフェード終了を待ちません。デフォルトで非同期実行のためこの属性は常に無視されます。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_wait" id="stop_wait">wait</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">指定するとフェードアウトが同期実行され、さらに終了してから追加で指定された時間だけ待ちます。<br />同期実行の詳細は<a class="jump" href="#stop_sync">sync</a>属性の欄を参照してください。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_canskip" id="stop_canskip">canskip</a></td><td class="tagattribformat">true/false</td><td class="tagattribdesc"><a class="jump" href="#stop_sync">sync</a>属性または<a class="jump" href="#stop_wait">wait</a>属性と一緒に使います。falseを指定するとフェード待ちをクリックでスキップできなくなります。省略時はtrue。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_buf" id="stop_buf">buf</a></td><td class="tagattribformat">バッファ番号</td><td class="tagattribdesc">停止するバッファを番号で指定します。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="stop_name" id="stop_name">name</a></td><td class="tagattribformat">音声ファイル名</td><td class="tagattribdesc">停止するバッファをファイル名で指定します。そのファイルを再生しているバッファを停止します。</td></tr>
+</tbody></table>
+<div class="para">
+<div class="tagremarks"><a class="jump" href="#stop_stop">stop</a>属性で再生中の効果音を停止します。<br /><a class="jump" href="#stop_buf">buf</a>属性と<a class="jump" href="#stop_name">name</a>属性のどちらかは必ず指定してください。</div>
+</div>
+
+<h1><a name="fade" id="fade" class="targanchor">効果音の音量設定</a></h1>
+<table class="tagparams" frame="box" rules="all"><thead><tr><td>属性名</td><td>属性値</td><td>説明</td></tr></thead><tbody>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_fade" id="fade_fade">fade</a></td><td class="tagattribformat">音量%(0～100)</td><td class="tagattribdesc">効果音の音量を指定します。初期状態では100です。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_time" id="fade_time">time</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">フェード時間を指定します。属性値を省略するとすぐに指定音量になります。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_sync" id="fade_sync">sync</a></td><td class="tagattribformat">true</td><td class="tagattribdesc">trueを指定するとフェードが同期実行されます。つまりフェード終了を待つようになります。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_nosync" id="fade_nosync">nosync</a></td><td class="tagattribformat">true</td><td class="tagattribdesc">trueを指定するとフェードが非同期実行されます。つまりフェード終了を待ちません。デフォルトで非同期実行のためこの属性は常に無視されます。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_wait" id="fade_wait">wait</a></td><td class="tagattribformat">時間(ms)</td><td class="tagattribdesc">指定するとフェードが同期実行され、さらに終了してから追加で指定された時間だけ待ちます。同期実行の詳細は<a class="jump" href="#fade_sync">sync</a>属性の欄を参照してください。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_canskip" id="fade_canskip">canskip</a></td><td class="tagattribformat">true/false</td><td class="tagattribdesc"><a class="jump" href="#fade_sync">sync</a>属性または<a class="jump" href="#fade_wait">wait</a>属性と一緒に使います。falseを指定するとフェード待ちをクリックでスキップできなくなります。省略時はtrue。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_buf" id="fade_buf">buf</a></td><td class="tagattribformat">バッファ番号</td><td class="tagattribdesc">音量設定するバッファを番号で指定します。</td></tr>
+<tr><td class="tagattribname"><a class="targanchor" name="fade_name" id="fade_name">name</a></td><td class="tagattribformat">音声ファイル名</td><td class="tagattribdesc">音量設定するバッファをファイル名で指定します。そのファイルを再生しているバッファを設定します。</td></tr>
+</tbody></table>
+<div class="para">
+<div class="tagremarks"><a class="jump" href="#fade_fade">fade</a>属性で効果音の音量を設定します。音量は<a class="jump" href="#play_play">play</a>属性で再生開始するたびに100にリセットされます。<br /><a class="jump" href="#fade_buf">buf</a>属性と<a class="jump" href="#fade_name">name</a>属性のどちらかは必ず指定してください。</div>
+</div>
+
+</body></html>
