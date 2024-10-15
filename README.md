@@ -1,123 +1,123 @@
 krkr_archives
 =============
 
-���܂ō쐬���Ă����g���g��2, �g���g��Z�֘A�̃X�N���v�g�ł��B
-+ �g���g��2(http://kikyou.info/tvp/)
-+ �g���g��Z(http://krkrz.github.io/)
+今まで作成してきた吉里吉里2, 吉里吉里Z関連のスクリプトです。
++ 吉里吉里2(http://kikyou.info/tvp/)
++ 吉里吉里Z(http://krkrz.github.io/)
 
-�ȉ��ɊT�v�������܂��B
-�ڍׂȐ����͊e�t�H���_�ɓ����Ă���readme.txt���Q�Ƃ��Ă��������B
+以下に概要を示します。
+詳細な説明は各フォルダに入っているreadme.txtを参照してください。
 
 
 
-## tools�t�H���_
-�J����Ǝ��ɕ֗��ȃc�[���Ȃǂ������Ă��܂��B
+## toolsフォルダ
+開発作業時に便利なツールなどが入っています。
 
 + oggConverter
-wav�t�@�C����ogg�t�@�C���ɕϊ����܂��B
+wavファイルをoggファイルに変換します。
 
 + packer
-�t�@�C���ɋg���g���̏�����������A�t�H���_��xp3�Ƀp�b�P�[�W���܂��B
+ファイルに吉里吉里の署名をつけたり、フォルダをxp3にパッケージします。
 
 + htmlConverter
-ks�t�@�C���܂���tjs�t�@�C����html�t�@�C���ɕϊ����܂��B
+ksファイルまたはtjsファイルをhtmlファイルに変換します。
 
 + tlgConverter
-tlg�t�@�C����png�t�@�C���ɕϊ����܂��B
+tlgファイルをpngファイルに変換します。
 
 + tpTjsExporter
-TexturePacker����tjs�̎����`���ŏo�͂��邽�߂�exporter�ł��B
+TexturePackerからtjsの辞書形式で出力するためのexporterです。
 
 + labelInserter
-KAGEX�̃X�N���v�g�t�@�C���Ƀy�[�W���Ƃ̃��x����}�����܂��B
+KAGEXのスクリプトファイルにページごとのラベルを挿入します。
 
 + MysticThumbsTlgPlugin
-�G�N�X�v���[�����TLG�摜�̃T���l�C����\���ł���悤�ɂȂ�܂��B
-MysticThumbs(http://mysticcoder.net/mysticthumbs.html)�𗘗p���Ă��܂��B
+エクスプローラ上でTLG画像のサムネイルを表示できるようになります。
+MysticThumbs(http://mysticcoder.net/mysticthumbs.html)を利用しています。
 
 
 
-## kag_plugin�t�H���_
-KAG�p�̃v���O�C���������Ă��܂��B
+## kag_pluginフォルダ
+KAG用のプラグインが入っています。
 
 + SKN_SystemShowing
-�E�B���h�E�E��ɃV�X�e�����C����\�����܂��BTIPS�\���ȂǂɎg���܂��BKAGEX�ł���������Ă��܂��B
+ウィンドウ右上にシステムレイヤを表示します。TIPS表示などに使えます。KAGEX版も同梱されています。
 http://kasekey.blog101.fc2.com/blog-entry-47.html
 
 + SKN_Slider
-�X���C�_��\���ł��܂��B
+スライダを表示できます。
 http://kasekey.blog101.fc2.com/blog-entry-17.html
 
 + SKN_RecordLabelTJS
-���x���̃Z�[�u�A���[�h�����������܂��B
+ラベルのセーブ、ロードを高速化します。
 http://kasekey.blog101.fc2.com/blog-entry-137.html
 
 + limitCursor
-�J�[�\���̈ړ��͈͂��E�B���h�E�̒��Ɍ��肵�܂��B
-http://www.biscrat.com/blog/limit-cursor-kag/
+カーソルの移動範囲をウィンドウの中に限定します。
+https://biscrat.com/blog/limit-cursor-kag/
 
 + ignoreMissing
-���ʉ��t�@�C����摜�t�@�C�������݂��Ȃ��Ƃ��ɃG���[�Œ�~���Ȃ��悤�ɂ��܂��B
-http://www.biscrat.com/blog/ignore-missing-error-kag/
+効果音ファイルや画像ファイルが存在しないときにエラーで停止しないようにします。
+https://biscrat.com/blog/ignore-missing-error-kag/
 
 
 
-## kagex_plugin�t�H���_
-KAGEX�p�̃v���O�C���������Ă��܂��B
+## kagex_pluginフォルダ
+KAGEX用のプラグインが入っています。
 
 + SKN_ActionEx
-�A�N�V�����@�\���g�����܂��B
+アクション機能を拡張します。
 http://kasekey.blog101.fc2.com/blog-entry-109.html
 
 + SKN_CatSystem
-CatSystem2�`���ŗ����G���\���ł���悤�ɂȂ�܂��B
+CatSystem2形式で立ち絵が表示できるようになります。
 http://kasekey.blog101.fc2.com/blog-entry-86.html
 
 + SKN_EditEx
-�P��s�G�f�B�^�̋@�\���g�����܂��B
+単一行エディタの機能を拡張します。
 http://kasekey.blog101.fc2.com/blog-entry-122.html
 
 + SKN_MouseGesture
-�}�E�X�W�F�X�`�����g����悤�ɂȂ�܂��B
+マウスジェスチャが使えるようになります。
 http://kasekey.blog101.fc2.com/blog-entry-99.html
 
 + SKN_MouseSkip
-�}�E�X�̍��{�^���������ςȂ��Ńe�L�X�g���X�L�b�v�ł��܂��B
+マウスの左ボタン押しっぱなしでテキストをスキップできます。
 http://kasekey.blog101.fc2.com/blog-entry-127.html
 
 + SKN_SelectAction
-�I������\���A��������ۂɃA�N�V�������g����悤�ɂȂ�܂��B
+選択肢を表示、消去する際にアクションが使えるようになります。
 http://kasekey.blog101.fc2.com/blog-entry-121.html
 
 + KAGParserExb
-KAGParser�N���X�̋@�\���g�����܂��B
+KAGParserクラスの機能を拡張します。
 http://kasekey.blog101.fc2.com/blog-entry-203.html
 
 
 
-## util�t�H���_
-�g���g��Z�p��tjs���C�u�����ł��B
+## utilフォルダ
+吉里吉里Z用のtjsライブラリです。
 
 
 
-## doc�t�H���_
-�g���g���֘A�̃h�L�������g�������Ă��܂��B
+## docフォルダ
+吉里吉里関連のドキュメントが入っています。
 
 + kagex_reference
-KAGEX�̃��[���h�g�����܂܂Ȃ������̃��t�@�����X�ł��B
-�ȉ���URL�œ������̂����J���Ă��܂��B
-http://www.biscrat.com/krkr/docs/kagex/contents/index.html
+KAGEXのワールド拡張を含まない部分のリファレンスです。
+以下のURLで同じものを公開しています。
+https://biscrat.com/krkr/docs/kagex/contents/index.html
 
 + kagex_book
-2011�N�̃R�~�P�ŔЕz����KAGEX�̉���{�ł��B
+2011年のコミケで頒布したKAGEXの解説本です。
 
 
 
-## photoshop�t�H���_
-Adobe Photoshop�p�̃X�N���v�g�t�@�C���������Ă��܂��B
+## photoshopフォルダ
+Adobe Photoshop用のスクリプトファイルが入っています。
 
 + psd2uicsv
-psd�t�@�C������KAGEX��UI��`�t�@�C�����o�͂��܂��B
+psdファイルからKAGEXのUI定義ファイルを出力します。
 
 + misc
-���̑��A�ׁX�Ƃ����X�N���v�g�ł��B
+その他、細々としたスクリプトです。
